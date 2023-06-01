@@ -60,6 +60,11 @@ cover/
 local_settings.py
 db.sqlite3
 db.sqlite3-journal
+migrations/
+documents/
+templates/index_demo.html
+templates/index_prod.html
+templates/index_dev.html
 
 # Flask stuff:
 instance/
