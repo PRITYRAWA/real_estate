@@ -313,6 +313,23 @@ class Realestateobjects(models.Model):
         managed = False
         db_table = 'RealEstateObjects'
 
+#object detail model
+class RealEstateObjectsDetails(models.Model):
+    object_code = models.CharField(max_length=100,null=True,blank=True)
+    related_object = models.ForeignKey(Realestateobjects, on_delete=models.CASCADE,null=True,blank=True)
+    objectName = models.TextField()
+    related_detail = models.ForeignKey('RealEstateObjectsDetails', on_delete=models.CASCADE, null=True, blank=True)
+    new = models.BooleanField(blank=True,null=True)
+    inorder = models.BooleanField(blank=True,null=True)
+    normal_wear = models.BooleanField(blank=True,null=True)
+    notes = models.TextField(blank=True, null=True)
+    image = models.ImageField(upload_to='object_images_master/')
+    
+
+    def __str__(self):
+        return f"Details for {self.objectName}"
+
+
 
 class Realestatepropertypersons(models.Model):
     realestatepropertyid = models.OneToOneField(Realestateproperties, models.DO_NOTHING, db_column='RealEstatePropertyId', primary_key=True)  # Field name made lowercase. The composite primary key (RealEstatePropertyId, RealEstatePersonId) found, that is not supported. The first column is selected.
