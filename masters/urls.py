@@ -4,7 +4,6 @@ from rest_framework import routers
 
 router = routers.DefaultRouter()
 
-
 router.register(r'properties', RealestatepropertyViewSet)
 router.register(r'objects', RealestateobjectsViewSet)
 router.register(r'agents', RealestateagentsViewSet)

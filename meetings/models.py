@@ -1,5 +1,4 @@
 from django.db import models
-# Create your models here.
 from masters.models import BaseModel ,Realestateproperties ,Realestatepropertyowner,Realestatepropertiessubgroup,Quorums
 
 class MeetingSchedule(BaseModel):
@@ -23,5 +22,4 @@ class MeetingSchedule(BaseModel):
     quorum = models.ForeignKey(Quorums,related_name="quorum",on_delete=models.CASCADE)
 
     class Meta:
-        managed = False
-        db_table = 'Meeting'
+        db_table = 'MeetingSchedule'

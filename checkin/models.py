@@ -25,14 +25,14 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
 class CheckInOut(models.Model):
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     service_ticket_number = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
-    object_check_in = models.ForeignKey(Realestateobjects, on_delete=models.CASCADE)
+    object_check_in = models.ForeignKey(Realestateobjects, on_delete=models.CASCADE, null=True, blank=True)
     check_in_date = models.DateField()
     check_in_time = models.TimeField()
     check_out_date = models.DateField()
     check_out_time = models.TimeField()
     inspection_date_time = models.DateTimeField()
     object_details = models.ManyToManyField(RealEstateObjectsDetails)
-    object_detail_list = models.ForeignKey('ObjectListInspection', on_delete=models.CASCADE)
+    object_detail_list = models.ForeignKey('ObjectListInspection', on_delete=models.CASCADE, null=True, blank=True)
 
     def __str__(self):
         return f"{self.user.full_name} checked into {self.object_check_in}"
@@ -40,7 +40,7 @@ class CheckInOut(models.Model):
 class GeneralInspection(models.Model):
     #  fk service id link with check in&out, 
     service_id = models.ForeignKey(CheckInOut, on_delete=models.CASCADE, null=True, blank=True)
-    real_estate_object = models.ForeignKey(Realestateobjects, on_delete=models.CASCADE,related_name='inspections')
+    real_estate_object = models.ForeignKey(Realestateobjects, on_delete=models.CASCADE, null=True, blank=True,related_name='inspections')
     inspection_report = models.TextField()
     name = models.CharField(max_length=100)
     image = models.ImageField(upload_to='inspection_images/')
@@ -54,7 +54,7 @@ class GeneralInspection(models.Model):
 class ObjectListInspection(models.Model):
     #  fk service id link with check in&out, 
     service_id = models.ForeignKey(CheckInOut, on_delete=models.CASCADE, null=True, blank=True)
-    object_detail_list = models.ForeignKey(RealEstateObjectsDetails, on_delete=models.CASCADE,related_name='inspections')
+    object_detail_list = models.ForeignKey(RealEstateObjectsDetails, on_delete=models.CASCADE,null=True,blank=True,related_name='inspections')
     new = models.BooleanField(default=False)
     inorder = models.BooleanField(default=False)
     normal_wear = models.BooleanField(blank=True,null=True)
@@ -62,9 +62,3 @@ class ObjectListInspection(models.Model):
     image = models.ImageField(upload_to='object_images_teenant/')   
     def __str__(self):
         return f'Object {self.id}'
-
-
-
-
-
-

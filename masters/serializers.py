@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Realestateproperties, Realestateobjects, Realestateagents, Messages, Messagecomments, Tickets, Ticketoffers, Realestateserviceproviders, Feedbacks, Realestatepersons
+from .models import *
 
 class RealestatepropertySerializer(serializers.ModelSerializer):
     class Meta:
@@ -48,5 +48,5 @@ class FeedbackSerializer(serializers.ModelSerializer):
 
 class RealestatepersonSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Realestatepersons
+        model = Realestatepropertyowner
         exclude = ('created', 'createdby', 'lastmodified', 'lastmodifiedby')

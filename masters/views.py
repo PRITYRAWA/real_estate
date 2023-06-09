@@ -57,5 +57,5 @@ class FeedbacksViewSet(viewsets.ModelViewSet):
 
 class RealestatepersonsViewSet(viewsets.ModelViewSet):
     # end point to access Realestatepersons Model.
-    queryset = Realestatepersons.objects.all()
+    queryset = Realestatepropertyowner.objects.all()
     serializer_class = RealestatepersonSerializer
