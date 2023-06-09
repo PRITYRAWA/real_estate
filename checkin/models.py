@@ -1,7 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
 from . manager import *
-from masters.models import Realestateobjects, ObjectDetailList,RealEstateObjectsDetails
+from masters.models import Realestateobjects,RealEstateObjectsDetails
 import uuid
 # user registration model
 class CustomUser(AbstractBaseUser, PermissionsMixin):

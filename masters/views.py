@@ -1,8 +1,8 @@
 from django.shortcuts import render
 from rest_framework import viewsets
 from django_filters.rest_framework import DjangoFilterBackend
-from .serializers import RealestatepropertySerializer, RealestateobjectSerializer, RealestateagentSerializer, MessageSerializer, MessagecommentSerializer, TicketSerializer, TicketofferSerializer, RealestateserviceproviderSerializer
-from .models import Realestateproperties, Realestateobjects, Realestateagents, Messages, Messagecomments, Tickets, Ticketoffers, Realestateserviceproviders
+from .serializers import *
+from .models import *
 
 # Create your views here.
 
@@ -49,3 +49,13 @@ class RealestateserviceprovidersViewSet(viewsets.ModelViewSet):
     # end point to access Realestateserviceproviders Model.
     queryset = Realestateserviceproviders.objects.all()
     serializer_class = RealestateserviceproviderSerializer
+
+class FeedbacksViewSet(viewsets.ModelViewSet):
+    # end point to access Feedbacks Model.
+    queryset = Feedbacks.objects.all()
+    serializer_class = FeedbackSerializer
+
+class RealestatepersonsViewSet(viewsets.ModelViewSet):
+    # end point to access Realestatepersons Model.
+    queryset = Realestatepersons.objects.all()
+    serializer_class = RealestatepersonSerializer
