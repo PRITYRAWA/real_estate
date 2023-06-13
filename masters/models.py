@@ -27,7 +27,7 @@ class Realestateagents(BaseModel):
 class Realestatepropertyowner(BaseModel):
     userid = models.CharField( max_length=36, blank=True, null=True)  # Field name made lowercase.
     #realestateagentid = models.ForeignKey(Realestateagents, models.DO_NOTHING, db_column='RealEstateAgentId')  # Field name made lowercase.
-    realestateagentid = models.ForeignKey(Realestateagents, models.DO_NOTHING)  # Field name made lowercase.
+    # realestateagentid = models.ForeignKey(Realestateagents, models.DO_NOTHING)  # Field name made lowercase.
     realestatepersontypeid = models.IntegerField()  # Field name made lowercase.
     name = models.CharField(max_length=50)  # Field name made lowercase.
     surname = models.CharField(max_length=100)  # Field name made lowercase.
@@ -95,6 +95,9 @@ class Realestateproperties(BaseModel):
     isactive = models.BooleanField(default=False)  # Field name made lowercase.
     attachments = models.TextField(blank=True, null=True)  # Field name made lowercase.
 
+    def __str__(self):
+        return f" {self.name}"
+
 class Feedbacks(BaseModel):
     comment = models.CharField(db_column='Comment', max_length=500,   )  # Field name made lowercase.
     class Meta:
@@ -159,9 +162,11 @@ class Realestateobjects(BaseModel):
     isactive = models.BooleanField(default=False)  # Field name made lowercase.
     attachments = models.TextField(blank=True, null=True)  # Field name made lowercase.
 
-    # class Meta:
-    #     managed = False
-    #     db_table = 'RealEstateObjects'
+    def __str__(self):
+        return f" {self.name}"
+
+    class Meta:
+        db_table = 'RealEstateObjects'
 
 #object detail model
 class RealEstateObjectsDetails(models.Model):
@@ -182,12 +187,23 @@ class RealEstateObjectsDetails(models.Model):
 
 class Realestatepropertymanagement(BaseModel):
     realestatepropertyid = models.OneToOneField(Realestateproperties, models.DO_NOTHING, primary_key=True)  
-    realestatepersonid = models.ForeignKey(Realestatepropertyowner, models.DO_NOTHING)  
+    realestateownerid = models.ForeignKey(Realestatepropertyowner, models.DO_NOTHING)  
     realestateagentid = models.ForeignKey(Realestateagents, models.DO_NOTHING) 
     realestateobjectid = models.ForeignKey(Realestateobjects, models.DO_NOTHING)
+    care_taker = models.CharField(max_length=10, choices=(('owner', 'Owner'), ('agent', 'Agent')))
+    care_taker_id = models.CharField(max_length=100,null=True,blank=True)
 
     class Meta:
         db_table = 'Realestatepropertymanagement'
+
+    def save(self, *args, **kwargs):
+        if self.take_care == 'agent':
+            self.care_taker_id = self.realestateagentid_id
+            self.realestateownerid_id = None
+        elif self.take_care == 'owner':
+            self.care_taker_id = self.realestateownerid_id
+            self.realestateagentid_id = None
+        super().save(*args, **kwargs)
 
 class Realestateserviceproviders(BaseModel):
     # id = models.CharField(db_column='Id', primary_key=True, max_length=36)  # Field name made lowercase.

@@ -4,49 +4,49 @@ from .models import *
 class RealestatepropertySerializer(serializers.ModelSerializer):
     class Meta:
         model = Realestateproperties
-        exclude = ('created', 'createdby', 'lastmodified', 'lastmodifiedby')
+        fields = '__all__'
 
 class RealestateobjectSerializer(serializers.ModelSerializer):
     class Meta:
         model = Realestateobjects
-        exclude = ('created', 'createdby', 'lastmodified', 'lastmodifiedby')
+        fields = '__all__'
 
 class RealestateagentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Realestateagents
-        exclude = ('created', 'createdby', 'lastmodified', 'lastmodifiedby')
+        fields = '__all__'
 
 class MessageSerializer(serializers.ModelSerializer):
     class Meta:
         model = Messages
-        exclude = ('created', 'createdby', 'lastmodified', 'lastmodifiedby')
+        fields = '__all__'
 
 class MessagecommentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Messagecomments
-        exclude = ('created',)
+        fields = '__all__'
 
 class TicketSerializer(serializers.ModelSerializer):
     class Meta:
         model = Tickets
-        exclude = ('created', 'createdby', 'lastmodified', 'lastmodifiedby')
+        fields = '__all__'
 
 class TicketofferSerializer(serializers.ModelSerializer):
     class Meta:
         model = Ticketoffers
-        exclude = ('created', 'createdby', 'lastmodified', 'lastmodifiedby')
+        fields = '__all__'
 
 class RealestateserviceproviderSerializer(serializers.ModelSerializer):
     class Meta:
         model = Realestateserviceproviders
-        exclude = ('created', 'createdby', 'lastmodified', 'lastmodifiedby')
+        fields = '__all__'
 
 class FeedbackSerializer(serializers.ModelSerializer):
     class Meta:
         model = Feedbacks
-        exclude = ('created', 'createdby', 'lastmodified', 'lastmodifiedby')
+        fields = '__all__'
 
-class RealestatepersonSerializer(serializers.ModelSerializer):
+class Realestateowner(serializers.ModelSerializer):
     class Meta:
         model = Realestatepropertyowner
-        exclude = ('created', 'createdby', 'lastmodified', 'lastmodifiedby')
+        fields = '__all__'

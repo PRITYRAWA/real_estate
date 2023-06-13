@@ -45,7 +45,8 @@ INSTALLED_APPS = [
     'checkout',
     'masters',
     'sales',
-    'rest_framework'
+    'rest_framework',
+    'drf_yasg'
 ]
 
 
@@ -83,7 +84,7 @@ WSGI_APPLICATION = 'property.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
- DATABASES = {
+DATABASES = {
      'default': {
          'ENGINE': 'django.db.backends.sqlite3',
          'NAME': BASE_DIR / 'db.sqlite3',

@@ -72,7 +72,7 @@ class CheckInOutSerializer(serializers.ModelSerializer):
     class Meta:
         model = CheckInOut
         fields = ('id', 'user', 'service_ticket_number', 'object_check_in', 'check_in_date', 'check_in_time',
-                  'check_out_date', 'check_out_time', 'inspection_date_time', 'object_details', 'object_detail_list')
+                  'check_out_date', 'check_out_time', 'inspection_date_time', 'object_details', 'object_detail_list','general_inspection','object_list_inspection')
 
     def create(self, validated_data):
         general_inspection_data = validated_data.pop('general_inspection', None)
