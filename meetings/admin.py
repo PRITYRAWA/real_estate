@@ -1,3 +1,16 @@
 from django.contrib import admin
+from meetings.models import *
 
-# Register your models here.
+
+# creating parent child model for agenda
+class MeetingAgendasInline(admin.TabularInline):
+    model = MeetingAgenda
+    extra = 1
+
+@admin.register(MeetingSchedule)
+class CustomAgenda(admin.ModelAdmin):
+    
+    inlines = [
+        MeetingAgendasInline,
+    ]
+

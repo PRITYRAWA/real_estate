@@ -7,7 +7,8 @@ class RealestateobjectSerializer(serializers.ModelSerializer):
         exclude = ('created_at', 'updated_at', 'createdby', 'lastmodifiedby')
 
 class RealestatepropertySerializer(serializers.ModelSerializer):
-    objects_details=RealestateobjectSerializer(many=True)
+    objects_detail=RealestateobjectSerializer(many=True)
+
     class Meta:
         model = Realestateproperties
         fields = (
@@ -20,10 +21,9 @@ class RealestatepropertySerializer(serializers.ModelSerializer):
             "country",
             "isactive",
             "attachments",
-            "objects_details",
+            "objects_detail",
             
         )
-
 
 class RealestateagentSerializer(serializers.ModelSerializer):
     class Meta:

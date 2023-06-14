@@ -12,6 +12,8 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 
 from pathlib import Path
 import environ
+from datetime import timedelta
+
 # SECURITY WARNING: don't run with debug turned on in production!
 # env = environ.Env(
 #     # set casting, default value
@@ -149,6 +151,12 @@ STATIC_ROOT = BASE_DIR / "static"
 MEDIA_ROOT = BASE_DIR / "media/"
 MEDIA_URL = "/media/"
 
+SIMPLE_JWT = {
+    "ACCESS_TOKEN_LIFETIME": timedelta(days=60),
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=15),
+    "ROTATE_REFRESH_TOKENS": True,
+    "BLACKLIST_AFTER_ROTATION": False,
+}
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field

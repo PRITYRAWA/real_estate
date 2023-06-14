@@ -1,13 +1,14 @@
 from django.db import models
 from foundation.models import BaseModel
+from masters.models import *
 
 class MeetingSchedule(BaseModel):
     title = models.CharField(max_length=100, blank=False, null=False)
     venue = models.TextField(blank=True, null=True)
-    # property = models.ForeignKey(Realestateproperties,related_name="property",on_delete=models.CASCADE)
-    # subgroup = models.ForeignKey(Realestatepropertiessubgroup,related_name="subgroup",on_delete=models.CASCADE)
-    # chairman = models.ForeignKey(Realestatepropertyowner,related_name="chairman",on_delete=models.CASCADE)
-    # mintue_taker = models.ForeignKey(Realestatepropertyowner,related_name="mintue_taker",on_delete=models.CASCADE)
+    property = models.ForeignKey(Realestateproperties,related_name="properties",on_delete=models.CASCADE)
+    subgroup = models.ForeignKey(Realestatepropertiessubgroup,related_name="subgroups",on_delete=models.CASCADE)
+    chairman = models.ForeignKey(Realestatepropertyowner,related_name="chairmans",on_delete=models.CASCADE)
+    mintue_taker = models.ForeignKey(Realestateagents,related_name="mintue_takers",on_delete=models.CASCADE)
     meeting_date = models.DateField(auto_now_add=True)
     meeting_time=models.TimeField(auto_now_add=True)
     date_defined =models.BooleanField(default=False)
@@ -21,8 +22,21 @@ class MeetingSchedule(BaseModel):
     cover_picture_for_presenation=models.FileField(upload_to="images", null=True, blank=True)
     association_information=models.TextField(null=True, blank=True)
     information_for_current_meeting=models.TextField(null=True, blank=True)
-    # quorum = models.ForeignKey(Quorums,related_name="quorum",on_delete=models.CASCADE)
-    # votes= models.ForeignKey(Votes,related_name="votes",on_delete=models.CASCADE)
+    quorum = models.ForeignKey(Quorums,related_name="quorums",on_delete=models.CASCADE)
+    voting_circle = models.ForeignKey(Realestatepropertyowner,related_name="voting_circles",on_delete=models.CASCADE)
 
     class Meta:
         db_table = 'MeetingSchedule'
+
+class MeetingAgenda(BaseModel):
+    status = (
+        ("draft", ("Draft")),
+        ("definitive", ("Definitive")),
+      
+    )
+    meeting = models.ForeignKey(MeetingSchedule,related_name="meeting_agendas",on_delete=models.CASCADE)
+    topic = models.CharField(max_length=100, blank=False, null=False)
+    status = models.TextField(max_length=20,choices= status,default='draft')
+    
+    class Meta:
+        db_table = 'MeetingAgenda'
