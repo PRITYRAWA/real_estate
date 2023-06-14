@@ -1,141 +1,130 @@
 from django.db import models
 from django_countries.fields import CountryField
+from foundation.models import BaseModel
 
-class BaseModel(models.Model):
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-    createdby = models.CharField(max_length=36, blank=True, null=True)
-    lastmodifiedby = models.CharField(max_length=36, blank=True, null=True)
-
-    class Meta:
-        abstract = True
 
 class Realestateagents(BaseModel):
-    prefix = models.CharField(max_length=5)  # Field name made lowercase.
-    name = models.CharField(max_length=50)  # Field name made lowercase.
-    contactname = models.CharField(max_length=100)  # Field name made lowercase.
-    email = models.CharField(max_length=320, blank=True, null=True)  # Field name made lowercase.
-    website = models.TextField(blank=True, null=True)  # Field name made lowercase.
-    phonenumber = models.CharField(max_length=30, blank=True, null=True)  # Field name made lowercase.
-    street = models.CharField(max_length=100)  # Field name made lowercase.
-    zip = models.CharField(max_length=10, blank=True, null=True)  # Field name made lowercase.
-    city = models.CharField(max_length=50, blank=True, null=True)  # Field name made lowercase.
-    country = CountryField( blank=True, null=True)  # Field name made lowercase.    isactive = models.BooleanField(default=False)  # Field name made lowercase.
-    
+    prefix = models.CharField(max_length=5) 
+    name = models.CharField(max_length=50) 
+    contactname = models.CharField(max_length=100) 
+    email = models.CharField(max_length=320, blank=True, null=True)  
+    website = models.TextField(blank=True, null=True)  
+    phonenumber = models.CharField(max_length=30, blank=True, null=True) 
+    street = models.CharField(max_length=100) 
+    zip = models.CharField(max_length=10, blank=True, null=True)  
+    city = models.CharField(max_length=50, blank=True, null=True)  
+    country = CountryField( blank=True, null=True) 
+
+    class Meta:
+        db_table = "Realestateagents"
 
 
 class Realestatepropertyowner(BaseModel):
-    userid = models.CharField( max_length=36, blank=True, null=True)  # Field name made lowercase.
-    #realestateagentid = models.ForeignKey(Realestateagents, models.DO_NOTHING, db_column='RealEstateAgentId')  # Field name made lowercase.
-    # realestateagentid = models.ForeignKey(Realestateagents, models.DO_NOTHING)  # Field name made lowercase.
-    realestatepersontypeid = models.IntegerField()  # Field name made lowercase.
-    name = models.CharField(max_length=50)  # Field name made lowercase.
-    surname = models.CharField(max_length=100)  # Field name made lowercase.
-    email = models.CharField(max_length=320, blank=True, null=True)  # Field name made lowercase.
-    phonenumber = models.CharField(max_length=30, blank=True, null=True)  # Field name made lowercase.
-    street = models.CharField(max_length=100)  # Field name made lowercase.
-    zip = models.CharField(max_length=10, blank=True, null=True)  # Field name made lowercase.
-    city = models.CharField(max_length=50, blank=True, null=True)  # Field name made lowercase.
-    country = CountryField( blank=True, null=True)  # Field name made lowercase.    isactive = models.BooleanField(default=False)  # Field name made lowercase.
-    languageid = models.IntegerField()  # Field name made lowercase.
-    isnotificationnewtickets = models.BooleanField(default=False)  # Field name made lowercase.
-    isnotificationnewupdates = models.BooleanField(default=False)  # Field name made lowercase.
-    isnotificationticketdeadline = models.BooleanField(default=False)  # Field name made lowercase.
-    isactive = models.BooleanField(default=False)  # Field name made lowercase.
-    lastlogindate = models.DateTimeField(null=True, blank=True)  # Field name made lowercase.
-    attachment = models.TextField(blank=True, null=True)  # Field name made lowercase.
-    attachments = models.TextField(blank=True, null=True)  # Field name made lowercase.
+    userid = models.CharField( max_length=36, blank=True, null=True) 
+    realestatepersontypeid = models.IntegerField()   
+    name = models.CharField(max_length=50)   
+    surname = models.CharField(max_length=100)   
+    email = models.CharField(max_length=320, blank=True, null=True)   
+    phonenumber = models.CharField(max_length=30, blank=True, null=True)   
+    street = models.CharField(max_length=100)   
+    zip = models.CharField(max_length=10, blank=True, null=True)   
+    city = models.CharField(max_length=50, blank=True, null=True)   
+    country = CountryField( blank=True, null=True)     
+    languageid = models.IntegerField()   
+    owner_representative = models.CharField( max_length=50, blank=True, null=True) 
+    isnotificationnewtickets = models.BooleanField(default=False)   
+    isnotificationnewupdates = models.BooleanField(default=False)   
+    isnotificationticketdeadline = models.BooleanField(default=False)   
+    isactive = models.BooleanField(default=False)   
+    lastlogindate = models.DateTimeField(null=True, blank=True)   
+    attachment = models.TextField(blank=True, null=True)   
+    attachments = models.TextField(blank=True, null=True)   
 
-class Messages(models.Model):
-    realestateagentid = models.ForeignKey('Realestateagents', models.DO_NOTHING)  # Field name made lowercase.
-    subject = models.CharField(max_length=150)  # Field name made lowercase.
-    body = models.CharField(max_length=2500)  # Field name made lowercase.
-    isemailnotification = models.BooleanField(default=False)  # Field name made lowercase.
-    isimportant = models.BooleanField(default=False)  # Field name made lowercase.
-    isallowcomment = models.BooleanField(default=False)  # Field name made lowercase.
-    issendimmediately = models.BooleanField(default=False)  # Field name made lowercase.
-    senddate = models.DateTimeField(blank=True, null=True)  # Field name made lowercase.
-    created = models.DateTimeField(blank=True, null=True)  # Field name made lowercase.
-    createdrealestapersonid = models.ForeignKey('Realestatepropertyowner', models.DO_NOTHING)  # Field name made lowercase.
-    isdeleted = models.BooleanField(default=False)  # Field name made lowercase.
-    attachments = models.TextField(blank=True, null=True)  # Field name made lowercase.
+    class Meta:
+        db_table = "Realestatepropertyowner"
 
-class Messagecomments(models.Model):
-    messageid = models.ForeignKey('Messages', models.DO_NOTHING)  # Field name made lowercase.
-    realestapersonid = models.ForeignKey('Realestatepropertyowner', models.DO_NOTHING)  # Field name made lowercase.
-    comment = models.CharField(max_length=500)  # Field name made lowercase.
-    created = models.DateTimeField(null=True, blank=True)  # Field name made lowercase.
+class Messages(BaseModel):
+    realestateagentid = models.ForeignKey('Realestateagents', models.DO_NOTHING)   
+    subject = models.CharField(max_length=150)   
+    body = models.CharField(max_length=2500)   
+    isemailnotification = models.BooleanField(default=False)   
+    isimportant = models.BooleanField(default=False)   
+    isallowcomment = models.BooleanField(default=False)   
+    issendimmediately = models.BooleanField(default=False)   
+    senddate = models.DateTimeField(blank=True, null=True)   
+    created = models.DateTimeField(blank=True, null=True)   
+    createdrealestateownerid = models.ForeignKey('Realestatepropertyowner', models.DO_NOTHING)   
+    isdeleted = models.BooleanField(default=False)   
+    attachments = models.TextField(blank=True, null=True)   
 
+    class Meta:
+        db_table = "Messages"
 
-class Messagerecipients(models.Model):
-    messageid = models.ForeignKey('Messages', models.DO_NOTHING)  # Field name made lowercase.
-    realestapersonid = models.OneToOneField('Realestatepropertyowner', models.DO_NOTHING, primary_key=True)  # Field name made lowercase. The composite primary key (RealEstaPersonId, MessageId) found, that is not supported. The first column is selected.
-    isread = models.BooleanField(default=True)  # Field name made lowercase.
-    readdate = models.DateTimeField(blank=True, null=True)  # Field name made lowercase.
+class Messagecomments(BaseModel):
+    messageid = models.ForeignKey('Messages', models.DO_NOTHING)   
+    realestateownerid = models.ForeignKey('Realestatepropertyowner', models.DO_NOTHING)   
+    comment = models.CharField(max_length=500)   
 
-    # class Meta:
-    #     managed = False
-    #     db_table = 'MessageRecipients'
-    #     unique_together = (('realestapersonid', 'messageid'),)
-
-class Realestateobjectpersons(models.Model):
-    realestateobjectid = models.OneToOneField('Realestateobjects', models.DO_NOTHING, primary_key=True)  # Field name made lowercase. The composite primary key (RealEstateObjectId, RealEstatePersonId) found, that is not supported. The first column is selected.
-    realestatepersonid = models.ForeignKey('Realestatepropertyowner', models.DO_NOTHING)  # Field name made lowercase.
-    isactive = models.BooleanField(default=True)  # Field name made lowercase.
+    class Meta:
+        db_table = "Messagecomments" 
 
 
+class Messagerecipients(BaseModel):
+    messageid = models.ForeignKey('Messages', models.DO_NOTHING)   
+    realestateownerid = models.OneToOneField('Realestatepropertyowner', models.DO_NOTHING, primary_key=True) 
+    isread = models.BooleanField(default=True)   
+    readdate = models.DateTimeField(blank=True, null=True)   
+
+    class Meta:
+        db_table = "Messagerecipients" 
 
 class Realestateproperties(BaseModel):
-    realestateagentid = models.ForeignKey(Realestateagents, models.DO_NOTHING)  # Field name made lowercase.
-    name = models.CharField(max_length=50)  # Field name made lowercase.
-    street = models.CharField(max_length=100)  # Field name made lowercase.
-    zip = models.CharField(max_length=10)  # Field name made lowercase.
-    city = models.CharField(max_length=50)  # Field name made lowercase.
-    country = CountryField( blank=True, null=True)  # Field name made lowercase.    isactive = models.BooleanField(default=False)  # Field name made lowercase.
-    isactive = models.BooleanField(default=False)  # Field name made lowercase.
-    attachments = models.TextField(blank=True, null=True)  # Field name made lowercase.
+    realestateagentid = models.ForeignKey(Realestateagents, models.DO_NOTHING)   
+    name = models.CharField(max_length=50)   
+    street = models.CharField(max_length=100)   
+    zip = models.CharField(max_length=10)   
+    city = models.CharField(max_length=50)   
+    country = CountryField( blank=True, null=True)     
+    isactive = models.BooleanField(default=False)   
+    attachments = models.TextField(blank=True, null=True)   
 
-    def __str__(self):
-        return f" {self.name}"
+    class Meta:
+        db_table = "Realestateproperties" 
+        ordering = ['-id']
 
 class Feedbacks(BaseModel):
-    comment = models.CharField(db_column='Comment', max_length=500,   )  # Field name made lowercase.
+    comment = models.CharField(db_column='Comment', max_length=500,   )   
     class Meta:
         db_table = 'Feedbacks'
 
 
 class Languages(BaseModel):
-    id = models.AutoField(db_column='Id', primary_key=True)  # Field name made lowercase.
-    name = models.CharField(db_column='Name', max_length=50,   )  # Field name made lowercase.
-    languagecode = models.CharField(db_column='LanguageCode', unique=True, max_length=2,   )  # Field name made lowercase.
-    displayorder = models.IntegerField(db_column='DisplayOrder')  # Field name made lowercase.
+    id = models.AutoField(db_column='Id', primary_key=True)   
+    name = models.CharField(db_column='Name', max_length=50,   )   
+    languagecode = models.CharField(db_column='LanguageCode', unique=True, max_length=2,   )   
+    displayorder = models.IntegerField(db_column='DisplayOrder')   
 
     class Meta:
-        managed = False
         db_table = 'Languages'
 
-
 class Localestringresources(BaseModel):
-    id = models.AutoField(db_column='Id', primary_key=True)  # Field name made lowercase.
-    name = models.TextField(db_column='Name',   )  # Field name made lowercase.
-    value = models.TextField(db_column='Value',   )  # Field name made lowercase.
-    languageid = models.ForeignKey(Languages, models.DO_NOTHING, db_column='LanguageId')  # Field name made lowercase.
+    id = models.AutoField(db_column='Id', primary_key=True)   
+    name = models.TextField(db_column='Name',   )   
+    value = models.TextField(db_column='Value',   )   
+    languageid = models.ForeignKey(Languages, models.DO_NOTHING, db_column='LanguageId')   
 
     class Meta:
-        managed = False
         db_table = 'LocaleStringResources'
 
-
 class Localizedproperties(BaseModel):
-    id = models.AutoField(db_column='Id', primary_key=True)  # Field name made lowercase.
-    entityid = models.CharField(db_column='EntityId', max_length=36)  # Field name made lowercase.
-    languageid = models.ForeignKey(Languages, models.DO_NOTHING, db_column='LanguageId')  # Field name made lowercase.
-    entityname = models.CharField(db_column='EntityName', max_length=100,   )  # Field name made lowercase.
-    propertyname = models.CharField(db_column='PropertyName', max_length=100,   )  # Field name made lowercase.
-    localevalue = models.TextField(db_column='LocaleValue',   )  # Field name made lowercase.
+    id = models.AutoField(db_column='Id', primary_key=True)   
+    entityid = models.CharField(db_column='EntityId', max_length=36)   
+    languageid = models.ForeignKey(Languages, models.DO_NOTHING, db_column='LanguageId')   
+    entityname = models.CharField(db_column='EntityName', max_length=100,   )   
+    propertyname = models.CharField(db_column='PropertyName', max_length=100,   )   
+    localevalue = models.TextField(db_column='LocaleValue',   )   
 
     class Meta:
-        managed = False
         db_table = 'LocalizedProperties'
 
 #model created for subgroup details in meeting 
@@ -147,29 +136,25 @@ class Realestatepropertiessubgroup(BaseModel):
     amenities = models.CharField(max_length=100,null=True, blank=True, verbose_name=("amenities"))
 
     class Meta:
-        managed = False
         db_table = 'Realestatepropertiessubgroup'
 
 class Realestateobjects(BaseModel):
-    realestatepropertyid = models.ForeignKey('Realestateproperties', models.DO_NOTHING)  # Field name made lowercase.
-    objectusagetypeid = models.IntegerField()  # Field name made lowercase.
-    name = models.CharField(max_length=50)  # Field name made lowercase.
-    description = models.CharField(max_length=100)  # Field name made lowercase.
-    location = models.CharField(max_length=100)  # Field name made lowercase.
-    floor = models.CharField(max_length=20)  # Field name made lowercase.
-    rooms = models.CharField(max_length=20, blank=True, null=True)  # Field name made lowercase.
-    surfacearea = models.IntegerField(blank=True, null=True)  # Field name made lowercase.
-    isactive = models.BooleanField(default=False)  # Field name made lowercase.
-    attachments = models.TextField(blank=True, null=True)  # Field name made lowercase.
-
-    def __str__(self):
-        return f" {self.name}"
+    realestatepropertyid = models.ForeignKey('Realestateproperties', models.DO_NOTHING)   
+    objectusagetypeid = models.IntegerField()   
+    name = models.CharField(max_length=50)   
+    description = models.CharField(max_length=100)   
+    location = models.CharField(max_length=100)   
+    floor = models.CharField(max_length=20)   
+    rooms = models.CharField(max_length=20, blank=True, null=True)   
+    surfacearea = models.IntegerField(blank=True, null=True)   
+    isactive = models.BooleanField(default=False)   
+    attachments = models.TextField(blank=True, null=True)   
 
     class Meta:
-        db_table = 'RealEstateObjects'
+        db_table = 'Realestateobjects'
 
 #object detail model
-class RealEstateObjectsDetails(models.Model):
+class RealEstateObjectsDetails(BaseModel):
     object_code = models.CharField(max_length=100,null=True,blank=True)
     related_object = models.ForeignKey(Realestateobjects, on_delete=models.CASCADE,null=True,blank=True)
     objectName = models.TextField()
@@ -180,6 +165,8 @@ class RealEstateObjectsDetails(models.Model):
     notes = models.TextField(blank=True, null=True)
     image = models.ImageField(upload_to='object_images_master/')
     
+    class Meta:
+        db_table = 'RealEstateObjectsDetails'
 
     def __str__(self):
         return f"Details for {self.objectName}"
@@ -187,121 +174,103 @@ class RealEstateObjectsDetails(models.Model):
 
 class Realestatepropertymanagement(BaseModel):
     realestatepropertyid = models.OneToOneField(Realestateproperties, models.DO_NOTHING, primary_key=True)  
-    realestateownerid = models.ForeignKey(Realestatepropertyowner, models.DO_NOTHING)  
+    realestatepersonid = models.ForeignKey(Realestatepropertyowner, models.DO_NOTHING)  
     realestateagentid = models.ForeignKey(Realestateagents, models.DO_NOTHING) 
     realestateobjectid = models.ForeignKey(Realestateobjects, models.DO_NOTHING)
-    care_taker = models.CharField(max_length=10, choices=(('owner', 'Owner'), ('agent', 'Agent')))
-    care_taker_id = models.CharField(max_length=100,null=True,blank=True)
+
 
     class Meta:
         db_table = 'Realestatepropertymanagement'
 
-    def save(self, *args, **kwargs):
-        if self.take_care == 'agent':
-            self.care_taker_id = self.realestateagentid_id
-            self.realestateownerid_id = None
-        elif self.take_care == 'owner':
-            self.care_taker_id = self.realestateownerid_id
-            self.realestateagentid_id = None
-        super().save(*args, **kwargs)
-
 class Realestateserviceproviders(BaseModel):
-    # id = models.CharField(db_column='Id', primary_key=True, max_length=36)  # Field name made lowercase.
-    realestateagentid = models.ForeignKey(Realestateagents, models.DO_NOTHING)  # Field name made lowercase.
-    name = models.CharField(max_length=50)  # Field name made lowercase.
-    field = models.CharField(max_length=50, blank=True, null=True)  # Field name made lowercase.
-    languageid = models.IntegerField()  # Field name made lowercase.
-    contactname = models.TextField(blank=True, null=True)  # Field name made lowercase.
-    phonenumber = models.CharField(max_length=30)  # Field name made lowercase.
-    email = models.CharField(max_length=320)  # Field name made lowercase.
-    street = models.CharField(max_length=100)  # Field name made lowercase.
-    zip = models.CharField(max_length=10)  # Field name made lowercase.
-    city = models.CharField(max_length=50)  # Field name made lowercase.
-    country = CountryField( blank=True, null=True)  # Field name made lowercase.    isactive = models.BooleanField(default=False)  # Field name made lowercase.
-    isactive = models.BooleanField(default=False)  # Field name made lowercase.
-   
-class Ticketmessages(models.Model):
-    ticketid = models.ForeignKey('Tickets', models.DO_NOTHING)  # Field name made lowercase.
-    realestapersonid = models.ForeignKey(Realestatepropertyowner, models.DO_NOTHING)  # Field name made lowercase.
-    message = models.CharField(max_length=2500)  # Field name made lowercase.
-    created = models.DateTimeField(null=True, blank=True)  # Field name made lowercase.
-    attachments = models.TextField(blank=True, null=True)  # Field name made lowercase.
+    realestateagentid = models.ForeignKey(Realestateagents, models.DO_NOTHING)   
+    name = models.CharField(max_length=50)   
+    field = models.CharField(max_length=50, blank=True, null=True)   
+    languageid = models.IntegerField()   
+    contactname = models.TextField(blank=True, null=True)   
+    phonenumber = models.CharField(max_length=30)   
+    email = models.CharField(max_length=320)   
+    street = models.CharField(max_length=100)   
+    zip = models.CharField(max_length=10)   
+    city = models.CharField(max_length=50)   
+    country = CountryField( blank=True, null=True)  
+    isactive = models.BooleanField(default=False)   
 
-    # class Meta:
-    #     managed = False
-    #     db_table = 'TicketMessages'
+    class Meta:
+        db_table = 'Realestateserviceproviders'
+   
+class Ticketmessages(BaseModel):
+    ticketid = models.ForeignKey('Tickets', models.DO_NOTHING)   
+    realestapersonid = models.ForeignKey(Realestatepropertyowner, models.DO_NOTHING)   
+    message = models.CharField(max_length=2500)   
+    created = models.DateTimeField(null=True, blank=True)   
+    attachments = models.TextField(blank=True, null=True)  
+
+    class Meta:
+        db_table = 'Ticketmessages' 
 
 
 class Ticketoffers(BaseModel):
-    # id = models.CharField(db_column='Id', primary_key=True, max_length=36)  # Field name made lowercase.
-    offertypeid = models.IntegerField()  # Field name made lowercase.
-    ticketid = models.ForeignKey('Tickets', models.DO_NOTHING)  # Field name made lowercase.
-    realestateserviceproviderid = models.ForeignKey(Realestateserviceproviders, models.DO_NOTHING)  # Field name made lowercase.
-    requestnote = models.CharField(max_length=1000, blank=True, null=True)  # Field name made lowercase.
-    note = models.CharField(max_length=1000, blank=True, null=True)  # Field name made lowercase.
-    price = models.DecimalField(max_digits=18, decimal_places=2, blank=True, null=True)  # Field name made lowercase.
-    pricelimit = models.DecimalField(max_digits=18, decimal_places=2, blank=True, null=True)  # Field name made lowercase.
-    deadline = models.DateField(blank=True, null=True)  # Field name made lowercase.
-    appointmentdate = models.DateTimeField(blank=True, null=True)  # Field name made lowercase.
-    serviceproviderratingbytenant = models.IntegerField(blank=True, null=True)  # Field name made lowercase.
-    serviceprovidercommentbytenant = models.CharField(max_length=1000, blank=True, null=True)  # Field name made lowercase.
-    serviceproviderratingbymanager = models.IntegerField(blank=True, null=True)  # Field name made lowercase.
-    serviceprovidercommentbymanager = models.CharField(max_length=1000, blank=True, null=True)  # Field name made lowercase.
-    ourrating = models.IntegerField(blank=True, null=True)  # Field name made lowercase.
-    problemcomment = models.CharField(max_length=1000, blank=True, null=True)  # Field name made lowercase.
-    status = models.IntegerField()  # Field name made lowercase.
-    noteattachments = models.TextField(blank=True, null=True)  # Field name made lowercase.
-    requestnoteattachments = models.TextField(blank=True, null=True)  # Field name made lowercase.
+    offertypeid = models.IntegerField()   
+    ticketid = models.ForeignKey('Tickets', models.DO_NOTHING)   
+    realestateserviceproviderid = models.ForeignKey(Realestateserviceproviders, models.DO_NOTHING)   
+    requestnote = models.CharField(max_length=1000, blank=True, null=True)   
+    note = models.CharField(max_length=1000, blank=True, null=True)   
+    price = models.DecimalField(max_digits=18, decimal_places=2, blank=True, null=True)   
+    pricelimit = models.DecimalField(max_digits=18, decimal_places=2, blank=True, null=True)   
+    deadline = models.DateField(blank=True, null=True)   
+    appointmentdate = models.DateTimeField(blank=True, null=True)   
+    serviceproviderratingbytenant = models.IntegerField(blank=True, null=True)   
+    serviceprovidercommentbytenant = models.CharField(max_length=1000, blank=True, null=True)   
+    serviceproviderratingbymanager = models.IntegerField(blank=True, null=True)   
+    serviceprovidercommentbymanager = models.CharField(max_length=1000, blank=True, null=True)   
+    ourrating = models.IntegerField(blank=True, null=True)   
+    problemcomment = models.CharField(max_length=1000, blank=True, null=True)   
+    status = models.IntegerField()   
+    noteattachments = models.TextField(blank=True, null=True)   
+    requestnoteattachments = models.TextField(blank=True, null=True)   
 
-    # class Meta:
-    #     managed = False
-    #     db_table = 'TicketOffers'
-    #     unique_together = (('ticketid', 'realestateserviceproviderid', 'status'),)
+    class Meta:
+        db_table = 'Ticketoffers' 
+   
 
+class Ticketsequences(BaseModel):
+    realestateagentid = models.CharField(primary_key=True, max_length=36)   
+    sequence = models.IntegerField()   
 
-class Ticketsequences(models.Model):
-    realestateagentid = models.CharField(primary_key=True, max_length=36)  # Field name made lowercase.
-    sequence = models.IntegerField()  # Field name made lowercase.
-
-    # class Meta:
-    #     managed = False
-    #     db_table = 'TicketSequences'
-
+    class Meta:
+        db_table = 'Ticketsequences' 
 
 class Tickets(BaseModel):
-    # id = models.CharField(db_column='Id', primary_key=True, max_length=36)  # Field name made lowercase.
-    tickettypeid = models.IntegerField()  # Field name made lowercase.
-    slug = models.CharField(max_length=15)  # Field name made lowercase.
-    realestateagentid = models.ForeignKey(Realestateagents, models.DO_NOTHING)  # Field name made lowercase.
-    realestatepropertyid = models.ForeignKey(Realestateproperties, models.DO_NOTHING)  # Field name made lowercase.
-    realestateobjectid = models.ForeignKey(Realestateobjects, models.DO_NOTHING, blank=True, null=True)  # Field name made lowercase.
-    realestatetenantid = models.ForeignKey(Realestatepropertyowner, models.DO_NOTHING)  # Field name made lowercase.
-    responsibleuserid = models.ForeignKey(Realestatepropertyowner, models.DO_NOTHING,related_name='tickets_responsibleuserid_set')  # Field name lowercase.
-    title = models.CharField(max_length=150)  # Field name made lowercase.
-    message = models.CharField(max_length=2500, blank=True, null=True)  # Field name made lowercase.
-    reportingtext = models.CharField(max_length=500, blank=True, null=True)  # Field name made lowercase.
-    duedate = models.DateTimeField(blank=True, null=True)  # Field name made lowercase.
-    status = models.IntegerField()  # Field name made lowercase.
-    contactname = models.CharField(max_length=100, blank=True, null=True)  # Field name made lowercase.
-    contactphone = models.CharField(max_length=30, blank=True, null=True)  # Field name made lowercase.
-    contactemail = models.CharField(max_length=320, blank=True, null=True)  # Field name made lowercase.
-    attachments = models.TextField(blank=True, null=True)  # Field name made lowercase.
-    info = models.TextField(blank=True, null=True)  # Field name made lowercase.
+    # id = models.CharField(db_column='Id', primary_key=True, max_length=36)   
+    tickettypeid = models.IntegerField()   
+    slug = models.CharField(max_length=15)   
+    realestateagentid = models.ForeignKey(Realestateagents, models.DO_NOTHING)   
+    realestatepropertyid = models.ForeignKey(Realestateproperties, models.DO_NOTHING)   
+    realestateobjectid = models.ForeignKey(Realestateobjects, models.DO_NOTHING, blank=True, null=True)   
+    realestatetenantid = models.ForeignKey(Realestatepropertyowner, models.DO_NOTHING)   
+    responsibleuserid = models.ForeignKey(Realestatepropertyowner, models.DO_NOTHING,related_name='tickets_responsibleuserid_set')
+    title = models.CharField(max_length=150)   
+    message = models.CharField(max_length=2500, blank=True, null=True)   
+    reportingtext = models.CharField(max_length=500, blank=True, null=True)   
+    duedate = models.DateTimeField(blank=True, null=True)   
+    status = models.IntegerField()   
+    contactname = models.CharField(max_length=100, blank=True, null=True)   
+    contactphone = models.CharField(max_length=30, blank=True, null=True)   
+    contactemail = models.CharField(max_length=320, blank=True, null=True)   
+    attachments = models.TextField(blank=True, null=True)   
+    info = models.TextField(blank=True, null=True)   
 
-    # class Meta:
-    #     managed = False
-    #     db_table = 'Tickets'
-
-
-class Efmigrationshistory(models.Model):
-    migrationid = models.CharField(primary_key=True, max_length=150)  # Field name made lowercase.
-    productversion = models.CharField(max_length=32)  # Field name made lowercase.
-
-    # class Meta:
-    #     managed = False
-    #     db_table = '__EFMigrationsHistory'
+    class Meta:
+        db_table = 'Tickets' 
 
 
+class Efmigrationshistory(BaseModel):
+    migrationid = models.CharField(primary_key=True, max_length=150)   
+    productversion = models.CharField(max_length=32)   
+
+    class Meta:
+        db_table = 'Efmigrationshistory' 
 
 class Sysdiagrams(BaseModel):
     name = models.CharField(max_length=128,   )
@@ -310,23 +279,27 @@ class Sysdiagrams(BaseModel):
     version = models.IntegerField(blank=True, null=True)
     definition = models.BinaryField(blank=True, null=True)
 
-    # class Meta:
-    #     managed = False
-    #     db_table = 'sysdiagrams'
-    #     unique_together = (('principal_id', 'name'),)
+    class Meta:
+        db_table = 'Sysdiagrams' 
 
 class Agenda(BaseModel):
+    status = (
+        ("draft", ("Draft")),
+        ("definitive", ("Definitive")),
+      
+    )
     topic=models.CharField(max_length=100, blank=False, null=False)
+    status=models.CharField(max_length=20, choices= status )
+    
     class Meta:
-        managed = False
         db_table = 'Agenda'
 
 class AgendaDetails(BaseModel):
     agenda = models.ForeignKey(Agenda,related_name="agenda_detail",on_delete=models.CASCADE)
     topic_details=models.CharField(max_length=100, blank=True, null=True)
+
     class Meta:
-        managed = False
-        db_table = 'Agenda'
+        db_table = 'AgendaDetails'
 
 class Quorums(BaseModel):
     types = (
@@ -334,25 +307,69 @@ class Quorums(BaseModel):
         ("object", ("Object Votes")),
         ("value", ("Value Votes")),
     )
-    voting_type=models.CharField(
-        max_length=20, choices=types)
+    voting_type=models.CharField(max_length=20, choices=types)
     present_votes=models.IntegerField(blank=False, null=False)
     condition = models.CharField(max_length=20, blank=False, null=False)
+
     class Meta:
-        managed = False
         db_table = 'Quorums'
 
 class Votes(BaseModel):
+    
     types = (
         ("head", ("Head Votes")),
         ("object", ("Object Votes")),
         ("value", ("Value Votes")),
     )
-    voting_type=models.CharField(max_length=20, choices=types)
+    cases = (
+        ("rejected", ("Rejected")),
+        ("accepted", ("Accepted")),
+      
+    )
+    sets=(
+        ("representatives_owners",("Presence/representatives Owner")),
+        ("total_owner",("Total owners")),
+        ("voting_owners_without_abstentions",("Only voting owners without abstentions")),
+    )
+    tabs =(
+        ("simple",("Simple Majority")),
+        ("qualified",("qualified Majority")),
+        ("unanimous",("Unanimous Vote Tab")),
+    )
+    quorums = models.ForeignKey(Quorums,related_name="votes_detail",on_delete=models.CASCADE)
+    tabs = models.CharField(max_length=30, choices=tabs, default='qualified')
+    voting_type=models.CharField(max_length=30, choices=types)
     majority=models.IntegerField(blank=False, null=False)
-    condition = models.CharField(max_length=20, blank=False, null=False)
-    basic_set=models.CharField(max_length=20, blank=False, null=False)
-    tie_case= models.CharField(max_length=20, blank=False, null=False)
+    condition = models.CharField(max_length=30, blank=False, null=False)
+    basic_set=models.CharField(max_length=30, choices=cases)
+    tie_case= models.CharField(max_length=30, choices=cases)
+    
     class Meta:
-        managed = False
         db_table = 'Votes'
+
+class MessageTemplate(BaseModel):
+    title = models.CharField(max_length=100, blank=False, null=False)
+    venue = models.TextField(blank=True, null=True)
+    property = models.ForeignKey(Realestateproperties,related_name="property",on_delete=models.CASCADE)
+    subgroup = models.ForeignKey(Realestatepropertiessubgroup,related_name="subgroup",on_delete=models.CASCADE)
+    chairman = models.ForeignKey(Realestatepropertyowner,related_name="chairman",on_delete=models.CASCADE)
+    mintue_taker = models.ForeignKey(Realestatepropertyowner,related_name="mintue_taker",on_delete=models.CASCADE)
+    meeting_date = models.DateField(auto_now_add=True)
+    meeting_time=models.TimeField(auto_now_add=True)
+    date_defined =models.BooleanField(default=False)
+    visible_to_ownership_app=models.BooleanField(default=False)
+    submission_deadline =models.BooleanField(default=False)
+    dispatch_invitaion=models.BooleanField(default=False)
+    online_voting = models.BooleanField(default=False)
+    attendence_in_person= models.BooleanField(default=False)
+    allow_power_of_attorney=models.BooleanField(default=False)
+    days_before_the_metting=models.CharField(max_length=20, blank=True, null=True)
+    cover_picture_for_presenation=models.FileField(upload_to="images", null=True, blank=True)
+    association_information=models.TextField(null=True, blank=True)
+    information_for_current_meeting=models.TextField(null=True, blank=True)
+    quorum = models.ForeignKey(Quorums,related_name="quorum",on_delete=models.CASCADE)
+    votes= models.ForeignKey(Votes,related_name="votes",on_delete=models.CASCADE)
+
+    class Meta:
+        db_table = 'MessageTemplate'
+

@@ -1,28 +1,27 @@
 from django.db import models
-from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
-from . manager import *
 from masters.models import Realestateobjects,RealEstateObjectsDetails
+from foundation.models import BaseModel,CustomUser
 import uuid
-# user registration model
-class CustomUser(AbstractBaseUser, PermissionsMixin):
-    full_name = models.CharField(max_length=255)
-    email = models.EmailField(unique=True)
-    is_active = models.BooleanField(default=True)
-    is_staff = models.BooleanField(default=False)
+# # user registration model
+# class CustomUser(AbstractBaseUser, PermissionsMixin):
+#     full_name = models.CharField(max_length=255)
+#     email = models.EmailField(unique=True)
+#     is_active = models.BooleanField(default=True)
+#     is_staff = models.BooleanField(default=False)
 
-    objects = UserManager()
+#     objects = UserManager()
 
-    USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = ['full_name']
+#     USERNAME_FIELD = 'email'
+#     REQUIRED_FIELDS = ['full_name']
 
-    def __str__(self):
-        return self.email
+#     def __str__(self):
+#         return self.email
     
 
 # inspection model  
 
 # checkin model
-class CheckInOut(models.Model):
+class CheckInOut(BaseModel):
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     service_ticket_number = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
     object_check_in = models.ForeignKey(Realestateobjects, on_delete=models.CASCADE, null=True, blank=True)
@@ -37,7 +36,7 @@ class CheckInOut(models.Model):
     def __str__(self):
         return f"{self.user.full_name} checked into {self.object_check_in}"
 
-class GeneralInspection(models.Model):
+class GeneralInspection(BaseModel):
     #  fk service id link with check in&out, 
     service_id = models.ForeignKey(CheckInOut, on_delete=models.CASCADE, null=True, blank=True)
     real_estate_object = models.ForeignKey(Realestateobjects, on_delete=models.CASCADE, null=True, blank=True,related_name='inspections')
@@ -51,7 +50,7 @@ class GeneralInspection(models.Model):
 
 #  object list inspection by tenant
 
-class ObjectListInspection(models.Model):
+class ObjectListInspection(BaseModel):
     #  fk service id link with check in&out, 
     service_id = models.ForeignKey(CheckInOut, on_delete=models.CASCADE, null=True, blank=True)
     object_detail_list = models.ForeignKey(RealEstateObjectsDetails, on_delete=models.CASCADE,null=True,blank=True,related_name='inspections')
