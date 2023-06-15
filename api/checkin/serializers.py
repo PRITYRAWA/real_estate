@@ -17,22 +17,22 @@ class ObjectListInspectionSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 class CheckInOutSerializer(serializers.ModelSerializer):
-    general_inspection = GeneralInspectionSerializer()
+    # general_inspection = GeneralInspectionSerializer()
     object_list_inspection = ObjectListInspectionSerializer()
 
     class Meta:
         model = CheckInOut
         fields = ('id', 'user', 'service_ticket_number', 'object_check_in', 'check_in_date', 'check_in_time',
-                  'check_out_date', 'check_out_time', 'inspection_date_time', 'object_details', 'object_detail_list','general_inspection','object_list_inspection')
+                  'check_out_date', 'check_out_time', 'inspection_date_time', 'object_details', 'object_detail_list')
 
     def create(self, validated_data):
-        general_inspection_data = validated_data.pop('general_inspection', None)
-        object_list_inspection_data = validated_data.pop('object_list_inspection', None)
+        # general_inspection_data = validated_data.pop('general_inspection', None)
+        object_list_inspection_data = validated_data.pop('object_detail_list', None)
 
         checkinout = CheckInOut.objects.create(**validated_data)
 
-        if general_inspection_data:
-            GeneralInspection.objects.create(service_id=checkinout, **general_inspection_data)
+        # if general_inspection_data:
+        #     GeneralInspection.objects.create(service_id=checkinout, **general_inspection_data)
 
         if object_list_inspection_data:
             ObjectListInspection.objects.create(service_id=checkinout, **object_list_inspection_data)

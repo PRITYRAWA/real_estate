@@ -154,11 +154,11 @@ class Realestateobjects(BaseModel):
         db_table = 'Realestateobjects'
 
 #object detail model
-class RealEstateObjectsDetails(BaseModel):
+class Realestateobjectsdetail(BaseModel):
     object_code = models.CharField(max_length=100,null=True,blank=True)
     related_object = models.ForeignKey(Realestateobjects, on_delete=models.CASCADE,null=True,blank=True)
     objectName = models.TextField()
-    related_detail = models.ForeignKey('RealEstateObjectsDetails', on_delete=models.CASCADE, null=True, blank=True)
+    related_detail = models.ForeignKey('Realestateobjectsdetail', on_delete=models.CASCADE, null=True, blank=True)
     new = models.BooleanField(blank=True,null=True)
     inorder = models.BooleanField(blank=True,null=True)
     normal_wear = models.BooleanField(blank=True,null=True)
@@ -166,11 +166,7 @@ class RealEstateObjectsDetails(BaseModel):
     image = models.ImageField(upload_to='object_images_master/')
     
     class Meta:
-        db_table = 'RealEstateObjectsDetails'
-
-    def __str__(self):
-        return f"Details for {self.objectName}"
-
+        db_table = 'Realestateobjectsdetail'
 
 class Realestatepropertymanagement(BaseModel):
     managed_by = (
@@ -351,14 +347,10 @@ class Votes(BaseModel):
     class Meta:
         db_table = 'Votes'
 
-class MessageTemplate(BaseModel):
-    property = models.ForeignKey(Realestateproperties,related_name="property",on_delete=models.CASCADE)
-    subgroup = models.ForeignKey(Realestatepropertiessubgroup,related_name="subgroup",on_delete=models.CASCADE)
-    chairman = models.ForeignKey(Realestatepropertyowner,related_name="chairman",on_delete=models.CASCADE)
-    mintue_taker = models.ForeignKey(Realestateagents,related_name="mintue_taker",on_delete=models.CASCADE)
+class Mettingtemplate(BaseModel):
     quorum = models.ForeignKey(Quorums,related_name="quorum",on_delete=models.CASCADE)
     agenda = models.ForeignKey(Agenda,related_name="agenda",on_delete=models.CASCADE)
     voting_circle = models.ForeignKey(Realestatepropertyowner,related_name="voting_circle",on_delete=models.CASCADE)
     
     class Meta:
-        db_table = 'MessageTemplate'
+        db_table = 'Mettingtemplate'

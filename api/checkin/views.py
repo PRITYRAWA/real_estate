@@ -1,15 +1,12 @@
 from django.shortcuts import render
-
-# Create your views here.
-# views.py
-from rest_framework import generics
-from checkin.models import *
+from rest_framework import viewsets
 from .serializers import *
+from checkin.models import *
 
-class CheckInOutListCreateView(generics.ListCreateAPIView):
+class CheckInOutListCreateView(viewsets.ModelViewSet):
     queryset = CheckInOut.objects.all()
     serializer_class = CheckInOutSerializer
 
-class CheckInOutRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
-    queryset = CheckInOut.objects.all()
-    serializer_class = CheckInOutSerializer
+
+
+

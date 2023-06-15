@@ -73,5 +73,5 @@ class QuroumsViewSet(viewsets.ModelViewSet):
 
 class MessagetemplateViewSet(viewsets.ModelViewSet):
     # end point to access Realestatepersons Model.
-    queryset = MessageTemplate.objects.all()
-    serializer_class = Messagetemplateserializer
+    queryset = Mettingtemplate.objects.all()
+    serializer_class = Mettingtemplateserializer

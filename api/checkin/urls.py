@@ -1,11 +1,12 @@
 from django.urls import path
 from .views import *
+from rest_framework import routers
 
 
-urlpatterns = [
-    path('signup/',SignupView.as_view()),
-    path('login/',LoginView.as_view()),
-    path('checkinouts/', CheckInOutListCreateView.as_view(), name='checkinout-list-create'),
-    path('checkinouts/<int:pk>/', CheckInOutRetrieveUpdateDestroyView.as_view(), name='checkinout-retrieve-update-destroy'),
+app_name = "api.checkin"
 
-]
+router = routers.DefaultRouter()
+router.register(r"checkinouts", CheckInOutListCreateView,basename="checkinouts")
+urlpatterns = []
+
+urlpatterns += router.urls

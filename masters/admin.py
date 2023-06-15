@@ -6,7 +6,7 @@ admin.site.register([
                      Feedbacks,  Realestateagents,
                      Messages, Messagecomments,Messagerecipients,
                      Realestateserviceproviders, Ticketmessages, Ticketoffers, Ticketsequences, Tickets,
-                     Efmigrationshistory, Sysdiagrams,Realestatepropertiessubgroup,Realestatepropertymanagement,Realestatepropertyowner])
+                     Efmigrationshistory, Sysdiagrams,Realestatepropertiessubgroup,Realestatepropertymanagement,Realestatepropertyowner,Mettingtemplate,Realestateobjectsdetail])
 
 # creating parent child model for agenda
 class AgendaDetailsInline(admin.TabularInline):

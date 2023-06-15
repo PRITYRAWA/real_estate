@@ -100,7 +100,7 @@ class Quorumsserializer(serializers.ModelSerializer):
         )
        
 
-class Messagetemplateserializer(serializers.ModelSerializer):
+class Mettingtemplateserializer(serializers.ModelSerializer):
     class Meta:
-        model = MessageTemplate
+        model = Mettingtemplate
         exclude = ('created_at', 'updated_at', 'createdby', 'lastmodifiedby')

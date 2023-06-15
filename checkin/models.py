@@ -1,5 +1,5 @@
 from django.db import models
-from masters.models import Realestateobjects,RealEstateObjectsDetails
+from masters.models import Realestateobjects,Realestateobjectsdetail
 from foundation.models import BaseModel,CustomUser
 import uuid
 # # user registration model
@@ -30,7 +30,7 @@ class CheckInOut(BaseModel):
     check_out_date = models.DateField()
     check_out_time = models.TimeField()
     inspection_date_time = models.DateTimeField()
-    object_details = models.ManyToManyField(RealEstateObjectsDetails)
+    object_details = models.ManyToManyField(Realestateobjectsdetail)
     object_detail_list = models.ForeignKey('ObjectListInspection', on_delete=models.CASCADE, null=True, blank=True)
 
     def __str__(self):
@@ -53,7 +53,7 @@ class GeneralInspection(BaseModel):
 class ObjectListInspection(BaseModel):
     #  fk service id link with check in&out, 
     service_id = models.ForeignKey(CheckInOut, on_delete=models.CASCADE, null=True, blank=True)
-    object_detail_list = models.ForeignKey(RealEstateObjectsDetails, on_delete=models.CASCADE,null=True,blank=True,related_name='inspections')
+    object_detail_list = models.ForeignKey(Realestateobjectsdetail, on_delete=models.CASCADE,null=True,blank=True,related_name='inspections')
     new = models.BooleanField(default=False)
     inorder = models.BooleanField(default=False)
     normal_wear = models.BooleanField(blank=True,null=True)

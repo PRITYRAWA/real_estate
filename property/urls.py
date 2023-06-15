@@ -19,6 +19,9 @@ urlpatterns = (
         path(
             "meeting/", include("api.meetings.urls", namespace="meetings-api")
         ),
+        path(
+            "checkin/", include("api.checkin.urls", namespace="checkin-api")
+        ),
     ]
     + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
     + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
