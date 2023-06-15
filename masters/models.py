@@ -43,6 +43,27 @@ class Realestatepropertyowner(BaseModel):
     class Meta:
         db_table = "Realestatepropertyowner"
 
+class Realestatepropertytenant(BaseModel):
+    STATUS_CHOICES = [
+        ('ENQUIRER', 'Enquirer'),
+        ('REGISTER', 'Register'),
+        ('OCCUPIED', 'Occupied'),
+        ('VACATOR', 'Vacator'),
+    ]
+    userid = models.CharField( max_length=36, blank=True, null=True)  
+    realestatepersontypeid = models.IntegerField()  
+    name = models.CharField(max_length=50)  
+    surname = models.CharField(max_length=100)  
+    email = models.CharField(max_length=320, blank=True, null=True)  
+    phonenumber = models.CharField(max_length=30, blank=True, null=True)  
+    street = models.CharField(max_length=100)  
+    zip = models.CharField(max_length=10, blank=True, null=True)  
+    city = models.CharField(max_length=50, blank=True, null=True)  
+    country = CountryField( blank=True, null=True)  
+    status = models.CharField(max_length=10,choices=STATUS_CHOICES,default='ENQUIRER')
+
+
+
 class Messages(BaseModel):
     realestateagentid = models.ForeignKey('Realestateagents', models.DO_NOTHING)   
     subject = models.CharField(max_length=150)   
@@ -156,7 +177,9 @@ class Realestateobjects(BaseModel):
 #object detail model
 class Realestateobjectsdetail(BaseModel):
     object_code = models.CharField(max_length=100,null=True,blank=True)
+    category = models.CharField(max_length=100,null=True,blank=True)
     related_object = models.ForeignKey(Realestateobjects, on_delete=models.CASCADE,null=True,blank=True)
+    related_property = models.ForeignKey(Realestateproperties, on_delete=models.CASCADE,null=True,blank=True)
     objectName = models.TextField()
     related_detail = models.ForeignKey('Realestateobjectsdetail', on_delete=models.CASCADE, null=True, blank=True)
     new = models.BooleanField(blank=True,null=True)
@@ -166,22 +189,63 @@ class Realestateobjectsdetail(BaseModel):
     image = models.ImageField(upload_to='object_images_master/')
     
     class Meta:
-        db_table = 'Realestateobjectsdetail'
+        db_table = 'RealEstateObjectsDetails'
+
+    def __str__(self):
+        return f"Details for {self.objectName}"
+
+class Realestatekeyhandover(BaseModel):
+    property = models.ForeignKey(Realestateproperties,on_delete=models.CASCADE, null=True, blank=True) 
+    object = models.ForeignKey(Realestateobjects,on_delete=models.CASCADE, null=True, blank=True) 
+    photo = models.ImageField(upload_to='key_photos/')
+    count = models.IntegerField(default=0)
+    description = models.TextField()
+    name = models.CharField(max_length=300,null=True, blank=True)
+
+
+
+class Realestatemeterhandover(BaseModel):
+    UNIT_CHOICES = [
+        ('Kwh', 'Kwh'),
+        ('m3', 'm3'),
+        ('litres', 'litres'),
+        ('units', 'units'),
+        ('steres', 'steres'),
+    ]
+    COMPANY_CHOICES = [
+        ('abc','abc')
+    ]
+    property = models.ForeignKey(Realestateproperties,on_delete=models.CASCADE, null=True, blank=True) 
+    object = models.ForeignKey(Realestateobjects,on_delete=models.CASCADE, null=True, blank=True) 
+    meterno = models.CharField(max_length=200,null=True,blank=True)
+    reading = models.CharField(max_length=200,null=True,blank=True)
+    unit = models.CharField(max_length=10,choices=UNIT_CHOICES,default='Kwh',null=True,blank=True)
+    whochange = models.CharField(max_length=200,null=True,blank=True)
+    company = models.CharField(max_length=100,choices=COMPANY_CHOICES,null=True,blank=True)
+    description = models.TextField(null=True,blank=True)
+
+
+
 
 class Realestatepropertymanagement(BaseModel):
-    managed_by = (
-        ("owner", ("Owner")),
-        ("agent", ("Agent")),
-    )
     realestatepropertyid = models.OneToOneField(Realestateproperties, models.DO_NOTHING, primary_key=True)  
-    realestatepersonid = models.ForeignKey(Realestatepropertyowner, models.DO_NOTHING)  
+    realestateownerid = models.ForeignKey(Realestatepropertyowner, models.DO_NOTHING)  
     realestateagentid = models.ForeignKey(Realestateagents, models.DO_NOTHING) 
     realestateobjectid = models.ForeignKey(Realestateobjects, models.DO_NOTHING)
-    managed_by = models.CharField(max_length=20, choices= managed_by )
-    managername = models.CharField(max_length=50)
+    manageby = models.CharField(max_length=10, choices=(('owner', 'Owner'), ('agent', 'Agent')))
+    manageby_id = models.CharField(max_length=100,null=True,blank=True)
 
     class Meta:
         db_table = 'Realestatepropertymanagement'
+
+    def save(self, *args, **kwargs):
+        if self.take_care == 'agent':
+            self.care_taker_id = self.realestateagentid_id
+            self.realestateownerid_id = None
+        elif self.take_care == 'owner':
+            self.care_taker_id = self.realestateownerid_id
+            self.realestateagentid_id = None
+        super().save(*args, **kwargs)
 
 class Realestateserviceproviders(BaseModel):
     realestateagentid = models.ForeignKey(Realestateagents, models.DO_NOTHING)   

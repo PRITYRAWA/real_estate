@@ -3,7 +3,8 @@ from rest_framework import viewsets
 from django_filters.rest_framework import DjangoFilterBackend
 from .serializers import *
 from masters.models import *
-
+from rest_framework.views import APIView
+from rest_framework.response import Response
 # Create your views here.
 
 class RealestatepropertyViewSet(viewsets.ModelViewSet):
@@ -60,6 +61,13 @@ class RealestatepersonsViewSet(viewsets.ModelViewSet):
     queryset = Realestatepropertyowner.objects.all()
     serializer_class = RealestatepersonSerializer
 
+class RealestatepropertytenantViewSet(viewsets.ModelViewSet):
+    serializer_class = RealestatetenantSerializer
+
+    def get_queryset(self):
+        queryset = Realestatepropertytenant.objects.filter(status="Occupied")
+        return queryset
+
 
 class AgendaViewSet(viewsets.ModelViewSet):
     # end point to access Realestateserviceproviders Model.
@@ -75,3 +83,22 @@ class MessagetemplateViewSet(viewsets.ModelViewSet):
     # end point to access Realestatepersons Model.
     queryset = Mettingtemplate.objects.all()
     serializer_class = Mettingtemplateserializer
+
+class SubgroupViewSet(viewsets.ModelViewSet):
+    # end point to access Realestatepersons Model.
+    queryset = Realestatepropertiessubgroup.objects.all()
+    serializer_class = Subgroupserializer
+
+class RealestateObjectDetailItemsViewSet(viewsets.ModelViewSet):
+    queryset = Realestateobjectsdetail.objects.all()
+    serializer_class = RealEstateObjectsDetailsSerializer
+
+    # def list(self, request):
+    #     prop_id = request.query_params.get('propid')
+    #     obj_id = request.query_params.get('objectid')
+    #     obj_detail_id = request.query_params.get('objdetailid')
+
+    #     queryset = self.get_queryset().filter(related_property_id=prop_id, related_object_id=obj_id, related_detail_id=obj_detail_id)
+
+    #     serializer = self.get_serializer(queryset, many=True)
+    #     return Response(serializer.data)

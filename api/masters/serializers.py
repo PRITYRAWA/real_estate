@@ -65,6 +65,11 @@ class RealestatepersonSerializer(serializers.ModelSerializer):
         model = Realestatepropertyowner
         exclude = ('created_at', 'updated_at', 'createdby', 'lastmodifiedby')
 
+class RealestatetenantSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Realestatepropertytenant
+        exclude = ('created_at', 'updated_at', 'createdby', 'lastmodifiedby')
+
 class AgendaDetailSerializer(serializers.ModelSerializer):
     class Meta:
         model = AgendaDetails
@@ -104,3 +109,14 @@ class Mettingtemplateserializer(serializers.ModelSerializer):
     class Meta:
         model = Mettingtemplate
         exclude = ('created_at', 'updated_at', 'createdby', 'lastmodifiedby')
+
+class Subgroupserializer(serializers.ModelSerializer):
+    class Meta:
+        model = Realestatepropertiessubgroup
+        exclude = ('created_at', 'updated_at', 'createdby', 'lastmodifiedby')
+
+
+class RealEstateObjectsDetailsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Realestateobjectsdetail
+        fields = '__all__'  
