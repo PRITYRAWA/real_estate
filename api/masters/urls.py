@@ -21,8 +21,9 @@ router.register(r'meeting-template', MessagetemplateViewSet,basename="meeting-te
 router.register(r'agendas', AgendaViewSet,basename="agendas")
 router.register(r'quroums', QuroumsViewSet,basename="quroums")
 router.register(r'objectdetailitems', RealestateObjectDetailItemsViewSet)
-router.register(r'subgroup', SubgroupViewSet,basename="subgroup")
-
+router.register(r'subgroup', SubgroupViewSet,basename="subgroup"),
+router.register(r'keys', RealestatekeysViewSet,basename="properties"),
+router.register(r'meters', RealestatemetersViewSet,basename="properties"),
 
 urlpatterns = [
         # path('objectdetailitems/', RealestateObjectDetailItemsAPIView.as_view(), name='realestate_objectdetailitems'),

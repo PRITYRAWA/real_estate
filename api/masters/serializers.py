@@ -129,3 +129,12 @@ class RealEstateObjectsDetailsSerializer(serializers.ModelSerializer):
         model = Realestateobjectsdetail
         exclude = ('created_at', 'updated_at', 'createdby', 'lastmodifiedby')
     
+class RealEstateKeysSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Realestatekeyhandover
+        exclude = ('created_at', 'updated_at', 'createdby', 'lastmodifiedby')
+    
+class RealEstateMeterssSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Realestatemeterhandover
+        exclude = ('created_at', 'updated_at', 'createdby', 'lastmodifiedby')

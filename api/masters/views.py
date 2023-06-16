@@ -112,3 +112,15 @@ class RealestateObjectDetailItemsViewSet(viewsets.ModelViewSet):
             return queryset
         except Realestateobjectsdetail.DoesNotExist:
             return Realestateobjectsdetail.objects.none()
+        
+class RealestatekeysViewSet(viewsets.ModelViewSet):
+    # end point to access RealEstateProperty Model.
+    queryset = Realestatekeyhandover.objects.all()
+    serializer_class = RealEstateKeysSerializer
+    http_method_names = ['get', 'post', 'put', 'patch', 'delete']
+
+class RealestatemetersViewSet(viewsets.ModelViewSet):
+    # end point to access RealEstateProperty Model.
+    queryset = Realestatemeterhandover.objects.all()
+    serializer_class = RealEstateMeterssSerializer
+    http_method_names = ['get', 'post', 'put', 'patch', 'delete']

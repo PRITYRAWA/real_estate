@@ -57,7 +57,7 @@ INSTALLED_APPS = [
     'masters',
     'sales',
     'rest_framework',
-    'drf_yasg'
+    'drf_yasg',
 ]
 
 
@@ -88,9 +88,6 @@ TEMPLATES = [
         },
     },
 ]
-
-WSGI_APPLICATION = 'property.wsgi.application'
-
 
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases

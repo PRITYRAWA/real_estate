@@ -30,8 +30,8 @@ class CheckInOut(BaseModel):
     check_out_date = models.DateField()
     check_out_time = models.TimeField()
     inspection_date_time = models.DateTimeField()
-    object_details = models.ManyToManyField(Realestateobjectsdetail)
-    object_detail_list = models.ForeignKey('ObjectListInspection', on_delete=models.CASCADE, null=True, blank=True)
+    object_details = models.ManyToManyField(Realestateobjectsdetail,null=True,blank=True)
+    # object_detail_list = models.ForeignKey('ObjectListInspection', on_delete=models.CASCADE, null=True, blank=True)
 
     def __str__(self):
         return f"{self.user.full_name} checked into {self.object_check_in}"
@@ -54,10 +54,10 @@ class ObjectListInspection(BaseModel):
     #  fk service id link with check in&out, 
     service_id = models.ForeignKey(CheckInOut, on_delete=models.CASCADE, null=True, blank=True)
     object_detail_list = models.ForeignKey(Realestateobjectsdetail, on_delete=models.CASCADE,null=True,blank=True,related_name='inspections')
-    new = models.BooleanField(default=False)
-    inorder = models.BooleanField(default=False)
+    new = models.BooleanField(default=False,null=True,blank=True)
+    inorder = models.BooleanField(default=False,null=True,blank=True)
     normal_wear = models.BooleanField(blank=True,null=True)
     notes = models.TextField(blank=True, null=True)
-    image = models.ImageField(upload_to='object_images_teenant/')   
+    image = models.ImageField(upload_to='object_images_teenant/',null=True,blank=True)   
     def __str__(self):
         return f'Object {self.id}'
