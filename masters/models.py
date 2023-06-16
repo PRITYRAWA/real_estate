@@ -100,7 +100,7 @@ class Messagerecipients(BaseModel):
         db_table = "Messagerecipients" 
 
 class Realestateproperties(BaseModel):
-    realestateagentid = models.ForeignKey(Realestateagents, models.DO_NOTHING)   
+    realestateagentid = models.ForeignKey(Realestateagents, models.DO_NOTHING,null=True,blank=True)   
     name = models.CharField(max_length=50)   
     street = models.CharField(max_length=100)   
     zip = models.CharField(max_length=10)   
@@ -160,7 +160,7 @@ class Realestatepropertiessubgroup(BaseModel):
         db_table = 'Realestatepropertiessubgroup'
 
 class Realestateobjects(BaseModel):
-    realestatepropertyid = models.ForeignKey(Realestateproperties,related_name="objects_detail",on_delete=models.CASCADE)
+    realestatepropertyid = models.ForeignKey(Realestateproperties,related_name="objects_detail",on_delete=models.CASCADE,null=True,blank=True)
     objectusagetypeid = models.IntegerField()   
     name = models.CharField(max_length=50)   
     description = models.CharField(max_length=100)   
@@ -238,17 +238,17 @@ class Realestatepropertymanagement(BaseModel):
     class Meta:
         db_table = 'Realestatepropertymanagement'
 
-    def save(self, *args, **kwargs):
-        if self.take_care == 'agent':
-            self.care_taker_id = self.realestateagentid_id
-            self.realestateownerid_id = None
-        elif self.take_care == 'owner':
-            self.care_taker_id = self.realestateownerid_id
-            self.realestateagentid_id = None
-        super().save(*args, **kwargs)
+    # def save(self, *args, **kwargs):
+    #     if self.manageby == 'agent':
+    #         self.manageby_id = self.realestateagentid_id
+    #         self.realestateownerid_id = None
+    #     elif self.take_care == 'owner':
+    #         self.manageby_id = self.realestateownerid_id
+    #         self.realestateagentid_id = None
+    #     super().save(*args, **kwargs)
 
 class Realestateserviceproviders(BaseModel):
-    realestateagentid = models.ForeignKey(Realestateagents, models.DO_NOTHING)   
+    realestateagentid = models.ForeignKey(Realestateagents, models.DO_NOTHING,null=True,blank=True)   
     name = models.CharField(max_length=50)   
     field = models.CharField(max_length=50, blank=True, null=True)   
     languageid = models.IntegerField()   
