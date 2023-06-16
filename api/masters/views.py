@@ -90,15 +90,17 @@ class SubgroupViewSet(viewsets.ModelViewSet):
     serializer_class = Subgroupserializer
 
 class RealestateObjectDetailItemsViewSet(viewsets.ModelViewSet):
-    queryset = Realestateobjectsdetail.objects.all()
     serializer_class = RealEstateObjectsDetailsSerializer
+    queryset = Realestateobjectsdetail.objects.all()
+    lookup_field = 'id'  # Specify the lookup field for detail view
 
-    # def list(self, request):
-    #     prop_id = request.query_params.get('propid')
-    #     obj_id = request.query_params.get('objectid')
-    #     obj_detail_id = request.query_params.get('objdetailid')
-
-    #     queryset = self.get_queryset().filter(related_property_id=prop_id, related_object_id=obj_id, related_detail_id=obj_detail_id)
-
-    #     serializer = self.get_serializer(queryset, many=True)
-    #     return Response(serializer.data)
+    def get_queryset(self):
+        prop_id = self.request.query_params.get('propid')
+        obj_id = self.request.query_params.get('objectid')
+        obj_detail_id = self.request.query_params.get('objdetailid')
+        
+        try:
+            queryset = Realestateobjectsdetail.objects.filter(related_property_id=prop_id, related_object=obj_id, related_detail=obj_detail_id)
+            return queryset
+        except Realestateobjectsdetail.DoesNotExist:
+            return Realestateobjectsdetail.objects.none()

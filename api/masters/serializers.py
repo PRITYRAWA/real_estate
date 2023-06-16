@@ -115,7 +115,6 @@ class Subgroupserializer(serializers.ModelSerializer):
         model = Realestatepropertiessubgroup
         exclude = ('created_at', 'updated_at', 'createdby', 'lastmodifiedby')
 
-
 class RealEstateObjectsDetailsSerializer(serializers.ModelSerializer):
     class Meta:
         model = Realestateobjectsdetail
