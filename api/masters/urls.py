@@ -20,7 +20,7 @@ router.register(r'tenant', RealestatepropertytenantViewSet,basename='property')
 router.register(r'meeting-template', MessagetemplateViewSet,basename="meeting-template")
 router.register(r'agendas', AgendaViewSet,basename="agendas")
 router.register(r'quroums', QuroumsViewSet,basename="quroums")
-router.register(r'realestate/objectdetailitems', RealestateObjectDetailItemsViewSet)
+router.register(r'objectdetailitems', RealestateObjectDetailItemsViewSet)
 router.register(r'subgroup', SubgroupViewSet,basename="subgroup")
 
 

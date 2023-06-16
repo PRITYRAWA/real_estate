@@ -6,14 +6,14 @@ class RealestateobjectSerializer(serializers.ModelSerializer):
         model = Realestateobjects
         exclude = ('created_at', 'updated_at', 'createdby', 'lastmodifiedby')
 
-class RealestatepropertySerializer(serializers.ModelSerializer):
-    objects_detail=RealestateobjectSerializer(many=True)
 
+class RealestatepropertySerializer(serializers.ModelSerializer):
+    objects_detail=RealestateobjectSerializer(many=True,read_only=True)
+    
     class Meta:
         model = Realestateproperties
         fields = (
             "id",
-            "realestateagentid",
             "name",
             "street",
             "zip",
@@ -24,6 +24,15 @@ class RealestatepropertySerializer(serializers.ModelSerializer):
             "objects_detail",
             
         )
+
+    def create(self, validated_data):
+        realestatepropertyobjects_detail = validated_data.pop('objects_detail', None)
+        realestateproperty = Realestateproperties.objects.create(**validated_data)
+
+        if realestatepropertyobjects_detail:
+            Realestateobjects.objects.create(realestatepropertyid=realestateproperty, **realestatepropertyobjects_detail[0])
+
+        return realestateproperty
 
 class RealestateagentSerializer(serializers.ModelSerializer):
     class Meta:
@@ -118,4 +127,5 @@ class Subgroupserializer(serializers.ModelSerializer):
 class RealEstateObjectsDetailsSerializer(serializers.ModelSerializer):
     class Meta:
         model = Realestateobjectsdetail
-        fields = '__all__'  
+        exclude = ('created_at', 'updated_at', 'createdby', 'lastmodifiedby')
+    
