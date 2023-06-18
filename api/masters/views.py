@@ -11,8 +11,6 @@ class RealestatepropertyViewSet(viewsets.ModelViewSet):
     # end point to access RealEstateProperty Model.
     queryset = Realestateproperties.objects.all()
     serializer_class = RealestatepropertySerializer
-    http_method_names = ['get', 'post', 'put', 'patch', 'delete']
-
 
 class RealestateobjectsViewSet(viewsets.ModelViewSet):
     # end point to access RealEstateObjects Model.
@@ -22,14 +20,11 @@ class RealestateobjectsViewSet(viewsets.ModelViewSet):
     filterset_fields = {
             'realestatepropertyid': ['exact']
     }
-    http_method_names = ['get', 'post', 'put', 'patch', 'delete']
-
 
 class RealestateagentsViewSet(viewsets.ModelViewSet):
     # end point to access Realestateagents Model.
     queryset = Realestateagents.objects.all()
     serializer_class = RealestateagentSerializer
-    http_method_names = ['get', 'post', 'put', 'patch', 'delete']
 
 class MessagesViewSet(viewsets.ModelViewSet):
     # end point to access Messages Model.
@@ -55,7 +50,6 @@ class RealestateserviceprovidersViewSet(viewsets.ModelViewSet):
     # end point to access Realestateserviceproviders Model.
     queryset = Realestateserviceproviders.objects.all()
     serializer_class = RealestateserviceproviderSerializer
-    http_method_names = ['get', 'post', 'put', 'patch', 'delete']
 
 class FeedbacksViewSet(viewsets.ModelViewSet):
     # end point to access Feedbacks Model.
@@ -66,16 +60,14 @@ class RealestatepersonsViewSet(viewsets.ModelViewSet):
     # end point to access Realestatepersons Model.
     queryset = Realestatepropertyowner.objects.all()
     serializer_class = RealestatepersonSerializer
-    http_method_names = ['get', 'post', 'put', 'patch', 'delete']
 
 class RealestatepropertytenantViewSet(viewsets.ModelViewSet):
     serializer_class = RealestatetenantSerializer
 
     def get_queryset(self):
-        queryset = Realestatepropertytenant.objects.filter(status="OCCUPIED")
+        queryset = Realestatepropertytenant.objects.filter(status="Occupied")
         return queryset
 
-    http_method_names = ['get', 'post', 'put', 'patch', 'delete']
 
 class AgendaViewSet(viewsets.ModelViewSet):
     # end point to access Realestateserviceproviders Model.
@@ -112,15 +104,8 @@ class RealestateObjectDetailItemsViewSet(viewsets.ModelViewSet):
             return queryset
         except Realestateobjectsdetail.DoesNotExist:
             return Realestateobjectsdetail.objects.none()
-        
-class RealestatekeysViewSet(viewsets.ModelViewSet):
-    # end point to access RealEstateProperty Model.
-    queryset = Realestatekeyhandover.objects.all()
-    serializer_class = RealEstateKeysSerializer
-    http_method_names = ['get', 'post', 'put', 'patch', 'delete']
 
-class RealestatemetersViewSet(viewsets.ModelViewSet):
-    # end point to access RealEstateProperty Model.
-    queryset = Realestatemeterhandover.objects.all()
-    serializer_class = RealEstateMeterssSerializer
-    http_method_names = ['get', 'post', 'put', 'patch', 'delete']
+class PropertyManagementViewSet(viewsets.ModelViewSet):
+    # end point to access Realestatepersons Model.
+    queryset = Realestatepropertymanagement.objects.all()
+    serializer_class = Mettingtemplateserializer
