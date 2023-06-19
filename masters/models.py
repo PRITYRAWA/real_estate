@@ -1,47 +1,44 @@
 from django.db import models
 from django_countries.fields import CountryField
 from foundation.models import BaseModel
-
+from django.utils.translation import gettext_lazy as _
 
 class Realestateagents(BaseModel):
-    prefix = models.CharField(max_length=5) 
-    name = models.CharField(max_length=50) 
-    contactname = models.CharField(max_length=100) 
-    email = models.CharField(max_length=320, blank=True, null=True)  
-    website = models.TextField(blank=True, null=True)  
-    phonenumber = models.CharField(max_length=30, blank=True, null=True) 
-    street = models.CharField(max_length=100) 
-    zip = models.CharField(max_length=10, blank=True, null=True)  
-    city = models.CharField(max_length=50, blank=True, null=True)  
-    country = CountryField( blank=True, null=True) 
+    prefix = models.CharField(max_length=5,verbose_name=("Prefix")) 
+    name = models.CharField(max_length=50,verbose_name=("Name")) 
+    contactname = models.CharField(max_length=100,verbose_name=("Contact Name")) 
+    email = models.CharField(max_length=320, blank=True, null=True,verbose_name=("Email"))  
+    website = models.TextField(blank=True, null=True,verbose_name=("Website"))  
+    phonenumber = models.CharField(max_length=30, blank=True, null=True,verbose_name=("Phone Number")) 
+    street = models.CharField(max_length=100,blank=True, null=True,verbose_name=("Street")) 
+    zip = models.CharField(max_length=10, blank=True, null=True,verbose_name=("Zip"))  
+    city = models.CharField(max_length=50, blank=True, null=True,verbose_name=("City"))  
+    country = CountryField( blank=True, null=True,verbose_name=("Country")) 
 
     class Meta:
         db_table = "Realestateagents"
-
+        ordering = ['-id']
 
 class Realestatepropertyowner(BaseModel):
-    userid = models.CharField( max_length=36, blank=True, null=True) 
-    realestatepersontypeid = models.IntegerField()   
-    name = models.CharField(max_length=50)   
-    surname = models.CharField(max_length=100)   
-    email = models.CharField(max_length=320, blank=True, null=True)   
-    phonenumber = models.CharField(max_length=30, blank=True, null=True)   
-    street = models.CharField(max_length=100)   
-    zip = models.CharField(max_length=10, blank=True, null=True)   
-    city = models.CharField(max_length=50, blank=True, null=True)   
-    country = CountryField( blank=True, null=True)     
-    languageid = models.IntegerField()   
-    owner_representative = models.CharField( max_length=50, blank=True, null=True) 
-    isnotificationnewtickets = models.BooleanField(default=False)   
-    isnotificationnewupdates = models.BooleanField(default=False)   
-    isnotificationticketdeadline = models.BooleanField(default=False)   
-    isactive = models.BooleanField(default=False)   
-    lastlogindate = models.DateTimeField(null=True, blank=True)   
-    attachment = models.TextField(blank=True, null=True)   
-    attachments = models.TextField(blank=True, null=True)   
+    name = models.CharField(max_length=50,verbose_name=("Name"))   
+    surname = models.CharField(max_length=100,verbose_name=("Surname"))   
+    email = models.CharField(max_length=320, blank=True, null=True,verbose_name=("Email"))   
+    phonenumber = models.CharField(max_length=30, blank=True, null=True,verbose_name=("Phone Number"))   
+    street = models.CharField(max_length=100,blank=True, null=True,verbose_name=("Street"))   
+    zip = models.CharField(max_length=10, blank=True, null=True,verbose_name=("Zip"))   
+    city = models.CharField(max_length=50, blank=True, null=True,verbose_name=("City"))   
+    country = CountryField( blank=True, null=True,verbose_name=("Country"))    
+    owner_representative = models.CharField( max_length=50, blank=True, null=True,verbose_name=("Owner Representative")) 
+    isnotificationnewtickets = models.BooleanField(default=False,verbose_name=("Is Notification New Tickets"))   
+    isnotificationnewupdates = models.BooleanField(default=False,verbose_name=("Is Notification New Updates"))   
+    isnotificationticketdeadline = models.BooleanField(default=False,verbose_name=("Is Notification Ticket Deadline"))   
+    isactive = models.BooleanField(default=False,verbose_name=("Is Active"))   
+    lastlogindate = models.DateTimeField(null=True, blank=True,verbose_name=("Last Logindate"))   
+    attachment = models.FileField(upload_to='attachement/',blank=True, null=True,verbose_name=("Attachment")) 
 
     class Meta:
         db_table = "Realestatepropertyowner"
+        ordering = ['-id']
 
 class Realestatepropertytenant(BaseModel):
     STATUS_CHOICES = [
@@ -100,14 +97,15 @@ class Messagerecipients(BaseModel):
         db_table = "Messagerecipients" 
 
 class Realestateproperties(BaseModel):
-    realestateagentid = models.ForeignKey(Realestateagents, models.DO_NOTHING,null=True,blank=True)   
-    name = models.CharField(max_length=50)   
-    street = models.CharField(max_length=100)   
-    zip = models.CharField(max_length=10)   
-    city = models.CharField(max_length=50)   
-    country = CountryField( blank=True, null=True)     
-    isactive = models.BooleanField(default=False)   
-    attachments = models.TextField(blank=True, null=True)   
+    realestateagentid = models.ForeignKey(Realestateagents, models.DO_NOTHING,verbose_name=("Agent Id"))   
+    name = models.CharField(max_length=50,verbose_name=("Name"))   
+    street = models.CharField(max_length=100,verbose_name=("Street"))   
+    zip = models.CharField(max_length=10,verbose_name=("Zip"))   
+    city = models.CharField(max_length=50,verbose_name=("City"))   
+    country = CountryField( blank=True, null=True,verbose_name=("Country"))     
+    isactive = models.BooleanField(default=False,verbose_name=("Is Active"))   
+    attachment = models.FileField(upload_to='attachement/',blank=True, null=True,verbose_name=("Attachment")) 
+   
 
     class Meta:
         db_table = "Realestateproperties" 
@@ -150,17 +148,18 @@ class Localizedproperties(BaseModel):
 
 #model created for subgroup details in meeting 
 class Realestatepropertiessubgroup(BaseModel):
-    property = models.ForeignKey(Realestateproperties,on_delete=models.CASCADE,verbose_name=("property"))
-    name =  models.CharField(max_length=100,null=True, blank=True, verbose_name=("name"))
+    property = models.ForeignKey(Realestateproperties,on_delete=models.CASCADE,verbose_name=("Property"))
+    name =  models.CharField(max_length=100,null=True, blank=True, verbose_name=("Name"))
     Description = models.TextField(null=True, blank=True, verbose_name=("Description"))
-    area =  models.CharField(max_length=100,null=True, blank=True, verbose_name=("area"))
-    amenities = models.CharField(max_length=100,null=True, blank=True, verbose_name=("amenities"))
+    area =  models.CharField(max_length=100,null=True, blank=True, verbose_name=("Area"))
+    amenities = models.CharField(max_length=100,null=True, blank=True, verbose_name=("Amenities"))
 
     class Meta:
         db_table = 'Realestatepropertiessubgroup'
+        ordering = ['-id']
 
 class Realestateobjects(BaseModel):
-    realestatepropertyid = models.ForeignKey(Realestateproperties,related_name="objects_detail",on_delete=models.CASCADE,null=True,blank=True)
+    realestatepropertyid = models.ForeignKey(Realestateproperties,related_name="objects_detail",on_delete=models.CASCADE)
     objectusagetypeid = models.IntegerField()   
     name = models.CharField(max_length=50)   
     description = models.CharField(max_length=100)   
@@ -173,24 +172,24 @@ class Realestateobjects(BaseModel):
 
     class Meta:
         db_table = 'Realestateobjects'
-
+        ordering = ['-id']
 #object detail model
 class Realestateobjectsdetail(BaseModel):
-    object_code = models.CharField(max_length=100,null=True,blank=True)
-    category = models.CharField(max_length=100,null=True,blank=True)
-    related_object = models.ForeignKey(Realestateobjects, on_delete=models.CASCADE,null=True,blank=True)
-    related_property = models.ForeignKey(Realestateproperties, on_delete=models.CASCADE,null=True,blank=True)
-    objectName = models.TextField()
-    related_detail = models.ForeignKey('Realestateobjectsdetail', on_delete=models.CASCADE, null=True, blank=True)
-    new = models.BooleanField(blank=True,null=True)
-    inorder = models.BooleanField(blank=True,null=True)
-    normal_wear = models.BooleanField(blank=True,null=True)
-    notes = models.TextField(blank=True, null=True)
-    image = models.ImageField(upload_to='object_images_master/')
+    object_code = models.CharField(max_length=100,null=True,blank=True,verbose_name=("Object Code"))
+    category = models.CharField(max_length=100,null=True,blank=True,verbose_name=("Category"))
+    related_object = models.ForeignKey(Realestateobjects, on_delete=models.CASCADE,null=True,blank=True,verbose_name=("Related Object"))
+    related_property = models.ForeignKey(Realestateproperties, on_delete=models.CASCADE,null=True,blank=True,verbose_name=("Related Property"))
+    objectName = models.TextField(verbose_name=("Object Name"))
+    related_detail = models.ForeignKey('Realestateobjectsdetail', on_delete=models.CASCADE, null=True, blank=True,verbose_name=("Related Detail"))
+    new = models.BooleanField(blank=True,null=True,verbose_name=("New"))
+    inorder = models.BooleanField(blank=True,null=True,verbose_name=("In Order"))
+    normal_wear = models.BooleanField(blank=True,null=True,verbose_name=("Normal Wear"))
+    notes = models.TextField(blank=True, null=True,verbose_name=("Notes"))
+    image = models.ImageField(upload_to='object_images_master/',verbose_name=("Image"))
     
     class Meta:
         db_table = 'RealEstateObjectsDetails'
-
+        ordering = ['-id']
     def __str__(self):
         return f"Details for {self.objectName}"
 
@@ -224,46 +223,35 @@ class Realestatemeterhandover(BaseModel):
     company = models.CharField(max_length=100,choices=COMPANY_CHOICES,null=True,blank=True)
     description = models.TextField(null=True,blank=True)
 
-
-
-
 class Realestatepropertymanagement(BaseModel):
-    realestatepropertyid = models.OneToOneField(Realestateproperties, models.DO_NOTHING, primary_key=True)  
-    realestateownerid = models.ForeignKey(Realestatepropertyowner, models.DO_NOTHING)  
-    realestateagentid = models.ForeignKey(Realestateagents, models.DO_NOTHING) 
-    realestateobjectid = models.ForeignKey(Realestateobjects, models.DO_NOTHING)
-    manageby = models.CharField(max_length=10, choices=(('owner', 'Owner'), ('agent', 'Agent')))
-    manageby_id = models.CharField(max_length=100,null=True,blank=True)
+    realestatepropertyid = models.OneToOneField(Realestateproperties, models.DO_NOTHING,verbose_name=_("Property") ) 
+    realestateownerid = models.ForeignKey(Realestatepropertyowner, models.DO_NOTHING,verbose_name=_("Property Owner"))  
+    realestateagentid = models.ForeignKey(Realestateagents, models.DO_NOTHING,verbose_name=_("Property Agent")) 
+    realestateobjectid = models.ForeignKey(Realestateobjects, models.DO_NOTHING,verbose_name=_("Property Object"))
+    manageby = models.CharField(max_length=10, choices=(('owner', 'Owner'), ('agent', 'Agent')),verbose_name=_("Manage By"))
+    manageby_id = models.CharField(max_length=100,null=True,blank=True,verbose_name=_("Manager Id"))
 
     class Meta:
         db_table = 'Realestatepropertymanagement'
-
-    # def save(self, *args, **kwargs):
-    #     if self.manageby == 'agent':
-    #         self.manageby_id = self.realestateagentid_id
-    #         self.realestateownerid_id = None
-    #     elif self.take_care == 'owner':
-    #         self.manageby_id = self.realestateownerid_id
-    #         self.realestateagentid_id = None
-    #     super().save(*args, **kwargs)
+        ordering = ['-id']
+   
 
 class Realestateserviceproviders(BaseModel):
-    realestateagentid = models.ForeignKey(Realestateagents, models.DO_NOTHING,null=True,blank=True)   
-    name = models.CharField(max_length=50)   
-    field = models.CharField(max_length=50, blank=True, null=True)   
-    languageid = models.IntegerField()   
-    contactname = models.TextField(blank=True, null=True)   
-    phonenumber = models.CharField(max_length=30)   
-    email = models.CharField(max_length=320)   
-    street = models.CharField(max_length=100)   
-    zip = models.CharField(max_length=10)   
-    city = models.CharField(max_length=50)   
-    country = CountryField( blank=True, null=True)  
-    isactive = models.BooleanField(default=False)   
+    realestateagentid = models.ForeignKey(Realestateagents, models.DO_NOTHING,verbose_name=("Agent Id"))   
+    name = models.CharField(max_length=50,verbose_name=("Name"))   
+    field = models.CharField(max_length=50, blank=True, null=True,verbose_name=("Field")) 
+    contactname = models.TextField(blank=True, null=True,verbose_name=("Contact Name"))   
+    phonenumber = models.CharField(max_length=30,verbose_name=("Phone Number"))   
+    email = models.CharField(max_length=320,verbose_name=("Email"))   
+    street = models.CharField(max_length=100,verbose_name=("Street"))   
+    zip = models.CharField(max_length=10,verbose_name=("Zip"))   
+    city = models.CharField(max_length=50,verbose_name=("City"))   
+    country = CountryField( blank=True, null=True,verbose_name=("Country"))  
+    isactive = models.BooleanField(default=False,verbose_name=("Is Active"))   
 
     class Meta:
         db_table = 'Realestateserviceproviders'
-   
+        ordering = ['-id']
 class Ticketmessages(BaseModel):
     ticketid = models.ForeignKey('Tickets', models.DO_NOTHING)   
     realestapersonid = models.ForeignKey(Realestatepropertyowner, models.DO_NOTHING)   
@@ -352,31 +340,32 @@ class Agenda(BaseModel):
         ("draft", ("Draft")),
         ("definitive", ("Definitive")),
     )
-    topic=models.CharField(max_length=100, blank=False, null=False)
-    status=models.CharField(max_length=20, choices= status ,default='draft' )
+    topic=models.CharField(max_length=100, blank=False, null=False,verbose_name=("Topic"))
+    status=models.CharField(max_length=20, choices= status ,default='draft',verbose_name=("Status") )
     
     class Meta:
         db_table = 'Agenda'
-
+        ordering = ['-id']
 class AgendaDetails(BaseModel):
-    agenda = models.ForeignKey(Agenda,related_name="agenda_detail",on_delete=models.CASCADE)
-    topic_details=models.CharField(max_length=100, blank=True, null=True)
+    agenda = models.ForeignKey(Agenda,related_name="agenda_detail",on_delete=models.CASCADE,verbose_name=("Agenda"))
+    topic_details=models.CharField(max_length=100, blank=True, null=True,verbose_name=("Topic Details"))
 
     class Meta:
         db_table = 'AgendaDetails'
-
+        ordering = ['-id']
 class Quorums(BaseModel):
     types = (
         ("head", ("Head Votes")),
         ("object", ("Object Votes")),
         ("value", ("Value Votes")),
     )
-    voting_type=models.CharField(max_length=20, choices=types)
-    present_votes=models.IntegerField(blank=False, null=False)
-    condition = models.CharField(max_length=20, blank=False, null=False)
+    voting_type=models.CharField(max_length=20, choices=types,verbose_name=("Voting Type"))
+    present_votes=models.IntegerField(blank=False, null=False,verbose_name=("Present Votes"))
+    condition = models.CharField(max_length=20, blank=False, null=False,verbose_name=("Condition"))
 
     class Meta:
         db_table = 'Quorums'
+        ordering = ['-id']
 
 class Votes(BaseModel):
     
@@ -400,21 +389,23 @@ class Votes(BaseModel):
         ("qualified",("qualified Majority")),
         ("unanimous",("Unanimous Vote Tab")),
     )
-    quorums = models.ForeignKey(Quorums,related_name="votes_detail",on_delete=models.CASCADE)
-    tabs = models.CharField(max_length=30, choices=tabs, default='qualified')
-    voting_type=models.CharField(max_length=30, choices=types)
-    majority=models.IntegerField(blank=False, null=False)
-    condition = models.CharField(max_length=30, blank=False, null=False)
-    basic_set=models.CharField(max_length=30, choices=cases)
-    tie_case= models.CharField(max_length=30, choices=cases)
+    quorums = models.ForeignKey(Quorums,related_name="votes_detail",on_delete=models.CASCADE,verbose_name=("Quorums"))
+    tabs = models.CharField(max_length=50, choices=tabs, default='qualified',verbose_name=("Tabs"))
+    voting_type=models.CharField(max_length=50, choices=types,verbose_name=("Voting Type"))
+    majority=models.IntegerField(blank=False, null=False,verbose_name=("Majority"))
+    condition = models.CharField(max_length=50, blank=False, null=False,verbose_name=("Condition"))
+    basic_set=models.CharField(max_length=50, choices=sets,verbose_name=("Basic Set"))
+    tie_case= models.CharField(max_length=50, choices=cases,verbose_name=("Tie Case"))
     
     class Meta:
         db_table = 'Votes'
+        ordering = ['-id']
 
 class Mettingtemplate(BaseModel):
-    quorum = models.ForeignKey(Quorums,related_name="quorum",on_delete=models.CASCADE)
-    agenda = models.ForeignKey(Agenda,related_name="agenda",on_delete=models.CASCADE)
-    voting_circle = models.ForeignKey(Realestatepropertyowner,related_name="voting_circle",on_delete=models.CASCADE)
+    quorum = models.ForeignKey(Quorums,related_name="quorum",on_delete=models.CASCADE,verbose_name=("Quorums"))
+    agenda = models.ForeignKey(Agenda,related_name="agenda",on_delete=models.CASCADE,verbose_name=("Agenda"))
+    voting_circle = models.ForeignKey(Realestatepropertymanagement,related_name="voting_circle",on_delete=models.CASCADE,verbose_name=("Voting Circle"))
     
     class Meta:
         db_table = 'Mettingtemplate'
+        ordering = ['-id']

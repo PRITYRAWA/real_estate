@@ -8,3 +8,4 @@ from rest_framework import viewsets
 class MeetingScheduleViewSet(viewsets.ModelViewSet):
     queryset = MeetingSchedule.objects.all()
     serializer_class = MeetingScheduleSerializer
+
