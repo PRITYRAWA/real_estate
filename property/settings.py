@@ -33,9 +33,7 @@ env = environ.Env()
 DEBUG = env('DEBUG')
 SECRET_KEY = env('SECRET_KEY')
 
-
-ALLOWED_HOSTS = ["*"]
-
+ALLOWED_HOSTS = env.list("ALLOWED_HOSTS")
 
 # Application definition
 
@@ -71,7 +69,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-
+ROOT_URLCONF = 'property.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
