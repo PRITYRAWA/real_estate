@@ -18,6 +18,8 @@ class Realestateagents(BaseModel):
     class Meta:
         db_table = "Realestateagents"
         ordering = ['-id']
+    def __str__(self):
+        return self.name
 
 class Realestatepropertyowner(BaseModel):
     name = models.CharField(max_length=50,verbose_name=("Name"))   
@@ -40,6 +42,8 @@ class Realestatepropertyowner(BaseModel):
         db_table = "Realestatepropertyowner"
         ordering = ['-id']
 
+    def __str__(self):
+        return self.name
 class Realestatepropertytenant(BaseModel):
     STATUS_CHOICES = [
         ('ENQUIRER', 'Enquirer'),
@@ -59,7 +63,11 @@ class Realestatepropertytenant(BaseModel):
     country = CountryField( blank=True, null=True)  
     status = models.CharField(max_length=10,choices=STATUS_CHOICES,default='ENQUIRER')
 
-
+    class Meta:
+        db_table = "Realestatepropertytenant"
+        
+    def __str__(self):
+        return self.name
 
 class Messages(BaseModel):
     realestateagentid = models.ForeignKey('Realestateagents', models.DO_NOTHING)   
@@ -76,7 +84,7 @@ class Messages(BaseModel):
     attachments = models.TextField(blank=True, null=True)   
 
     class Meta:
-        db_table = "Messages"
+        db_table = "Messages"  
 
 class Messagecomments(BaseModel):
     messageid = models.ForeignKey('Messages', models.DO_NOTHING)   
@@ -95,9 +103,9 @@ class Messagerecipients(BaseModel):
 
     class Meta:
         db_table = "Messagerecipients" 
-
+    
 class Realestateproperties(BaseModel):
-    realestateagentid = models.ForeignKey(Realestateagents, models.DO_NOTHING,verbose_name=("Agent Id"))   
+    realestateagentid = models.ForeignKey(Realestateagents, models.DO_NOTHING,verbose_name=("Agent Id"),null=True,blank=True)   
     name = models.CharField(max_length=50,verbose_name=("Name"))   
     street = models.CharField(max_length=100,verbose_name=("Street"))   
     zip = models.CharField(max_length=10,verbose_name=("Zip"))   
@@ -111,6 +119,9 @@ class Realestateproperties(BaseModel):
         db_table = "Realestateproperties" 
         ordering = ['-id']
 
+    def __str__(self):
+        return self.name
+    
 class Feedbacks(BaseModel):
     comment = models.CharField(db_column='Comment', max_length=500,   )   
     class Meta:
@@ -125,7 +136,7 @@ class Languages(BaseModel):
 
     class Meta:
         db_table = 'Languages'
-
+    
 class Localestringresources(BaseModel):
     id = models.AutoField(db_column='Id', primary_key=True)   
     name = models.TextField(db_column='Name',   )   
@@ -159,7 +170,7 @@ class Realestatepropertiessubgroup(BaseModel):
         ordering = ['-id']
 
 class Realestateobjects(BaseModel):
-    realestatepropertyid = models.ForeignKey(Realestateproperties,related_name="objects_detail",on_delete=models.CASCADE)
+    realestatepropertyid = models.ForeignKey(Realestateproperties,related_name="objects_detail",on_delete=models.CASCADE,null=True,blank=True)
     objectusagetypeid = models.IntegerField()   
     name = models.CharField(max_length=50)   
     description = models.CharField(max_length=100)   
@@ -173,6 +184,9 @@ class Realestateobjects(BaseModel):
     class Meta:
         db_table = 'Realestateobjects'
         ordering = ['-id']
+    def __str__(self):
+        return self.name
+    
 #object detail model
 class Realestateobjectsdetail(BaseModel):
     object_code = models.CharField(max_length=100,null=True,blank=True,verbose_name=("Object Code"))
@@ -180,7 +194,7 @@ class Realestateobjectsdetail(BaseModel):
     related_object = models.ForeignKey(Realestateobjects, on_delete=models.CASCADE,null=True,blank=True,verbose_name=("Related Object"))
     related_property = models.ForeignKey(Realestateproperties, on_delete=models.CASCADE,null=True,blank=True,verbose_name=("Related Property"))
     objectName = models.TextField(verbose_name=("Object Name"))
-    related_detail = models.ForeignKey('Realestateobjectsdetail', on_delete=models.CASCADE, null=True, blank=True,verbose_name=("Related Detail"))
+    related_detail = models.ForeignKey('Realestateobjectsdetail', on_delete=models.CASCADE, null=True, blank=True,verbose_name=("Related Detail"),related_name='child_details')
     new = models.BooleanField(blank=True,null=True,verbose_name=("New"))
     inorder = models.BooleanField(blank=True,null=True,verbose_name=("In Order"))
     normal_wear = models.BooleanField(blank=True,null=True,verbose_name=("Normal Wear"))
@@ -191,17 +205,21 @@ class Realestateobjectsdetail(BaseModel):
         db_table = 'RealEstateObjectsDetails'
         ordering = ['-id']
     def __str__(self):
-        return f"Details for {self.objectName}"
+        return self.objectName
 
 class Realestatekeyhandover(BaseModel):
     property = models.ForeignKey(Realestateproperties,on_delete=models.CASCADE, null=True, blank=True) 
     object = models.ForeignKey(Realestateobjects,on_delete=models.CASCADE, null=True, blank=True) 
-    photo = models.ImageField(upload_to='key_photos/')
+    photo = models.FileField(upload_to='key_photos/')
     count = models.IntegerField(default=0)
     description = models.TextField()
     name = models.CharField(max_length=300,null=True, blank=True)
 
+    class Meta:
+        db_table = 'Keys'
 
+    def __str__(self):
+        return self.name
 
 class Realestatemeterhandover(BaseModel):
     UNIT_CHOICES = [
@@ -214,6 +232,7 @@ class Realestatemeterhandover(BaseModel):
     COMPANY_CHOICES = [
         ('abc','abc')
     ]
+    name = models.CharField(max_length=300,null=True, blank=True)
     property = models.ForeignKey(Realestateproperties,on_delete=models.CASCADE, null=True, blank=True) 
     object = models.ForeignKey(Realestateobjects,on_delete=models.CASCADE, null=True, blank=True) 
     meterno = models.CharField(max_length=200,null=True,blank=True)
@@ -222,6 +241,13 @@ class Realestatemeterhandover(BaseModel):
     whochange = models.CharField(max_length=200,null=True,blank=True)
     company = models.CharField(max_length=100,choices=COMPANY_CHOICES,null=True,blank=True)
     description = models.TextField(null=True,blank=True)
+
+    class Meta:
+        db_table = 'meters'
+
+    def __str__(self):
+        return self.name
+
 
 class Realestatepropertymanagement(BaseModel):
     realestatepropertyid = models.OneToOneField(Realestateproperties, models.DO_NOTHING,verbose_name=_("Property") ) 
@@ -237,6 +263,18 @@ class Realestatepropertymanagement(BaseModel):
    
 
 class Realestateserviceproviders(BaseModel):
+    realestateagentid = models.ForeignKey(Realestateagents, models.DO_NOTHING,null=True,blank=True)   
+    name = models.CharField(max_length=50)   
+    field = models.CharField(max_length=50, blank=True, null=True)   
+    languageid = models.IntegerField()   
+    contactname = models.TextField(blank=True, null=True)   
+    phonenumber = models.CharField(max_length=30)   
+    email = models.CharField(max_length=320)   
+    street = models.CharField(max_length=100)   
+    zip = models.CharField(max_length=10)   
+    city = models.CharField(max_length=50)   
+    country = CountryField( blank=True, null=True)  
+    isactive = models.BooleanField(default=False)   
     realestateagentid = models.ForeignKey(Realestateagents, models.DO_NOTHING,verbose_name=("Agent Id"))   
     name = models.CharField(max_length=50,verbose_name=("Name"))   
     field = models.CharField(max_length=50, blank=True, null=True,verbose_name=("Field")) 

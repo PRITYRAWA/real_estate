@@ -6,14 +6,14 @@ class RealestateobjectSerializer(serializers.ModelSerializer):
         model = Realestateobjects
         exclude = ('created_at', 'updated_at', 'createdby', 'lastmodifiedby')
 
-class RealestatepropertySerializer(serializers.ModelSerializer):
-    objects_detail=RealestateobjectSerializer(many=True)
 
+class RealestatepropertySerializer(serializers.ModelSerializer):
+    objects_detail=RealestateobjectSerializer(many=True,read_only=True)
+    
     class Meta:
         model = Realestateproperties
         fields = (
             "id",
-            "realestateagentid",
             "name",
             "street",
             "zip",
@@ -24,6 +24,15 @@ class RealestatepropertySerializer(serializers.ModelSerializer):
             "objects_detail",
             
         )
+
+    def create(self, validated_data):
+        realestatepropertyobjects_detail = validated_data.pop('objects_detail', None)
+        realestateproperty = Realestateproperties.objects.create(**validated_data)
+
+        if realestatepropertyobjects_detail:
+            Realestateobjects.objects.create(realestatepropertyid=realestateproperty, **realestatepropertyobjects_detail[0])
+
+        return realestateproperty
 
 class RealestateagentSerializer(serializers.ModelSerializer):
     class Meta:
@@ -115,12 +124,32 @@ class Subgroupserializer(serializers.ModelSerializer):
         model = Realestatepropertiessubgroup
         exclude = ('created_at', 'updated_at', 'createdby', 'lastmodifiedby')
 
-class RealEstateObjectsDetailsSerializer(serializers.ModelSerializer):
+# class RealEstateObjectsDetailsSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = Realestateobjectsdetail
+#         exclude = ('created_at', 'updated_at', 'createdby', 'lastmodifiedby')
+    
+class RealEstateKeysSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Realestateobjectsdetail
-        fields = '__all__'  
+        model = Realestatekeyhandover
+        exclude = ('created_at', 'updated_at', 'createdby', 'lastmodifiedby')    
 
 class Propertymanagementserializer(serializers.ModelSerializer):
     class Meta:
         model = Realestatepropertymanagement
         exclude = ('created_at', 'updated_at', 'createdby', 'lastmodifiedby')
+class RealEstateMeterssSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Realestatemeterhandover
+        exclude = ('created_at', 'updated_at', 'createdby', 'lastmodifiedby')
+
+class RealestateobjectsdetailitemSerializer(serializers.ModelSerializer):
+    child_details = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Realestateobjectsdetail
+        fields = '__all__'
+
+    def get_child_details(self, obj):
+        child_details = Realestateobjectsdetail.objects.filter(related_detail=obj)
+        return RealestateobjectsdetailitemSerializer(child_details, many=True).data

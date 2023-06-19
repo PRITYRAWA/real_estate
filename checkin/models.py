@@ -30,7 +30,7 @@ class CheckInOut(BaseModel):
     check_out_date = models.DateField()
     check_out_time = models.TimeField()
     inspection_date_time = models.DateTimeField()
-    object_details = models.ManyToManyField(Realestateobjectsdetail,null=True,blank=True)
+    object_details = models.ManyToManyField(Realestateobjectsdetail)
     # object_detail_list = models.ForeignKey('ObjectListInspection', on_delete=models.CASCADE, null=True, blank=True)
 
     def __str__(self):
