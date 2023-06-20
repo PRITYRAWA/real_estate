@@ -13,11 +13,16 @@ class MeetingParticipantSerializer(serializers.ModelSerializer):
         model = MeetingParticipant
         exclude = ('created_at', 'updated_at', 'createdby', 'lastmodifiedby')
 
+class VotingCircleSerializer(serializers.ModelSerializer):
+    
+    class Meta:
+        model = MeetingVotingCircle
+        exclude = ('created_at', 'updated_at', 'createdby', 'lastmodifiedby')
 
 class MeetingScheduleSerializer(serializers.ModelSerializer):
     meeting_agendas = MeetingAgendaSerializer(many=True)
     meeting_participants = MeetingParticipantSerializer(many=True)
-    
+    meeting_votingcircles = VotingCircleSerializer(many=True)
     class Meta:
         model = MeetingSchedule
         fields = (
@@ -44,5 +49,6 @@ class MeetingScheduleSerializer(serializers.ModelSerializer):
             "information_for_current_meeting",
             "quorum",
             "meeting_agendas",
-            "meeting_participants"
+            "meeting_participants",
+            "meeting_votingcircles"
         )
