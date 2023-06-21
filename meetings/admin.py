@@ -11,10 +11,14 @@ class MeetingParticipantsInline(admin.TabularInline):
     model = MeetingParticipant
     extra = 1
 
+class MeetingVotingInline(admin.TabularInline):
+    model = MeetingVotingCircle
+    extra = 1
+
 @admin.register(MeetingSchedule)
 class CustomAgenda(admin.ModelAdmin):
     
     inlines = [
-        MeetingAgendasInline,MeetingParticipantsInline
+        MeetingAgendasInline,MeetingVotingInline
     ]
 
