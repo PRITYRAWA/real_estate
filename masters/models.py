@@ -3,6 +3,8 @@ from django_countries.fields import CountryField
 from foundation.models import BaseModel
 from django.utils.translation import gettext_lazy as _
 
+
+
 class Realestateagents(BaseModel):
     prefix = models.CharField(max_length=5,verbose_name=("Prefix")) 
     name = models.CharField(max_length=50,verbose_name=("Name")) 
@@ -19,7 +21,7 @@ class Realestateagents(BaseModel):
         db_table = "Realestateagents"
         ordering = ['-id']
     def __str__(self):
-        return self.name
+        return str(self.name)
 
 class Realestatepropertyowner(BaseModel):
     name = models.CharField(max_length=50,verbose_name=("Name"))   
@@ -43,7 +45,8 @@ class Realestatepropertyowner(BaseModel):
         ordering = ['-id']
 
     def __str__(self):
-        return self.name
+        return str(self.name)
+    
 class Realestatepropertytenant(BaseModel):
     STATUS_CHOICES = [
         ('ENQUIRER', 'Enquirer'),
@@ -52,22 +55,23 @@ class Realestatepropertytenant(BaseModel):
         ('VACATOR', 'Vacator'),
     ]
     userid = models.CharField( max_length=36, blank=True, null=True)  
-    realestatepersontypeid = models.IntegerField()  
-    name = models.CharField(max_length=50)  
-    surname = models.CharField(max_length=100)  
+    realestatepersontypeid = models.IntegerField(null=True,blank=True)  
+    name = models.CharField(max_length=50,null=True,blank=True)  
+    surname = models.CharField(max_length=100,null=True,blank=True)  
     email = models.CharField(max_length=320, blank=True, null=True)  
     phonenumber = models.CharField(max_length=30, blank=True, null=True)  
-    street = models.CharField(max_length=100)  
+    country = CountryField( blank=True, null=True,verbose_name=("Country"))    
+    street = models.CharField(max_length=100,null=True,blank=True)  
     zip = models.CharField(max_length=10, blank=True, null=True)  
     city = models.CharField(max_length=50, blank=True, null=True)  
-    country = CountryField( blank=True, null=True)  
-    status = models.CharField(max_length=10,choices=STATUS_CHOICES,default='ENQUIRER')
+    status = models.CharField(max_length=10,choices=STATUS_CHOICES,default='ENQUIRER',null=True,blank=True)
 
     class Meta:
         db_table = "Realestatepropertytenant"
-        
+        ordering = ['-id']
+      
     def __str__(self):
-        return self.name
+        return str(self.name)
 
 class Messages(BaseModel):
     realestateagentid = models.ForeignKey('Realestateagents', models.DO_NOTHING)   
@@ -85,14 +89,17 @@ class Messages(BaseModel):
 
     class Meta:
         db_table = "Messages"  
+        ordering = ['-id']
 
 class Messagecomments(BaseModel):
-    messageid = models.ForeignKey('Messages', models.DO_NOTHING)   
+    messageid = models.ForeignKey('Messages', models.DO_NOTHING,null=True,blank=True)   
     realestateownerid = models.ForeignKey('Realestatepropertyowner', models.DO_NOTHING)   
-    comment = models.CharField(max_length=500)   
+    tenantcomment = models.CharField(max_length=500,null=True,blank=True)   
+    comment = models.CharField(max_length=500,null=True,blank=True)   
 
     class Meta:
         db_table = "Messagecomments" 
+        ordering = ['-created_at']
 
 
 class Messagerecipients(BaseModel):
@@ -103,7 +110,9 @@ class Messagerecipients(BaseModel):
 
     class Meta:
         db_table = "Messagerecipients" 
+        ordering = ['-created_at']
     
+
 class Realestateproperties(BaseModel):
     realestateagentid = models.ForeignKey(Realestateagents, models.DO_NOTHING,verbose_name=("Agent Id"),null=True,blank=True)   
     name = models.CharField(max_length=50,verbose_name=("Name"))   
@@ -120,12 +129,13 @@ class Realestateproperties(BaseModel):
         ordering = ['-id']
 
     def __str__(self):
-        return self.name
+        return str(self.name)
     
 class Feedbacks(BaseModel):
     comment = models.CharField(db_column='Comment', max_length=500,   )   
     class Meta:
         db_table = 'Feedbacks'
+        ordering = ['-id']
 
 
 class Languages(BaseModel):
@@ -136,7 +146,9 @@ class Languages(BaseModel):
 
     class Meta:
         db_table = 'Languages'
+        ordering = ['-id']
     
+
 class Localestringresources(BaseModel):
     id = models.AutoField(db_column='Id', primary_key=True)   
     name = models.TextField(db_column='Name',   )   
@@ -145,6 +157,7 @@ class Localestringresources(BaseModel):
 
     class Meta:
         db_table = 'LocaleStringResources'
+        ordering = ['-id']
 
 class Localizedproperties(BaseModel):
     id = models.AutoField(db_column='Id', primary_key=True)   
@@ -156,6 +169,7 @@ class Localizedproperties(BaseModel):
 
     class Meta:
         db_table = 'LocalizedProperties'
+        ordering = ['-id']
 
 #model created for subgroup details in meeting 
 class Realestatepropertiessubgroup(BaseModel):
@@ -185,7 +199,7 @@ class Realestateobjects(BaseModel):
         db_table = 'Realestateobjects'
         ordering = ['-id']
     def __str__(self):
-        return self.name
+        return str(self.name)
     
 #object detail model
 class Realestateobjectsdetail(BaseModel):
@@ -196,16 +210,17 @@ class Realestateobjectsdetail(BaseModel):
     objectName = models.TextField(verbose_name=("Object Name"))
     related_detail = models.ForeignKey('Realestateobjectsdetail', on_delete=models.CASCADE, null=True, blank=True,verbose_name=("Related Detail"),related_name='child_details')
     new = models.BooleanField(blank=True,null=True,verbose_name=("New"))
-    inorder = models.BooleanField(blank=True,null=True,verbose_name=("In Order"))
-    normal_wear = models.BooleanField(blank=True,null=True,verbose_name=("Normal Wear"))
+    inorder = models.BooleanField(blank=True,null=True,verbose_name=("In Order"),default=False)
+    normal_wear = models.BooleanField(blank=True,null=True,verbose_name=("Normal Wear"),default=False)
     notes = models.TextField(blank=True, null=True,verbose_name=("Notes"))
     image = models.ImageField(upload_to='object_images_master/',verbose_name=("Image"))
     
     class Meta:
-        db_table = 'RealEstateObjectsDetails'
+        db_table = 'Realestateobjectsdetail'
         ordering = ['-id']
+
     def __str__(self):
-        return self.objectName
+        return str(self.objectName)
 
 class Realestatekeyhandover(BaseModel):
     property = models.ForeignKey(Realestateproperties,on_delete=models.CASCADE, null=True, blank=True) 
@@ -216,10 +231,11 @@ class Realestatekeyhandover(BaseModel):
     name = models.CharField(max_length=300,null=True, blank=True)
 
     class Meta:
-        db_table = 'Keys'
+        db_table = 'Realestatekeyhandover'
+        ordering = ['-id']
 
     def __str__(self):
-        return self.name
+        return str(self.name)
 
 class Realestatemeterhandover(BaseModel):
     UNIT_CHOICES = [
@@ -230,23 +246,32 @@ class Realestatemeterhandover(BaseModel):
         ('steres', 'steres'),
     ]
     COMPANY_CHOICES = [
-        ('abc','abc')
+        ('company1','company1'),
+        ('company2','company2'),
+        ('company3','company3'),
+    ]
+    WHO_CHANGES = [
+        ('user','user'),
+        ('admin','admin'),
     ]
     name = models.CharField(max_length=300,null=True, blank=True)
     property = models.ForeignKey(Realestateproperties,on_delete=models.CASCADE, null=True, blank=True) 
     object = models.ForeignKey(Realestateobjects,on_delete=models.CASCADE, null=True, blank=True) 
     meterno = models.CharField(max_length=200,null=True,blank=True)
     reading = models.CharField(max_length=200,null=True,blank=True)
+    photo = models.FileField(upload_to='meter_photos/',null=True,blank=True)
+    count = models.IntegerField(default=0)
     unit = models.CharField(max_length=10,choices=UNIT_CHOICES,default='Kwh',null=True,blank=True)
-    whochange = models.CharField(max_length=200,null=True,blank=True)
+    whochange = models.CharField(max_length=200,choices=WHO_CHANGES,null=True,blank=True)
     company = models.CharField(max_length=100,choices=COMPANY_CHOICES,null=True,blank=True)
     description = models.TextField(null=True,blank=True)
 
     class Meta:
-        db_table = 'meters'
+        db_table = 'Realestatemeterhandover'
+        ordering = ['-id']
 
     def __str__(self):
-        return self.name
+        return str(self.name)
 
 
 class Realestatepropertymanagement(BaseModel):
@@ -290,6 +315,7 @@ class Realestateserviceproviders(BaseModel):
     class Meta:
         db_table = 'Realestateserviceproviders'
         ordering = ['-id']
+
 class Ticketmessages(BaseModel):
     ticketid = models.ForeignKey('Tickets', models.DO_NOTHING)   
     realestapersonid = models.ForeignKey(Realestatepropertyowner, models.DO_NOTHING)   
@@ -299,6 +325,7 @@ class Ticketmessages(BaseModel):
 
     class Meta:
         db_table = 'Ticketmessages' 
+        ordering = ['-id']
 
 
 class Ticketoffers(BaseModel):
@@ -323,6 +350,7 @@ class Ticketoffers(BaseModel):
 
     class Meta:
         db_table = 'Ticketoffers' 
+        ordering = ['-id']
    
 
 class Ticketsequences(BaseModel):
@@ -331,6 +359,8 @@ class Ticketsequences(BaseModel):
 
     class Meta:
         db_table = 'Ticketsequences' 
+        ordering = ['-created_at']
+
 
 class Tickets(BaseModel):
     # id = models.CharField(db_column='Id', primary_key=True, max_length=36)   
@@ -354,6 +384,7 @@ class Tickets(BaseModel):
 
     class Meta:
         db_table = 'Tickets' 
+        ordering = ['-id']
 
 
 class Efmigrationshistory(BaseModel):
@@ -362,6 +393,7 @@ class Efmigrationshistory(BaseModel):
 
     class Meta:
         db_table = 'Efmigrationshistory' 
+        ordering = ['-created_at']
 
 class Sysdiagrams(BaseModel):
     name = models.CharField(max_length=128,   )
@@ -447,3 +479,192 @@ class Mettingtemplate(BaseModel):
     class Meta:
         db_table = 'Mettingtemplate'
         ordering = ['-id']
+
+class CommonFields(models.Model):
+    title = models.CharField(max_length=50, null=True, blank=True)
+    property = models.ForeignKey(Realestateproperties, on_delete=models.CASCADE, null=True, blank=True)
+    status = models.CharField(max_length=50, null=True, blank=True)
+    Ticket_responsible = models.CharField(max_length=50, null=True, blank=True)
+    Current_process_step = models.CharField(max_length=100,null=True,blank=True)
+    object = models.ForeignKey(Realestateobjects,on_delete=models.CASCADE, max_length=100, null=True, blank=True)
+    tenant = models.ForeignKey(Realestatepropertytenant,on_delete=models.CASCADE, max_length=100, null=True, blank=True)
+    duedate = models.DateField(verbose_name="due_date",null=True,blank=True)
+    descriptions = models.TextField(null=True,blank=True)
+    # attachments = models.FileField(upload_to='manager', null=True, blank=True)
+
+    class Meta:
+        abstract = True
+
+
+class ExtendedBaseModel(BaseModel, CommonFields):
+    class Meta:
+        abstract = True
+
+
+class Reportdamage(ExtendedBaseModel):
+    TIME_CHOICES = (
+    ('MORNING', 'Morning (8 to 12)'),
+    ('AFTERNOON', 'Afternoon (13 to 17)'),
+    ('FULL_DAY', 'Full day (8 to 17)'),
+    )
+    CONTACT_PERSON_CHOICES = (
+    ('SITE_CONTACT', 'Contact person on site'),
+    ('LETTER_BOX_CARETAKER', 'Letter box caretaker'),
+    ('NEIGHBOR_DEPOSIT', 'At the neighbour\'s/deposit'),
+    )
+    date = models.DateField()
+    time_range = models.CharField(max_length=20, choices=TIME_CHOICES)
+    contact_person = models.CharField(max_length=30, choices=CONTACT_PERSON_CHOICES)
+    KeyLocation = models.CharField(max_length=250,null=True,blank=True)
+
+    class Meta:
+        db_table = 'Reportdamage'
+        ordering = ['-id']
+
+
+
+class Generalenquiries(ExtendedBaseModel):
+    attachments = models.FileField(upload_to='manager_enquiries',null=True,blank=True)
+
+    class Meta:
+        db_table = 'Generalenquiries'
+        ordering = ['-id']
+
+class Invoicequestion(ExtendedBaseModel):
+    refrence_number = models.CharField(max_length=100,null=True,blank=True)
+    invoice_amount = models.CharField(max_length=100,null=True,blank=True)
+    question = models.TextField(null=True,blank=True)
+    attachments = models.FileField(upload_to='manager_invoice',null=True,blank=True)
+
+    class Meta:
+        db_table = 'Invoicequestion'
+        ordering = ['-id']
+
+class Petrequest(ExtendedBaseModel):
+    PET_CHOICES = (
+    ('cat_inside', 'Cat (inside)'),
+    ('cat_in_out', 'Cat (inside and outside)'),
+    ('dog', 'Dog'),
+    ('fish', 'Fish (aquarium)'),
+    ('reptiles', 'Reptiles (terrarium)'),
+    ('birds', 'Birds'),
+    ('other_pets', 'Other pets'),
+    )
+    pet_type = models.CharField(max_length=20, choices=PET_CHOICES)
+    quantity = models.CharField(max_length=100,null=True,blank=True)
+    attachments = models.FileField(upload_to='pet_request',null=True,blank=True)
+
+    class Meta:
+        db_table = 'Petrequest'
+        ordering = ['-id']
+
+class Orderkey(BaseModel):
+    KEY_CHOICES = (
+    ('house_apartment', 'House and apartment/property door'),
+    ('front_door', 'Front door'),
+    ('object_door', 'Object door'),
+    ('mailbox', 'Mailbox'),
+    ('garage', 'Garage'),
+    ('other', 'Other'),
+    )
+    REASON_CHOICES = (
+    ('loss', 'Loss (can no longer be found)'),
+    ('defective', 'Defective (key present but defective)'),
+    ('additional_key', 'Additional Key'),
+    ('other', 'Other (enter reason in remarks)'),
+    )
+
+  
+    key_type = models.CharField(max_length=20, choices=KEY_CHOICES)
+    quantity = models.CharField(max_length=100,null=True,blank=True)
+    locking_system = models.CharField(max_length=100,null=True,blank=True)
+    serial_number = models.CharField(max_length=100,null=True,blank=True)
+    order_reason = models.CharField(max_length=20, choices=REASON_CHOICES)
+    attachments = models.FileField(upload_to='order-key',null=True,blank=True)
+
+    class Meta:
+        db_table = 'Orderkey'
+        ordering = ['-id']
+
+class Paymentslips(BaseModel):
+    MONTH_CHOICES = (
+        ('1', 'January'),
+        ('2', 'February'),
+        ('3', 'March'),
+        ('4', 'April'),
+        ('5', 'May'),
+        ('6', 'June'),
+        ('7', 'July'),
+        ('8', 'August'),
+        ('9', 'September'),
+        ('10', 'October'),
+        ('11', 'November'),
+        ('12', 'December'),
+    )
+
+    YEAR_CHOICES = (
+        ('2022', '2022'),
+        ('2023', '2023'),
+        ('2024', '2024'),
+        ('2025', '2025'),
+        ('2026', '2026'),
+        ('2027', '2027'),
+        ('2028', '2028'),
+        ('2029', '2029'),
+        ('2030', '2030'),
+        # Add more years as needed
+    )
+    PAYMENT_SLIP_DELIVERY_CHOICES = (
+        ('app', 'Via app'),
+        ('email', 'By e-mail'),
+        ('mail', 'By mail'),
+    )
+
+    from_month = models.CharField(max_length=50,choices=MONTH_CHOICES,null=True,blank=True)
+    from_year = models.CharField(max_length=50,choices=YEAR_CHOICES,null=True,blank=True)
+    to_month = models.CharField(max_length=50,choices=MONTH_CHOICES,null=True,blank=True)
+    to_year =  models.CharField(max_length=50,choices=YEAR_CHOICES,null=True,blank=True)
+    payment_slip_delivery = models.CharField(max_length=10, choices=PAYMENT_SLIP_DELIVERY_CHOICES)
+    attachments = models.FileField(upload_to='payment-slip',null=True,blank=True)
+
+    class Meta:
+        db_table = 'Paymentslips'
+        ordering = ['-id']
+
+class Bankdetails(ExtendedBaseModel):
+    valid = models.DateField()
+    account_name = models.CharField(max_length=200)
+    zip = models.CharField(max_length=100)
+    city = models.CharField(max_length=200)
+    iban = models.CharField(max_length=200)
+    swift = models.CharField(max_length=200)
+    bank_name = models.CharField(max_length=150)
+    place = models.CharField(max_length=200)
+    
+    class Meta:
+        db_table = 'Bankdetails'
+        ordering = ['-id']
+
+class Orderbadge(ExtendedBaseModel):
+    ORDER_CHOICES = [
+        ('complete_set', 'I would like a complete set of new badges with the inscription.'),
+        ('replacement', 'I wish only the replacement of the sign at certain locations.'),
+    ]
+    VALID_FROM_CHOICES = [
+        ('assembly', 'Valid From (assembly)'),
+        ('asap', 'As Soon As Possible'),
+        ('date', 'Valid From Date'),
+    ]
+    order_type = models.CharField(
+        max_length=20,
+        choices=ORDER_CHOICES,
+        default='complete_set',
+        verbose_name='Order Type',
+    )
+    valid_from = models.CharField(
+        max_length=20,
+        choices=VALID_FROM_CHOICES,
+        default='assembly',
+        verbose_name='Valid From'
+    )
+    labeling = models.CharField(max_length=300)
