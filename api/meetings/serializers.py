@@ -41,6 +41,8 @@ class VotingCircleSerializer(serializers.ModelSerializer):
             "meeting",
             "participant_name",
             "email",
+            "manageby",
+            "manageby_id"
        
         )
 
@@ -77,6 +79,7 @@ class MeetingScheduleSerializer(serializers.ModelSerializer):
             "quorum",
             "meeting_agendas",
             "qr_code",
+            "status",
             "meeting_participants",
            "meeting_votingcircles"
         )
