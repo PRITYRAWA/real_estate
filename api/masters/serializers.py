@@ -74,7 +74,10 @@ class RealestatepersonSerializer(serializers.ModelSerializer):
         model = Realestatepropertyowner
         exclude = ('created_at', 'updated_at', 'createdby', 'lastmodifiedby')
 
+
+
 class RealestatetenantSerializer(serializers.ModelSerializer):
+    
     class Meta:
         model = Realestatepropertytenant
         exclude = ('created_at', 'updated_at', 'createdby', 'lastmodifiedby')
@@ -143,7 +146,7 @@ class RealEstateMeterssSerializer(serializers.ModelSerializer):
         model = Realestatemeterhandover
         exclude = ('created_at', 'updated_at', 'createdby', 'lastmodifiedby')
 
-class RealestateobjectsdetailitemSerializer(serializers.ModelSerializer):
+class RealestateobjectsdetailSerializer(serializers.ModelSerializer):
     child_details = serializers.SerializerMethodField()
 
     class Meta:
@@ -151,5 +154,19 @@ class RealestateobjectsdetailitemSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
     def get_child_details(self, obj):
-        child_details = Realestateobjectsdetail.objects.filter(related_detail=obj)
-        return RealestateobjectsdetailitemSerializer(child_details, many=True).data
+        if self.context.get('exclude_child_details'):
+            return []
+        child_details = obj.child_details.all()
+        serialized_child_details = self.__class__(child_details, many=True, context={'exclude_child_details': True}).data
+        return serialized_child_details
+
+    def to_representation(self, instance):
+        representation = super().to_representation(instance)
+        representation.pop('child_details')  # Remove child_details from the main representation
+        representation['child_details'] = self.get_child_details(instance)
+        return representation
+
+class RealEstateObjectsDetailsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Realestateobjectsdetail
+        fields = '__all__' 

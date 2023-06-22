@@ -1,7 +1,9 @@
 from django.db import models
-from masters.models import Realestateobjects,Realestateobjectsdetail
+from masters.models import Realestateobjects,Realestateobjectsdetail,Realestatepropertytenant,Realestateproperties,Realestatekeyhandover,Realestatemeterhandover
 from foundation.models import BaseModel,CustomUser
 import uuid
+from django.contrib.postgres.fields import ArrayField
+import json
 # # user registration model
 # class CustomUser(AbstractBaseUser, PermissionsMixin):
 #     full_name = models.CharField(max_length=255)
@@ -22,19 +24,19 @@ import uuid
 
 # checkin model
 class CheckInOut(BaseModel):
-    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    user = models.ForeignKey(Realestatepropertytenant, on_delete=models.CASCADE)
     service_ticket_number = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
     object_check_in = models.ForeignKey(Realestateobjects, on_delete=models.CASCADE, null=True, blank=True)
-    check_in_date = models.DateField()
-    check_in_time = models.TimeField()
-    check_out_date = models.DateField()
-    check_out_time = models.TimeField()
-    inspection_date_time = models.DateTimeField()
-    object_details = models.ManyToManyField(Realestateobjectsdetail)
-    # object_detail_list = models.ForeignKey('ObjectListInspection', on_delete=models.CASCADE, null=True, blank=True)
+    check_in_date = models.DateField(null=True, blank=True)
+    check_in_time = models.TimeField(null=True, blank=True)
+    check_out_date = models.DateField(null=True, blank=True)
+    check_out_time = models.TimeField(null=True, blank=True)
+    inspection_date_time = models.DateTimeField(null=True, blank=True)
+    # object_details = models.ManyToManyField(Realestateobjectsdetail)
+    object_detail_list = models.ForeignKey('ObjectListInspection', on_delete=models.CASCADE, null=True, blank=True)
 
     def __str__(self):
-        return f"{self.user.full_name} checked into {self.object_check_in}"
+        return f"{self.user.name} checked into {self.object_check_in}"
 
 class GeneralInspection(BaseModel):
     #  fk service id link with check in&out, 
@@ -61,3 +63,56 @@ class ObjectListInspection(BaseModel):
     image = models.ImageField(upload_to='object_images_teenant/',null=True,blank=True)   
     def __str__(self):
         return f'Object {self.id}'
+class StringArrayField(models.TextField):
+    def from_db_value(self, value, expression, connection):
+        if value is None:
+            return []
+        return json.loads(value)
+
+    def to_python(self, value):
+        if isinstance(value, list):
+            return value
+        if value is None:
+            return []
+        return json.loads(value)
+
+    def get_prep_value(self, value):
+        if value is None:
+            return value
+        return json.dumps(value)
+
+class Realestatekey(BaseModel):
+    checkin = models.ForeignKey(CheckInOut,on_delete=models.CASCADE, null=True, blank=True) 
+    obj = models.ForeignKey(Realestatekeyhandover,on_delete=models.CASCADE, null=True, blank=True) 
+    photos = StringArrayField(null=True, blank=True)
+    count = models.IntegerField(default=0)
+    description = models.TextField()
+    name = models.CharField(max_length=300,null=True, blank=True)
+
+    class Meta:
+        db_table = 'Realestatekey'
+        ordering = ['-id']
+
+    def __str__(self):
+        return str(self.name)
+    
+# class Realestatemeter(BaseModel):
+#     checkin = models.ForeignKey(CheckInOut,on_delete=models.CASCADE, null=True, blank=True) 
+#     obj = models.ForeignKey(Realestatemeterhandover,on_delete=models.CASCADE, null=True, blank=True) 
+#     photo = models.FileField(upload_to='keys_photos/',null=True,blank=True)
+#     count = models.IntegerField(default=0)
+#     description = models.TextField()
+#     name = models.CharField(max_length=300,null=True, blank=True)
+
+#     class Meta:
+#         db_table = 'Realestatemeter'
+#         ordering = ['-id']
+
+#     def __str__(self):
+#         return str(self.name)
+
+class PDFReport(models.Model):
+    pdf_file = models.FileField(upload_to='pdf_reports/')
+
+    def __str__(self):
+        return self.pdf_file.name

@@ -3,8 +3,13 @@ from rest_framework import viewsets
 from django_filters.rest_framework import DjangoFilterBackend
 from .serializers import *
 from masters.models import *
+from checkin.models import *
 from rest_framework.views import APIView
 from rest_framework.response import Response
+from django.http import HttpResponse
+import datetime
+from masters.utils import render_to_pdf #created in step 4
+
 # Create your views here.
 
 class RealestatepropertyViewSet(viewsets.ModelViewSet):
@@ -69,10 +74,11 @@ class RealestatepersonsViewSet(viewsets.ModelViewSet):
 
 class RealestatepropertytenantViewSet(viewsets.ModelViewSet):
     serializer_class = RealestatetenantSerializer
+    queryset = Realestatepropertytenant.objects.all()
 
-    def get_queryset(self):
-        queryset = Realestatepropertytenant.objects.filter(status="OCCUPIED")
-        return queryset
+    # def get_queryset(self):
+    #     queryset = Realestatepropertytenant.objects.filter(status="OCCUPIED")
+    #     return queryset
 
     http_method_names = ['get', 'post', 'put', 'patch', 'delete']
 
@@ -124,13 +130,38 @@ class RealestatemetersViewSet(viewsets.ModelViewSet):
     serializer_class = RealEstateMeterssSerializer
     http_method_names = ['get', 'post', 'put', 'patch', 'delete']
 
-class RealestateObjectDetailItemsViewSet(viewsets.ModelViewSet):
+class RealestateobjectsdetailViewSet(viewsets.ModelViewSet):
     queryset = Realestateobjectsdetail.objects.all()
-    serializer_class = RealestateobjectsdetailitemSerializer
+    serializer_class = RealestateobjectsdetailSerializer
 
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        queryset = queryset.filter(related_detail=None)  # Exclude self-related items
+        return queryset
 
 class PropertyManagementViewSet(viewsets.ModelViewSet):
     # end point to access Realestatepersons Model.
     queryset = Realestatepropertymanagement.objects.all()
     serializer_class = Mettingtemplateserializer
+    
+
+
+
+class RealestateObjectDetailItemsViewSet(viewsets.ModelViewSet):
+    serializer_class = RealEstateObjectsDetailsSerializer
+    queryset = Realestateobjectsdetail.objects.all()
+    lookup_field = 'id'  # Specify the lookup field for detail view
+
+    def get_queryset(self):
+        # prop_id = self.request.query_params.get('propid')
+        obj_id = self.request.query_params.get('objectid')
+        obj_detail_id = self.request.query_params.get('objdetailid')
+        
+        try:
+            queryset = Realestateobjectsdetail.objects.filter( related_object=obj_id, related_detail=obj_detail_id)
+            print(queryset)
+            return queryset
+        except Realestateobjectsdetail.DoesNotExist:
+            return Realestateobjectsdetail.objects.none()
+    http_method_names = ['get', 'post', 'put', 'patch', 'delete']
     

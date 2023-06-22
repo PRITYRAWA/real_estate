@@ -20,14 +20,14 @@ router.register(r'tenant', RealestatepropertytenantViewSet,basename='property')
 router.register(r'meeting-template', MessagetemplateViewSet,basename="meeting-template")
 router.register(r'agendas', AgendaViewSet,basename="agendas")
 router.register(r'quroums', QuroumsViewSet,basename="quroums")
-router.register(r'objectdetailitems', RealestateObjectDetailItemsViewSet,basename='properties'),
+router.register(r'objectdetail', RealestateobjectsdetailViewSet,basename='properties'),
+router.register(r'objectdetailitem', RealestateObjectDetailItemsViewSet,basename='properties'),
 router.register(r'subgroup', SubgroupViewSet,basename="subgroup"),
 router.register(r'keys', RealestatekeysViewSet,basename="properties"),
 router.register(r'meters', RealestatemetersViewSet,basename="properties"),
 router.register(r'property-management', PropertyManagementViewSet,basename="property-management")
 
 urlpatterns = [
-        # path('objectdetailitems/', RealestateObjectDetailItemsAPIView.as_view(), name='realestate_objectdetailitems'),
 
 ]
 urlpatterns += router.urls
