@@ -225,9 +225,9 @@ class Realestateobjectsdetail(BaseModel):
 class Realestatekeyhandover(BaseModel):
     property = models.ForeignKey(Realestateproperties,on_delete=models.CASCADE, null=True, blank=True) 
     object = models.ForeignKey(Realestateobjects,on_delete=models.CASCADE, null=True, blank=True) 
-    photo = models.FileField(upload_to='key_photos/')
+    photo = models.FileField(upload_to='master_key_photos/',null=True, blank=True)
     count = models.IntegerField(default=0)
-    description = models.TextField()
+    description = models.TextField(null=True, blank=True)
     name = models.CharField(max_length=300,null=True, blank=True)
 
     class Meta:
@@ -259,7 +259,7 @@ class Realestatemeterhandover(BaseModel):
     object = models.ForeignKey(Realestateobjects,on_delete=models.CASCADE, null=True, blank=True) 
     meterno = models.CharField(max_length=200,null=True,blank=True)
     reading = models.CharField(max_length=200,null=True,blank=True)
-    photo = models.FileField(upload_to='meter_photos/',null=True,blank=True)
+    photo = models.FileField(upload_to='master_meter_photos/',null=True,blank=True)
     count = models.IntegerField(default=0)
     unit = models.CharField(max_length=10,choices=UNIT_CHOICES,default='Kwh',null=True,blank=True)
     whochange = models.CharField(max_length=200,choices=WHO_CHANGES,null=True,blank=True)
@@ -273,7 +273,23 @@ class Realestatemeterhandover(BaseModel):
     def __str__(self):
         return str(self.name)
 
+class FurnitureInspectionMaster(models.Model):
 
+    
+    CLEANING_TYPES = [
+        ('General Cleaning', 'General Cleaning'),
+        ('Sheer Cleaning', 'Sheer Cleaning'),
+        ('Linen Cleaning', 'Linen Cleaning'),
+    ]
+    property = models.ForeignKey(Realestateproperties,on_delete=models.CASCADE, null=True, blank=True) 
+    object = models.ForeignKey(Realestateobjects,on_delete=models.CASCADE, null=True, blank=True)    
+    cleaning_type = models.CharField(max_length=50, choices=CLEANING_TYPES)
+    photos = models.ImageField(upload_to='master_inspection_photos/',null=True,blank=True)
+    description = models.TextField()
+
+    def __str__(self):
+        return f"{self.cleaning_type} - {self.pk}"
+    
 class Realestatepropertymanagement(BaseModel):
     realestatepropertyid = models.OneToOneField(Realestateproperties, models.DO_NOTHING,verbose_name=_("Property") ) 
     realestateownerid = models.ForeignKey(Realestatepropertyowner, models.DO_NOTHING,verbose_name=_("Property Owner"))  
@@ -668,3 +684,27 @@ class Orderbadge(ExtendedBaseModel):
         verbose_name='Valid From'
     )
     labeling = models.CharField(max_length=300)
+
+class Tender(BaseModel):
+    net_rent_total_per_month = models.DecimalField(max_digits=10, decimal_places=2, null=True)
+    net_rent_total_per_year = models.DecimalField(max_digits=10, decimal_places=2, null=True)
+    incidental_cost = models.DecimalField(max_digits=10, decimal_places=2, null=True)
+    gross_rent_total_per_month = models.DecimalField(max_digits=10, decimal_places=2, null=True)
+    gross_rent_total_per_year = models.DecimalField(max_digits=10, decimal_places=2, null=True)
+    move_in_date = models.DateField(null=True)
+    display_rent_per_month = models.DecimalField(max_digits=10, decimal_places=2, null=True)
+    furnished = models.BooleanField(default=False)
+    unfurnished = models.BooleanField(default=False)
+    role_of_property = models.CharField(max_length=100, blank=True)
+    assigned_manager = models.CharField(max_length=100, blank=True)
+    contact_person = models.CharField(max_length=100, blank=True)
+    contact_number = models.CharField(max_length=20, blank=True)
+    start_date = models.DateField(null=True)
+    end_date = models.DateField(null=True)
+
+    class Meta:
+        db_table = 'Tender'
+        ordering = ['-id']
+
+    def __str__(self):
+        return str(self.role_of_property)

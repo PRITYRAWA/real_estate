@@ -25,7 +25,8 @@ router.register(r'objectdetailitem', RealestateObjectDetailItemsViewSet,basename
 router.register(r'subgroup', SubgroupViewSet,basename="subgroup"),
 router.register(r'keys', RealestatekeysViewSet,basename="properties"),
 router.register(r'meters', RealestatemetersViewSet,basename="properties"),
-router.register(r'property-management', PropertyManagementViewSet,basename="property-management")
+router.register(r'property-management', PropertyManagementViewSet,basename="property-management"),
+router.register(r'tender', TenderViewSet,basename="property-management")
 
 urlpatterns = [
 

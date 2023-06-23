@@ -32,7 +32,7 @@ env = environ.Env()
 # SECURITY WARNING: keep the secret key used in production secret!
 DEBUG = env('DEBUG')
 SECRET_KEY = env('SECRET_KEY')
-
+# ALLOWED_HOSTS = ["*"]
 ALLOWED_HOSTS = env.list("ALLOWED_HOSTS")
 
 # Application definition
@@ -70,7 +70,11 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
-
+# CORS_ORIGIN_ALLOW_ALL = True
+# CORS_ORIGIN_WHITELIST = [
+#     'http://localhost:5173',  # Replace with your friend's React server URL
+#     'http://localhost:8000',  # Replace with your friend's React server URL
+# ]
 ROOT_URLCONF = 'property.urls'
 TEMPLATES = [
     {

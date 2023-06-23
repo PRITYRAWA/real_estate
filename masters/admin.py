@@ -6,7 +6,7 @@ admin.site.register([
                      Feedbacks,  Realestateagents,
                      Messages, Messagecomments,Messagerecipients,
                      Realestateserviceproviders, Ticketmessages, Ticketoffers, Ticketsequences, Tickets,
-                     Efmigrationshistory,Languages, Realestateobjects,Realestateobjectsdetail,Realestatepropertytenant,Sysdiagrams,Realestatepropertiessubgroup,Realestatepropertymanagement,Realestatepropertyowner,Localestringresources,Localizedproperties,Realestatekeyhandover,Realestatemeterhandover])
+                     Efmigrationshistory,Languages,Realestatepropertytenant,Sysdiagrams,Realestatepropertiessubgroup,Realestatepropertymanagement,Realestatepropertyowner,Localestringresources,Localizedproperties,Realestatekeyhandover,Realestatemeterhandover])
 
 # creating parent child model for agenda
 class AgendaDetailsInline(admin.TabularInline):
@@ -44,4 +44,15 @@ class CustomProperties(admin.ModelAdmin):
     
     inlines = [
         ObjectsInline,
+    ]
+
+class ObjectsdetailInline(admin.TabularInline):
+    model = Realestateobjectsdetail
+    extra = 1
+
+@admin.register(Realestateobjects)
+class CustomProperties(admin.ModelAdmin):
+    
+    inlines = [
+        ObjectsdetailInline,
     ]

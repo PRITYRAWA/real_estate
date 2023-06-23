@@ -144,7 +144,9 @@ class PropertyManagementViewSet(viewsets.ModelViewSet):
     queryset = Realestatepropertymanagement.objects.all()
     serializer_class = Mettingtemplateserializer
     
-
+class TenderViewSet(viewsets.ModelViewSet):
+    queryset = Tender.objects.all()
+    serializer_class = TenderSerializer
 
 
 class RealestateObjectDetailItemsViewSet(viewsets.ModelViewSet):
@@ -158,7 +160,7 @@ class RealestateObjectDetailItemsViewSet(viewsets.ModelViewSet):
         obj_detail_id = self.request.query_params.get('objdetailid')
         
         try:
-            queryset = Realestateobjectsdetail.objects.filter( related_object=obj_id, related_detail=obj_detail_id)
+            queryset = Realestateobjectsdetail.objects.get( related_object=obj_id, related_detail=obj_detail_id)
             print(queryset)
             return queryset
         except Realestateobjectsdetail.DoesNotExist:
