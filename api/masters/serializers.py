@@ -170,3 +170,9 @@ class RealEstateObjectsDetailsSerializer(serializers.ModelSerializer):
     class Meta:
         model = Realestateobjectsdetail
         fields = '__all__' 
+    
+
+class TenderSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Tender
+        exclude = ('created_at', 'updated_at', 'createdby', 'lastmodifiedby')

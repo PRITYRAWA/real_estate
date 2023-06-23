@@ -2,25 +2,6 @@ from django.db import models
 from masters.models import Realestateobjects,Realestateobjectsdetail,Realestatepropertytenant,Realestateproperties,Realestatekeyhandover,Realestatemeterhandover
 from foundation.models import BaseModel,CustomUser
 import uuid
-from django.contrib.postgres.fields import ArrayField
-import json
-# # user registration model
-# class CustomUser(AbstractBaseUser, PermissionsMixin):
-#     full_name = models.CharField(max_length=255)
-#     email = models.EmailField(unique=True)
-#     is_active = models.BooleanField(default=True)
-#     is_staff = models.BooleanField(default=False)
-
-#     objects = UserManager()
-
-#     USERNAME_FIELD = 'email'
-#     REQUIRED_FIELDS = ['full_name']
-
-#     def __str__(self):
-#         return self.email
-    
-
-# inspection model  
 
 # checkin model
 class CheckInOut(BaseModel):
@@ -63,30 +44,13 @@ class ObjectListInspection(BaseModel):
     image = models.ImageField(upload_to='object_images_teenant/',null=True,blank=True)   
     def __str__(self):
         return f'Object {self.id}'
-class StringArrayField(models.TextField):
-    def from_db_value(self, value, expression, connection):
-        if value is None:
-            return []
-        return json.loads(value)
-
-    def to_python(self, value):
-        if isinstance(value, list):
-            return value
-        if value is None:
-            return []
-        return json.loads(value)
-
-    def get_prep_value(self, value):
-        if value is None:
-            return value
-        return json.dumps(value)
 
 class Realestatekey(BaseModel):
     checkin = models.ForeignKey(CheckInOut,on_delete=models.CASCADE, null=True, blank=True) 
     obj = models.ForeignKey(Realestatekeyhandover,on_delete=models.CASCADE, null=True, blank=True) 
-    photos = StringArrayField(null=True, blank=True)
+    photos = models.ImageField(upload_to='key_photos/',null=True,blank=True)
     count = models.IntegerField(default=0)
-    description = models.TextField()
+    description = models.TextField(null=True,blank=True)
     name = models.CharField(max_length=300,null=True, blank=True)
 
     class Meta:
@@ -96,23 +60,66 @@ class Realestatekey(BaseModel):
     def __str__(self):
         return str(self.name)
     
-# class Realestatemeter(BaseModel):
-#     checkin = models.ForeignKey(CheckInOut,on_delete=models.CASCADE, null=True, blank=True) 
-#     obj = models.ForeignKey(Realestatemeterhandover,on_delete=models.CASCADE, null=True, blank=True) 
-#     photo = models.FileField(upload_to='keys_photos/',null=True,blank=True)
-#     count = models.IntegerField(default=0)
-#     description = models.TextField()
-#     name = models.CharField(max_length=300,null=True, blank=True)
+class Realestatemeter(BaseModel):
+    checkin = models.ForeignKey(CheckInOut,on_delete=models.CASCADE, null=True, blank=True) 
+    # obj = models.ForeignKey(Realestatemeterhandover,on_delete=models.CASCADE, null=True, blank=True) 
+    photos = models.ImageField(upload_to='meter_photos/',null=True,blank=True)
+    count = models.IntegerField(default=0)
+    description = models.TextField()
+    name = models.CharField(max_length=300,null=True, blank=True)
 
-#     class Meta:
-#         db_table = 'Realestatemeter'
-#         ordering = ['-id']
+    class Meta:
+        db_table = 'Realestatemeter'
+        ordering = ['-id']
 
-#     def __str__(self):
-#         return str(self.name)
+    def __str__(self):
+        return str(self.name)
 
 class PDFReport(models.Model):
     pdf_file = models.FileField(upload_to='pdf_reports/')
 
     def __str__(self):
         return self.pdf_file.name
+    
+class FurnitureInspection(models.Model):
+
+    
+    CLEANING_TYPES = [
+        ('General Cleaning', 'General Cleaning'),
+        ('Sheer Cleaning', 'Sheer Cleaning'),
+        ('Linen Cleaning', 'Linen Cleaning'),
+    ]
+    checkin = models.ForeignKey(CheckInOut, models.DO_NOTHING,null=True,blank=True)   
+    cleaning_type = models.CharField(max_length=50, choices=CLEANING_TYPES)
+    photos = models.ImageField(upload_to='inspection_photos/',null=True,blank=True)
+    description = models.TextField()
+
+    def __str__(self):
+        return f"{self.cleaning_type} - {self.pk}"
+    
+class Checkincomments(BaseModel):
+    checkin = models.ForeignKey(CheckInOut, models.DO_NOTHING)   
+    tenantcomment = models.CharField(max_length=500,null=True,blank=True)   
+    comment = models.CharField(max_length=500,null=True,blank=True)   
+
+    class Meta:
+        db_table = "Checkincomments" 
+        ordering = ['-created_at']
+
+class RentalDeduction(models.Model):
+    DEDUCTION_TYPES = [
+    ('lump_sum', 'Lump Sum'),
+    ('tenant_expense', 'At the Tenant Expense'),
+    ('invoice_payment', 'Payment by Invoice'),
+    ('to_be_defined', 'To Be Defined'),
+    ]
+    title = models.CharField(max_length=50)
+    deduction_type = models.CharField(max_length=50, choices=DEDUCTION_TYPES)
+    photo = models.ImageField(upload_to='rental_deductions/')
+    description = models.TextField()
+    deadline = models.DateTimeField(auto_now_add=True)
+    checkinout = models.ForeignKey(CheckInOut, on_delete=models.CASCADE)
+    period = models.CharField(max_length=100,null=True,blank=True)   
+
+    def __str__(self):
+        return f"{self.title} - {self.pk}"

@@ -5,7 +5,9 @@ from rest_framework import serializers
 from checkin.models import *
 from django.contrib.auth import authenticate
 from api.masters.serializers import *
-
+from reportlab.pdfgen import canvas
+from django.conf import settings
+import os
 class GeneralInspectionSerializer(serializers.ModelSerializer):
     class Meta:
         model = GeneralInspection
@@ -26,6 +28,7 @@ class CheckInOutSerializer(serializers.ModelSerializer):
     user_name = serializers.SerializerMethodField()
     object_check_in = serializers.PrimaryKeyRelatedField(queryset=Realestateobjects.objects.all())
     property_check_in = serializers.SerializerMethodField()
+    # furniture_check_in = serializers.PrimaryKeyRelatedField(queryset=Realestateobjects.objects.all())
 
     class Meta:
         model = CheckInOut
@@ -50,6 +53,43 @@ class CheckInOutSerializer(serializers.ModelSerializer):
         return check_in_out
 
 class KeysSerializer(serializers.ModelSerializer):
+
     class Meta:
         model = Realestatekey
+        exclude = ('created_at', 'updated_at', 'createdby', 'lastmodifiedby')
+
+class MetersSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Realestatemeter
         exclude = ('created_at', 'updated_at', 'createdby', 'lastmodifiedby')    
+
+
+class FurnitureInspectionSerializer(serializers.ModelSerializer):
+    checkin = serializers.PrimaryKeyRelatedField(queryset=CheckInOut.objects.all())
+
+    class Meta:
+        model = FurnitureInspection
+        fields = ('id', 'cleaning_type', 'photos', 'description', 'checkin')
+
+    def generate_pdf(self, data):
+        pdf_filename = f'furniture_inspection_{data["id"]}.pdf'
+        pdf_path = os.path.join(settings.MEDIA_ROOT, pdf_filename)
+
+        # Create the PDF document
+        c = canvas.Canvas(pdf_path)
+        c.drawString(100, 750, 'Furniture Inspection Details')
+        c.drawString(100, 700, f'ID: {data["id"]}')
+        c.drawString(100, 650, f'Cleaning Type: {data["cleaning_type"]}')
+        # Add more fields as needed
+
+        c.showPage()
+        c.save()
+
+        return pdf_path
+
+class RentaldeductionSerializer(serializers.ModelSerializer):
+    checkin_id = serializers.PrimaryKeyRelatedField(queryset=CheckInOut.objects.all(), source='checkin', write_only=True)
+
+    class Meta:
+        model = RentalDeduction
+        fields = '__all__'
