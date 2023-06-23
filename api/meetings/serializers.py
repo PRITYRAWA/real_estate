@@ -115,7 +115,7 @@ class MeetingScheduleSerializer(serializers.ModelSerializer):
                 participant_list.append(MeetingParticipant(meeting=instance,participant=votes))
             bulk_participants_details = MeetingParticipant.objects.bulk_create(participant_list)
         print("bulk_voting_details ", bulk_voting_details)
-        print("bulk_participants_details ", bulk_participants_details)
+        #print("bulk_participants_details ", bulk_participants_details)
 
         qr = qrcode.QRCode(
             version=1,
