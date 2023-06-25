@@ -1,6 +1,6 @@
 from django.db import models
+from foundation.models import BaseModel, User
 from masters.models import Realestateobjects,Realestateobjectsdetail,Realestatepropertytenant,Realestateproperties,Realestatekeyhandover,Realestatemeterhandover
-from foundation.models import BaseModel,CustomUser
 import uuid
 
 # checkin model

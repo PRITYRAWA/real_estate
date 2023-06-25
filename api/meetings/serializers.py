@@ -16,7 +16,6 @@ class MeetingAgendaSerializer(serializers.ModelSerializer):
        
         )
     
-
 class MeetingParticipantSerializer(serializers.ModelSerializer):
     meeting = serializers.PrimaryKeyRelatedField(read_only=True)
     class Meta:

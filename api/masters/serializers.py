@@ -4,7 +4,7 @@ from masters.models import *
 class RealestateobjectSerializer(serializers.ModelSerializer):
     class Meta:
         model = Realestateobjects
-        exclude = ('created_at', 'updated_at', 'createdby', 'lastmodifiedby')
+        exclude = ('created_at', 'updated_at')
 
 
 class RealestatepropertySerializer(serializers.ModelSerializer):
@@ -37,42 +37,42 @@ class RealestatepropertySerializer(serializers.ModelSerializer):
 class RealestateagentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Realestateagents
-        exclude = ('created_at', 'updated_at', 'createdby', 'lastmodifiedby')
+        exclude = ('created_at', 'updated_at')
 
 class MessageSerializer(serializers.ModelSerializer):
     class Meta:
         model = Messages
-        exclude = ('created_at', 'updated_at', 'createdby', 'lastmodifiedby')
+        exclude = ('created_at', 'updated_at')
 
 class MessagecommentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Messagecomments
-        exclude = ('created_at', 'updated_at', 'createdby', 'lastmodifiedby')
+        exclude = ('created_at', 'updated_at')
 
 class TicketSerializer(serializers.ModelSerializer):
     class Meta:
         model = Tickets
-        exclude = ('created_at', 'updated_at', 'createdby', 'lastmodifiedby')
+        exclude = ('created_at', 'updated_at')
 
 class TicketofferSerializer(serializers.ModelSerializer):
     class Meta:
         model = Ticketoffers
-        exclude = ('created_at', 'updated_at', 'createdby', 'lastmodifiedby')
+        exclude = ('created_at', 'updated_at')
 
 class RealestateserviceproviderSerializer(serializers.ModelSerializer):
     class Meta:
         model = Realestateserviceproviders
-        exclude = ('created_at', 'updated_at', 'createdby', 'lastmodifiedby')
+        exclude = ('created_at', 'updated_at')
 
 class FeedbackSerializer(serializers.ModelSerializer):
     class Meta:
         model = Feedbacks
-        exclude = ('created_at', 'updated_at', 'createdby', 'lastmodifiedby')
+        exclude = ('created_at', 'updated_at')
 
 class RealestatepersonSerializer(serializers.ModelSerializer):
     class Meta:
         model = Realestatepropertyowner
-        exclude = ('created_at', 'updated_at', 'createdby', 'lastmodifiedby')
+        exclude = ('created_at', 'updated_at')
 
 
 
@@ -80,12 +80,12 @@ class RealestatetenantSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = Realestatepropertytenant
-        exclude = ('created_at', 'updated_at', 'createdby', 'lastmodifiedby')
+        exclude = ('created_at', 'updated_at')
 
 class AgendaDetailSerializer(serializers.ModelSerializer):
     class Meta:
         model = AgendaDetails
-        exclude = ('created_at', 'updated_at', 'createdby', 'lastmodifiedby')
+        exclude = ('created_at', 'updated_at')
 
 class Agendaserializer(serializers.ModelSerializer):
     agenda_detail = AgendaDetailSerializer(many=True)
@@ -102,7 +102,7 @@ class Agendaserializer(serializers.ModelSerializer):
 class Votesserializer(serializers.ModelSerializer):
     class Meta:
         model = Votes
-        exclude = ('created_at', 'updated_at', 'createdby', 'lastmodifiedby')       
+        exclude = ('created_at', 'updated_at')       
 
 class Quorumsserializer(serializers.ModelSerializer):
     votes_detail = Votesserializer(many=True)
@@ -120,31 +120,31 @@ class Quorumsserializer(serializers.ModelSerializer):
 class Mettingtemplateserializer(serializers.ModelSerializer):
     class Meta:
         model = Mettingtemplate
-        exclude = ('created_at', 'updated_at', 'createdby', 'lastmodifiedby')
+        exclude = ('created_at', 'updated_at')
 
 class Subgroupserializer(serializers.ModelSerializer):
     class Meta:
         model = Realestatepropertiessubgroup
-        exclude = ('created_at', 'updated_at', 'createdby', 'lastmodifiedby')
+        exclude = ('created_at', 'updated_at')
 
 # class RealEstateObjectsDetailsSerializer(serializers.ModelSerializer):
 #     class Meta:
 #         model = Realestateobjectsdetail
-#         exclude = ('created_at', 'updated_at', 'createdby', 'lastmodifiedby')
+#         exclude = ('created_at', 'updated_at')
     
 class RealEstateKeysSerializer(serializers.ModelSerializer):
     class Meta:
         model = Realestatekeyhandover
-        exclude = ('created_at', 'updated_at', 'createdby', 'lastmodifiedby')    
+        exclude = ('created_at', 'updated_at')    
 
 class Propertymanagementserializer(serializers.ModelSerializer):
     class Meta:
         model = Realestatepropertymanagement
-        exclude = ('created_at', 'updated_at', 'createdby', 'lastmodifiedby')
+        exclude = ('created_at', 'updated_at')
 class RealEstateMeterssSerializer(serializers.ModelSerializer):
     class Meta:
         model = Realestatemeterhandover
-        exclude = ('created_at', 'updated_at', 'createdby', 'lastmodifiedby')
+        exclude = ('created_at', 'updated_at')
 
 class RealestateobjectsdetailSerializer(serializers.ModelSerializer):
     child_details = serializers.SerializerMethodField()

@@ -8,6 +8,7 @@ from api.masters.serializers import *
 from reportlab.pdfgen import canvas
 from django.conf import settings
 import os
+
 class GeneralInspectionSerializer(serializers.ModelSerializer):
     class Meta:
         model = GeneralInspection
@@ -17,11 +18,6 @@ class ObjectListInspectionSerializer(serializers.ModelSerializer):
     class Meta:
         model = ObjectListInspection
         fields = '__all__'
-
-class UserSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = CustomUser
-        fields = ('full_name',)
 
 class CheckInOutSerializer(serializers.ModelSerializer):
     user = serializers.PrimaryKeyRelatedField(queryset=Realestatepropertytenant.objects.all())
