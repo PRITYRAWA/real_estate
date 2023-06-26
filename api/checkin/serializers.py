@@ -52,12 +52,12 @@ class KeysSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Realestatekey
-        exclude = ('created_at', 'updated_at', 'createdby', 'lastmodifiedby')
+        exclude = ('created_at', 'updated_at')
 
 class MetersSerializer(serializers.ModelSerializer):
     class Meta:
         model = Realestatemeter
-        exclude = ('created_at', 'updated_at', 'createdby', 'lastmodifiedby')    
+        exclude = ('created_at', 'updated_at')    
 
 
 class FurnitureInspectionSerializer(serializers.ModelSerializer):
