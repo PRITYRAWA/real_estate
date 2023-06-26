@@ -175,4 +175,4 @@ class RealEstateObjectsDetailsSerializer(serializers.ModelSerializer):
 class TenderSerializer(serializers.ModelSerializer):
     class Meta:
         model = Tender
-        exclude = ('created_at', 'updated_at', 'createdby', 'lastmodifiedby')
+        exclude = ('created_at', 'updated_at')
