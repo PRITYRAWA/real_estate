@@ -9,6 +9,8 @@ from rest_framework.response import Response
 from django.http import HttpResponse
 import datetime
 from masters.utils import render_to_pdf #created in step 4
+from rest_framework import generics
+from django.db.models import Subquery, OuterRef
 
 # Create your views here.
 
@@ -148,6 +150,10 @@ class TenderViewSet(viewsets.ModelViewSet):
     queryset = Tender.objects.all()
     serializer_class = TenderSerializer
 
+class AppendMasterViewSet(viewsets.ModelViewSet):
+    queryset = Appendicesmaster.objects.all()
+    serializer_class = AppendicesMasterSerializer
+
 
 class RealestateObjectDetailItemsViewSet(viewsets.ModelViewSet):
     serializer_class = RealEstateObjectsDetailsSerializer
@@ -156,8 +162,8 @@ class RealestateObjectDetailItemsViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         # prop_id = self.request.query_params.get('propid')
-        obj_id = self.request.query_params.get('objectid')
-        obj_detail_id = self.request.query_params.get('objdetailid')
+        obj_id = self.request.query_params.get('roomid')
+        obj_detail_id = self.request.query_params.get('childid')
         
         try:
             queryset = Realestateobjectsdetail.objects.get( related_object=obj_id, related_detail=obj_detail_id)
@@ -167,3 +173,9 @@ class RealestateObjectDetailItemsViewSet(viewsets.ModelViewSet):
             return Realestateobjectsdetail.objects.none()
     http_method_names = ['get', 'post', 'put', 'patch', 'delete']
     
+
+class VacantPropertiesViewSet(viewsets.ModelViewSet):
+    serializer_class = RealestateobjectSerializer
+
+    def get_queryset(self):
+            return Realestateobjects.objects.filter(status='VACATOR')
