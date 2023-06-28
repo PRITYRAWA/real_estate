@@ -12,18 +12,7 @@ class RealestatepropertySerializer(serializers.ModelSerializer):
     
     class Meta:
         model = Realestateproperties
-        fields = (
-            "id",
-            "name",
-            "street",
-            "zip",
-            "city",
-            "country",
-            "isactive",
-            "attachment",
-            "objects_detail",
-            
-        )
+        exclude = ('created_at', 'updated_at')
 
     def create(self, validated_data):
         realestatepropertyobjects_detail = validated_data.pop('objects_detail', None)
@@ -102,7 +91,7 @@ class Agendaserializer(serializers.ModelSerializer):
 class Votesserializer(serializers.ModelSerializer):
     class Meta:
         model = Votes
-        exclude = ('created_at', 'updated_at')       
+        exclude = ('created_at', 'updated_at')
 
 class Quorumsserializer(serializers.ModelSerializer):
     votes_detail = Votesserializer(many=True)
@@ -130,17 +119,18 @@ class Subgroupserializer(serializers.ModelSerializer):
 # class RealEstateObjectsDetailsSerializer(serializers.ModelSerializer):
 #     class Meta:
 #         model = Realestateobjectsdetail
-#         exclude = ('created_at', 'updated_at')
+#         exclude = ('created_at', 'updated_at', 'createdby', 'lastmodifiedby')
     
 class RealEstateKeysSerializer(serializers.ModelSerializer):
     class Meta:
         model = Realestatekeyhandover
-        exclude = ('created_at', 'updated_at')    
+        exclude = ('created_at', 'updated_at')
 
 class Propertymanagementserializer(serializers.ModelSerializer):
     class Meta:
         model = Realestatepropertymanagement
         exclude = ('created_at', 'updated_at')
+
 class RealEstateMeterssSerializer(serializers.ModelSerializer):
     class Meta:
         model = Realestatemeterhandover
@@ -151,7 +141,7 @@ class RealestateobjectsdetailSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Realestateobjectsdetail
-        fields = '__all__'
+        exclude = ('created_at', 'updated_at')
 
     def get_child_details(self, obj):
         if self.context.get('exclude_child_details'):
@@ -169,10 +159,15 @@ class RealestateobjectsdetailSerializer(serializers.ModelSerializer):
 class RealEstateObjectsDetailsSerializer(serializers.ModelSerializer):
     class Meta:
         model = Realestateobjectsdetail
-        fields = '__all__' 
+        exclude = ('created_at', 'updated_at')
     
 
 class TenderSerializer(serializers.ModelSerializer):
     class Meta:
         model = Tender
+        exclude = ('created_at', 'updated_at')
+
+class AppendicesMasterSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Appendicesmaster
         exclude = ('created_at', 'updated_at')

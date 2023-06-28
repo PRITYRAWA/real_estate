@@ -6,7 +6,10 @@ admin.site.register([
                      Feedbacks,  Realestateagents,
                      Messages, Messagecomments,Messagerecipients,
                      Realestateserviceproviders, Ticketmessages, Ticketoffers, Ticketsequences, Tickets,
-                     Efmigrationshistory,Languages,Realestatepropertytenant,Sysdiagrams,Realestatepropertiessubgroup,Realestatepropertymanagement,Realestatepropertyowner,Localestringresources,Localizedproperties,Realestatekeyhandover,Realestatemeterhandover])
+                     Efmigrationshistory,Languages,Realestatepropertytenant,Sysdiagrams,Realestatepropertiessubgroup,Realestatepropertymanagement,Realestatepropertyowner,Localestringresources,Localizedproperties,Realestatekeyhandover,Realestatemeterhandover,Appendicesmaster,Tender])
+
+
+
 
 # creating parent child model for agenda
 class AgendaDetailsInline(admin.TabularInline):
@@ -15,7 +18,7 @@ class AgendaDetailsInline(admin.TabularInline):
 
 @admin.register(Agenda)
 class CustomAgenda(admin.ModelAdmin):
-    
+    exclude = ("createdby","lastmodifiedby")
     inlines = [
         AgendaDetailsInline,
     ]
@@ -28,7 +31,7 @@ class VotesInline(admin.TabularInline):
 
 @admin.register(Quorums)
 class CustomQuorums(admin.ModelAdmin):
-    
+    exclude = ("createdby","lastmodifiedby")
     inlines = [
         VotesInline,
     ]
@@ -41,7 +44,7 @@ class ObjectsInline(admin.TabularInline):
 
 @admin.register(Realestateproperties)
 class CustomProperties(admin.ModelAdmin):
-    
+    exclude = ("createdby","lastmodifiedby")
     inlines = [
         ObjectsInline,
     ]
@@ -52,7 +55,7 @@ class ObjectsdetailInline(admin.TabularInline):
 
 @admin.register(Realestateobjects)
 class CustomProperties(admin.ModelAdmin):
-    
+    exclude = ("createdby","lastmodifiedby")
     inlines = [
         ObjectsdetailInline,
     ]

@@ -20,15 +20,17 @@ router.register(r'tenant', RealestatepropertytenantViewSet,basename='property')
 router.register(r'meeting-template', MessagetemplateViewSet,basename="meeting-template")
 router.register(r'agendas', AgendaViewSet,basename="agendas")
 router.register(r'quroums', QuroumsViewSet,basename="quroums")
-router.register(r'objectdetail', RealestateobjectsdetailViewSet,basename='properties'),
-router.register(r'objectdetailitem', RealestateObjectDetailItemsViewSet,basename='properties'),
+router.register(r'rooms', RealestateobjectsdetailViewSet,basename='properties'),
+router.register(r'roomitems', RealestateObjectDetailItemsViewSet,basename='properties'),
 router.register(r'subgroup', SubgroupViewSet,basename="subgroup"),
 router.register(r'keys', RealestatekeysViewSet,basename="properties"),
 router.register(r'meters', RealestatemetersViewSet,basename="properties"),
 router.register(r'property-management', PropertyManagementViewSet,basename="property-management"),
-router.register(r'tender', TenderViewSet,basename="property-management")
+router.register(r'vacant', VacantPropertiesViewSet,basename="property-management")
+router.register(r'appendices', AppendMasterViewSet,basename="property-management")
 
 urlpatterns = [
+    # path('properties/vacant/', VacantPropertyListView.as_view(), name='vacant-property-list'),
 
 ]
 urlpatterns += router.urls

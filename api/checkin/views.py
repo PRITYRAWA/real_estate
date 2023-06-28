@@ -8,14 +8,28 @@ import os
 from django.http import HttpRequest
 from django.conf import settings
 from django.http import HttpResponse
+from rest_framework.response import Response
+from django.db.models import Q
 
 class CheckInOutListCreateView(viewsets.ModelViewSet):
     queryset = CheckInOut.objects.all()
     serializer_class = CheckInOutSerializer
 
-class ObjectListInspectionView(viewsets.ModelViewSet):
+class ObjectListInspectionViewSet(viewsets.ModelViewSet):
     queryset = ObjectListInspection.objects.all()
-    serializer_class = CheckInOutSerializer
+    serializer_class = ObjectListInspectionSerializer
+    http_method_names = ['get', 'post', 'put', 'patch', 'delete']
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        queryset = queryset.filter(related_detail=None)  # Exclude self-related items
+        return queryset
+    
+class ChildObjectListInspectionViewSet(viewsets.ModelViewSet):
+    queryset = ObjectListInspection.objects.all()
+    serializer_class = ChildDetailSerializer
+    http_method_names = ['get', 'post', 'put', 'patch', 'delete']
+
 
 
 class KeysViewSet(viewsets.ModelViewSet):
@@ -39,13 +53,16 @@ class MetersViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         checkin_id = self.request.query_params.get('checkin')
-        if checkin_id:
-            queryset = Realestatemeter.objects.filter(checkin=checkin_id)
-        else:
-            queryset = super().get_queryset() 
+        obj_id = self.request.query_params.get('obj')
+        queryset = Realestatemeter.objects.all()
 
+        if checkin_id and obj_id:
+            queryset = queryset.filter(Q(checkin=checkin_id) & Q(obj=obj_id))
+        elif checkin_id:
+            queryset = queryset.filter(checkin=checkin_id)
+        elif obj_id:
+            queryset = queryset.filter(obj=obj_id)
         return queryset
-
 
 def generate_pdf_report(request: HttpRequest) -> HttpResponse:
     # Get the data from the serializer
@@ -104,17 +121,73 @@ def generate_pdf_report(request: HttpRequest) -> HttpResponse:
 class FurnitureInspectionViewSet(viewsets.ModelViewSet):
     queryset = FurnitureInspection.objects.all()
     serializer_class = FurnitureInspectionSerializer
-    lookup_field = 'checkin'
     http_method_names = ['get', 'post', 'put', 'patch', 'delete']
+    
+    def get_queryset(self):
+        checkin_id = self.request.query_params.get('checkin')
+        if checkin_id:
+            queryset = FurnitureInspection.objects.filter(checkin=checkin_id)
+        else:
+            queryset = super().get_queryset() 
 
-    # def retrieve(self, request, *args, **kwargs):
-    #     self.lookup_field = 'checkin'
-    #     return super().retrieve(request, *args, **kwargs)
+        return queryset
+
 
 class RentaldeductionViewSet(viewsets.ModelViewSet):
-    queryset = FurnitureInspection.objects.all()
+    queryset = RentalDeduction.objects.all()
     serializer_class = RentaldeductionSerializer
-    http_method_names = ['get', 'post', 'put', 'patch', 'delete']
+    # http_method_names = ['get', 'post', 'put', 'patch', 'delete']
+
+    def get_queryset(self):
+        checkin_id = self.request.query_params.get('checkin')
+        obj_id = self.request.query_params.get('obj')
+        queryset = RentalDeduction.objects.all()
+
+        if checkin_id and obj_id:
+            queryset = queryset.filter(Q(checkin=checkin_id) & Q(obj=obj_id))
+        elif checkin_id:
+            queryset = queryset.filter(checkin=checkin_id)
+        elif obj_id:
+            queryset = queryset.filter(obj=obj_id)
+        return queryset
+    
+class AppendTransViewSet(viewsets.ModelViewSet):
+    queryset = Appendicestransaction.objects.all()
+    serializer_class = AppendicesTransSerializer
+
+    def get_queryset(self):
+        checkin_id = self.request.query_params.get('checkin')
+        obj_id = self.request.query_params.get('obj')
+        queryset = Appendicestransaction.objects.all()
+
+        if checkin_id and obj_id:
+            queryset = queryset.filter(Q(checkin=checkin_id) & Q(obj=obj_id))
+        elif checkin_id:
+            queryset = queryset.filter(checkin=checkin_id)
+        elif obj_id:
+            queryset = queryset.filter(obj=obj_id)
+        return queryset
+    
+class CommentViewSet(viewsets.ModelViewSet):
+    queryset = Checkincomments.objects.all()
+    serializer_class = CommentSerializer
+
+    def get_queryset(self):
+        queryset = Checkincomments.objects.all()
+        checkin_id = self.request.query_params.get('checkin')
+        if checkin_id:
+            queryset = Checkincomments.objects.filter(checkin=checkin_id)
+        else:
+            queryset = super().get_queryset() 
+        return queryset
+        
+class TenderViewSet(viewsets.ModelViewSet):
+    queryset = Tender.objects.all()
+    serializer_class = TenderSerializer
+
+class PersonmoveinViewSet(viewsets.ModelViewSet):
+    queryset = Personmovein.objects.all()
+    serializer_class = PersonmoveinSerializer
 
 
 def generate_pdf(request, pk):
@@ -126,3 +199,4 @@ def generate_pdf(request, pk):
         response = HttpResponse(pdf_file.read(), content_type='application/pdf')
         response['Content-Disposition'] = f'attachment; filename=furniture_inspection_{pk}.pdf'
         return response
+    
