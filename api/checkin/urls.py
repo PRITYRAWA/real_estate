@@ -19,10 +19,10 @@ router.register(r'tenders', TenderViewSet,basename="tender")
 router.register(r'person-movein', PersonmoveinViewSet,basename="Personmovein")
 urlpatterns = [
         path('generate-report/', generate_pdf_report, name='generate_report'),
-        path('furniture-inspection/<int:pk>/pdf/', generate_pdf, name='generate_pdf'),
+        path('generate-report-furniture/', generate_pdf_report_furniture, name='generate_report-furniture'),
+        path('inspection/<int:id>', generate_checkin_report, name='generate_pdf'),
 
 ]
 
 urlpatterns += router.urls
-
 

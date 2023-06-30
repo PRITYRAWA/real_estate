@@ -28,7 +28,15 @@ router.register(r'meters', RealestatemetersViewSet,basename="properties"),
 router.register(r'property-management', PropertyManagementViewSet,basename="property-management"),
 router.register(r'vacant', VacantPropertiesViewSet,basename="property-management")
 router.register(r'appendices', AppendMasterViewSet,basename="property-management")
-
+router.register(r'furniture', RealestateFurnitureViewSet,basename="property-management")
+router.register(r'tk-damage', TkDamageViewSet,basename="task")
+router.register(r'tk-enquiry', TkEnquiriesViewSet,basename="task")
+router.register(r'tk-invoice', TkInvoiceViewSet,basename="task")
+router.register(r'tk-pet', TkPetViewSet,basename="task")
+router.register(r'tk-orderkey', TkOrderKeyViewSet,basename="task")
+router.register(r'tk-paymentslip', TkPaymentSlipViewSet,basename="task")
+router.register(r'tk-bankdetail', TkBankDetailViewSet,basename="task")
+router.register(r'tk-orderbadge', TkOrderBadgeViewSet,basename="task")
 urlpatterns = [
     # path('properties/vacant/', VacantPropertyListView.as_view(), name='vacant-property-list'),
 

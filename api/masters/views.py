@@ -7,8 +7,8 @@ from checkin.models import *
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from django.http import HttpResponse
-import datetime
 from masters.utils import render_to_pdf #created in step 4
+
 
 # Create your views here.
 
@@ -102,30 +102,17 @@ class SubgroupViewSet(viewsets.ModelViewSet):
     queryset = Realestatepropertiessubgroup.objects.all()
     serializer_class = Subgroupserializer
 
-# class RealestateObjectDetailViewSet(viewsets.ModelViewSet):
-#     serializer_class = RealestateobjectsdetailSerializer
-#     queryset = Realestateobjectsdetail.objects.all()
-#     lookup_field = 'id'  # Specify the lookup field for detail view
-
-#     def get_queryset(self):
-#         prop_id = self.request.query_params.get('propid')
-#         obj_id = self.request.query_params.get('objectid')
-#         obj_detail_id = self.request.query_params.get('objdetailid')
-        
-#         try:
-#             queryset = Realestateobjectsdetail.objects.filter(related_property_id=prop_id, related_object=obj_id, related_detail=obj_detail_id)
-#             return queryset
-#         except Realestateobjectsdetail.DoesNotExist:
-#             return Realestateobjectsdetail.objects.none()
-        
 class RealestatekeysViewSet(viewsets.ModelViewSet):
-    # end point to access RealEstateProperty Model.
     queryset = Realestatekeyhandover.objects.all()
     serializer_class = RealEstateKeysSerializer
     http_method_names = ['get', 'post', 'put', 'patch', 'delete']
 
+class RealestateFurnitureViewSet(viewsets.ModelViewSet):
+    queryset = FurnitureInspectionMaster.objects.all()
+    serializer_class = FurnitureInspectionMasterSerializer
+    http_method_names = ['get', 'post', 'put', 'patch', 'delete']
+
 class RealestatemetersViewSet(viewsets.ModelViewSet):
-    # end point to access RealEstateProperty Model.
     queryset = Realestatemeterhandover.objects.all()
     serializer_class = RealEstateMeterssSerializer
     http_method_names = ['get', 'post', 'put', 'patch', 'delete']
@@ -152,6 +139,10 @@ class AppendMasterViewSet(viewsets.ModelViewSet):
     queryset = Appendicesmaster.objects.all()
     serializer_class = AppendicesMasterSerializer
 
+class AppendMasterViewSet(viewsets.ModelViewSet):
+    queryset = Appendicesmaster.objects.all()
+    serializer_class = AppendicesMasterSerializer
+
 
 class RealestateObjectDetailItemsViewSet(viewsets.ModelViewSet):
     serializer_class = RealEstateObjectsDetailsSerializer
@@ -171,3 +162,50 @@ class RealestateObjectDetailItemsViewSet(viewsets.ModelViewSet):
             return Realestateobjectsdetail.objects.none()
     http_method_names = ['get', 'post', 'put', 'patch', 'delete']
     
+
+class VacantPropertiesViewSet(viewsets.ModelViewSet):
+    serializer_class = RealestateobjectSerializer
+
+    def get_queryset(self):
+            return Realestateobjects.objects.filter(status='VACANT')
+
+
+class TkDamageViewSet(viewsets.ModelViewSet):
+    queryset = TicketDamage.objects.all()
+    serializer_class = TkDamageSerializer
+    http_method_names = ['get', 'post', 'put', 'patch', 'delete']
+
+class TkEnquiriesViewSet(viewsets.ModelViewSet):
+    queryset = TkGeneralEnquiries.objects.all()
+    serializer_class = TkEnquiriesSerializer
+    http_method_names = ['get', 'post', 'put', 'patch', 'delete']
+
+class TkInvoiceViewSet(viewsets.ModelViewSet):
+    queryset = TkInvoiceQuestion.objects.all()
+    serializer_class = TkInvoiceSerializer
+    http_method_names = ['get', 'post', 'put', 'patch', 'delete']
+
+class TkPetViewSet(viewsets.ModelViewSet):
+    queryset = TkPetRequest.objects.all()
+    serializer_class = TkPetSerializer
+    http_method_names = ['get', 'post', 'put', 'patch', 'delete']
+
+class TkOrderKeyViewSet(viewsets.ModelViewSet):
+    queryset = TkOrderKey.objects.all()
+    serializer_class = TkOrderKeySerializer
+    http_method_names = ['get', 'post', 'put', 'patch', 'delete']
+
+class TkPaymentSlipViewSet(viewsets.ModelViewSet):
+    queryset = TkPaymentSlips.objects.all()
+    serializer_class = TkPaymentSerializer
+    http_method_names = ['get', 'post', 'put', 'patch', 'delete']
+
+class TkBankDetailViewSet(viewsets.ModelViewSet):
+    queryset = TkBankDetails.objects.all()
+    serializer_class = TkBankSerializer
+    http_method_names = ['get', 'post', 'put', 'patch', 'delete']
+
+class TkOrderBadgeViewSet(viewsets.ModelViewSet):
+    queryset = TkOrderBadge.objects.all()
+    serializer_class = TkOrderSerializer
+    http_method_names = ['get', 'post', 'put', 'patch', 'delete']

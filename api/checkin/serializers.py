@@ -18,14 +18,6 @@ class GeneralInspectionSerializer(serializers.ModelSerializer):
 #     class Meta:
 #         model = Realestateobjectsdetail
 #         fields = '__all__'
-
-class ObjectListInspectionSerializer(serializers.ModelSerializer):
-    # child_details = ChildDetailSerializer(many=True, required=False)
-
-    class Meta:
-        model = ObjectListInspection
-        exclude = ('created_at', 'updated_at')
-
     # def get_child_details(self, obj):
     #     if self.context.get('exclude_child_details'):
     #         return []
@@ -40,6 +32,8 @@ class ObjectListInspectionSerializer(serializers.ModelSerializer):
     #     return representation
 
 class ChildDetailSerializer(serializers.ModelSerializer):
+    child_details = serializers.SerializerMethodField()
+
     class Meta:
         model = ObjectListInspection
         exclude = ('created_at', 'updated_at')
@@ -50,44 +44,30 @@ class ChildDetailSerializer(serializers.ModelSerializer):
         child_details = obj.child_details.all()
         serialized_child_details = self.__class__(child_details, many=True, context={'exclude_child_details': True}).data
         return serialized_child_details
-
-    def to_representation(self, instance):
-        representation = super().to_representation(instance)
-        representation.pop('child_details')  # Remove child_details from the main representation
-        representation['child_details'] = self.get_child_details(instance)
-        return representation
-
-'''
-
-class RealestateobjectsdetailSerializer(serializers.ModelSerializer):
-    child_details = serializers.SerializerMethodField()
+    
+class ObjectListInspectionSerializer(serializers.ModelSerializer):
+    child_details = ChildDetailSerializer(many=True, required=False)
 
     class Meta:
-        model = Realestateobjectsdetail
-        fields = '__all__' 
+        model = ObjectListInspection
+        exclude = ('created_at', 'updated_at')
 
-    def get_child_details(self, obj):
-        if self.context.get('exclude_child_details'):
-            return []
-        child_details = obj.child_details.all()
-        serialized_child_details = self.__class__(child_details, many=True, context={'exclude_child_details': True}).data
-        return serialized_child_details
+    def create(self, validated_data):
+        child_details_data = validated_data.pop('child_details', [])
+        inspection = ObjectListInspection.objects.create(**validated_data)
 
-    def to_representation(self, instance):
-        representation = super().to_representation(instance)
-        representation.pop('child_details')  # Remove child_details from the main representation
-        representation['child_details'] = self.get_child_details(instance)
-        return representation
+        for child_detail_data in child_details_data:
+            child_detail_data['related_detail'] = inspection
+            ChildDetailSerializer().create(child_detail_data)
 
-
-
-
+        return inspection
+    # def to_representation(self, instance):
+    #     representation = super().to_representation(instance)
+    #     representation.pop('child_details')  # Remove child_details from the main representation
+    #     representation['child_details'] = self.get_child_details(instance)
+    #     return representation
 
 
-
-
-
-'''
     # def create(self, validated_data):
     #     object_id = self.context.get('object_id')
     #     if object_id is not None:
