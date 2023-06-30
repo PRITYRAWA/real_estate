@@ -6,7 +6,7 @@ admin.site.register([
                      Feedbacks,  Realestateagents,
                      Messages, Messagecomments,Messagerecipients,
                      Realestateserviceproviders, Ticketmessages, Ticketoffers, Ticketsequences, Tickets,
-                     Efmigrationshistory,Languages,Realestatepropertytenant,Sysdiagrams,Realestatepropertiessubgroup,Realestatepropertymanagement,Realestatepropertyowner,Localestringresources,Localizedproperties,Realestatekeyhandover,Realestatemeterhandover,Appendicesmaster,Tender])
+                     Efmigrationshistory,Languages,Realestatepropertytenant,Sysdiagrams,Realestatepropertiessubgroup,Realestatepropertyowner,Localestringresources,Localizedproperties,Realestatekeyhandover,Realestatemeterhandover,Appendicesmaster,Tender])
 
 
 
@@ -59,3 +59,22 @@ class CustomProperties(admin.ModelAdmin):
     inlines = [
         ObjectsdetailInline,
     ]
+
+@admin.register(Realestatepropertymanagement)
+class PropertyManagement(admin.ModelAdmin):
+   
+    def save_model(self, request, obj, form, change):
+        manage_by=obj.manageby
+        if not change:
+            print("id",obj.id)
+            if manage_by == 'owner':
+                owner = obj.realestateownerid
+                record = Realestatepropertyowner.objects.get(id=owner)
+                print(record.email)
+                print("owner",owner)
+            if manage_by == 'agent':
+                agent = obj.realestateownerid
+                print("agent",agent)
+            if not change:  # Only populate the value if it's a new object
+                obj.some_field = "Value based on ID: {}".format(obj.id)
+        super().save_model(request, obj, form, change)
