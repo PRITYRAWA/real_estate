@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from masters.models import *
-
+from tasks.models import *
 class RealestateobjectSerializer(serializers.ModelSerializer):
     class Meta:
         model = Realestateobjects
@@ -160,7 +160,11 @@ class RealEstateObjectsDetailsSerializer(serializers.ModelSerializer):
     class Meta:
         model = Realestateobjectsdetail
         exclude = ('created_at', 'updated_at')
-    
+
+class FurnitureInspectionMasterSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = FurnitureInspectionMaster
+        exclude = ('created_at', 'updated_at') 
 
 class TenderSerializer(serializers.ModelSerializer):
     class Meta:
@@ -170,4 +174,44 @@ class TenderSerializer(serializers.ModelSerializer):
 class AppendicesMasterSerializer(serializers.ModelSerializer):
     class Meta:
         model = Appendicesmaster
+        exclude = ('created_at', 'updated_at')
+
+class TkDamageSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = TicketDamage
+        exclude = ('created_at', 'updated_at')
+
+class TkEnquiriesSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = TkGeneralEnquiries
+        exclude = ('created_at', 'updated_at')
+
+class TkInvoiceSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = TkInvoiceQuestion
+        exclude = ('created_at', 'updated_at')
+
+class TkPetSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = TkPetRequest
+        exclude = ('created_at', 'updated_at')
+
+class TkOrderKeySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = TkOrderKey
+        exclude = ('created_at', 'updated_at')
+
+class TkPaymentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = TkPaymentSlips
+        exclude = ('created_at', 'updated_at')
+
+class TkBankSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = TkBankDetails
+        exclude = ('created_at', 'updated_at')
+
+class TkOrderSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = TkOrderBadge
         exclude = ('created_at', 'updated_at')

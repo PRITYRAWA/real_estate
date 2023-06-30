@@ -5,8 +5,7 @@ from masters.models import *
 admin.site.register([
                      Feedbacks,  Realestateagents,
                      Messages, Messagecomments,Messagerecipients,
-                     Realestateserviceproviders, Ticketmessages, Ticketoffers, Ticketsequences, Tickets,
-                     Efmigrationshistory,Languages,Realestatepropertytenant,Sysdiagrams,Realestatepropertiessubgroup,Realestatepropertyowner,Localestringresources,Localizedproperties,Realestatekeyhandover,Realestatemeterhandover,Appendicesmaster,Tender])
+                     Realestateserviceproviders,Languages,Realestatepropertytenant,Realestatepropertiessubgroup,Realestatepropertymanagement,Realestatepropertyowner,Localestringresources,Localizedproperties,Realestatekeyhandover,Realestatemeterhandover,FurnitureInspectionMaster,Appendicesmaster,Tender])
 
 
 
