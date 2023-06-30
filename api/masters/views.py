@@ -9,8 +9,6 @@ from rest_framework.response import Response
 from django.http import HttpResponse
 import datetime
 from masters.utils import render_to_pdf #created in step 4
-from rest_framework import generics
-from django.db.models import Subquery, OuterRef
 
 # Create your views here.
 
@@ -144,12 +142,12 @@ class RealestateobjectsdetailViewSet(viewsets.ModelViewSet):
 class PropertyManagementViewSet(viewsets.ModelViewSet):
     # end point to access Realestatepersons Model.
     queryset = Realestatepropertymanagement.objects.all()
-    serializer_class = Mettingtemplateserializer
+    serializer_class = Propertymanagementserializer
     
 class TenderViewSet(viewsets.ModelViewSet):
     queryset = Tender.objects.all()
     serializer_class = TenderSerializer
-
+    
 class AppendMasterViewSet(viewsets.ModelViewSet):
     queryset = Appendicesmaster.objects.all()
     serializer_class = AppendicesMasterSerializer
@@ -173,9 +171,3 @@ class RealestateObjectDetailItemsViewSet(viewsets.ModelViewSet):
             return Realestateobjectsdetail.objects.none()
     http_method_names = ['get', 'post', 'put', 'patch', 'delete']
     
-
-class VacantPropertiesViewSet(viewsets.ModelViewSet):
-    serializer_class = RealestateobjectSerializer
-
-    def get_queryset(self):
-            return Realestateobjects.objects.filter(status='VACATOR')

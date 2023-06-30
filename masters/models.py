@@ -20,7 +20,7 @@ class Realestateagents(BaseModel):
         db_table = "Realestateagents"
         ordering = ['-id']
     def __str__(self):
-        return str(self.name)
+        return str(self.id)
 
 class Realestatepropertyowner(BaseModel):
     name = models.CharField(max_length=50,verbose_name=("Name"))   
@@ -44,7 +44,7 @@ class Realestatepropertyowner(BaseModel):
         ordering = ['-id']
 
     def __str__(self):
-        return str(self.name)
+        return str(self.id)
     
 class Realestatepropertytenant(BaseModel):
     STATUS_CHOICES = [
@@ -201,7 +201,8 @@ class Realestateobjects(BaseModel):
     object_description = models.CharField(max_length=100,verbose_name="Object Description")   
     location = models.CharField(max_length=100,verbose_name="Location")   
     floor = models.CharField(max_length=20,blank=True, null=True,verbose_name=("Floor"))   
-    rooms = models.CharField(max_length=20, blank=True, null=True,verbose_name=("Rooms"))   
+    rooms = models.CharField(max_length=20, blank=True, null=True,verbose_name=("Rooms")) 
+    value = models.FloatField(default=0.0,  null=True, blank=True,verbose_name=("Value"))    
     surfacearea = models.IntegerField(blank=True, null=True,verbose_name=("Surface Area"))   
     isactive = models.BooleanField(default=False,verbose_name=("Is Active"))   
     attachments = models.TextField(blank=True, null=True,verbose_name=("Attachments"))   
@@ -307,6 +308,9 @@ class Realestatepropertymanagement(BaseModel):
     realestateobjectid = models.ForeignKey(Realestateobjects, models.DO_NOTHING,verbose_name=_("Property Object"))
     manageby = models.CharField(max_length=10, choices=(('owner', 'Owner'), ('agent', 'Agent')),verbose_name=_("Manage By"))
     manageby_id = models.CharField(max_length=100,null=True,blank=True,verbose_name=_("Manager Id"))
+    manager_name = models.CharField(max_length=100,null=True,blank=True,verbose_name=_("Manager Name"))
+    manager_email = models.CharField(max_length=100,null=True,blank=True,verbose_name=_("Manager Email"))
+    manager_Phone = models.CharField(max_length=100,null=True,blank=True,verbose_name=_("Manager Phone"))
 
     class Meta:
         db_table = 'Realestatepropertymanagement'
