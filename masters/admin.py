@@ -5,7 +5,7 @@ from masters.models import *
 admin.site.register([
                      Feedbacks,  Realestateagents,
                      Messages, Messagecomments,Messagerecipients,
-                     Realestateserviceproviders,Languages,Realestatepropertytenant,Realestatepropertiessubgroup,Realestatepropertymanagement,Realestatepropertyowner,Localestringresources,Localizedproperties,Realestatekeyhandover,Realestatemeterhandover,FurnitureInspectionMaster,Appendicesmaster,Tender])
+                     Realestateserviceproviders,Languages,Realestatepropertytenant,Realestatepropertiessubgroup,Realestatepropertyowner,Localestringresources,Localizedproperties,Realestatekeyhandover,Realestatemeterhandover,FurnitureInspectionMaster,Appendicesmaster,Tender])
 
 
 
@@ -67,7 +67,7 @@ class PropertyManagement(admin.ModelAdmin):
         if not change:
             print("id",obj.id)
             if manage_by == 'owner':
-                owner = obj.realestateownerid
+                owner = obj.realestateownerid.id
                 record = Realestatepropertyowner.objects.get(id=owner)
                 print(record.email)
                 print("owner",owner)
