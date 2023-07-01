@@ -20,7 +20,7 @@ class Realestateagents(BaseModel):
         db_table = "Realestateagents"
         ordering = ['-id']
     def __str__(self):
-        return str(self.id)
+        return str(self.name)
 
 class Realestatepropertyowner(BaseModel):
     name = models.CharField(max_length=50,verbose_name=("Name"))   
@@ -44,7 +44,7 @@ class Realestatepropertyowner(BaseModel):
         ordering = ['-id']
 
     def __str__(self):
-        return str(self.id)
+        return str(self.name)
     
 class Realestatepropertytenant(BaseModel):
     STATUS_CHOICES = [
@@ -61,10 +61,12 @@ class Realestatepropertytenant(BaseModel):
     email = models.CharField(max_length=320, blank=True, null=True,verbose_name=("Email"))  
     phonenumber = models.CharField(max_length=30, blank=True, null=True,verbose_name=("Phone Number"))  
     country = CountryField( blank=True, null=True,verbose_name=("Country"))    
+    state = models.CharField(max_length=100,null=True,blank=True,verbose_name=("State"))  
     street = models.CharField(max_length=100,null=True,blank=True,verbose_name=("Street"))  
     zip = models.CharField(max_length=10, blank=True, null=True,verbose_name=("Zip"))  
     city = models.CharField(max_length=50, blank=True, null=True,verbose_name=("City"))  
     status = models.CharField(max_length=10,choices=STATUS_CHOICES,default='ENQUIRER',null=True,blank=True,verbose_name=("Status"))
+
     state = models.CharField(max_length=100,null=True,blank=True,verbose_name=("State"))  
     class Meta:
         db_table = "Realestatepropertytenant"
@@ -206,13 +208,12 @@ class Realestateobjects(BaseModel):
     surfacearea = models.IntegerField(blank=True, null=True,verbose_name=("Surface Area"))   
     isactive = models.BooleanField(default=False,verbose_name=("Is Active"))   
     attachments = models.TextField(blank=True, null=True,verbose_name=("Attachments"))   
-    status = models.CharField(max_length=10,choices=STATUS_CHOICES,default='VACATOR',null=True,blank=True,verbose_name=("Status"))
+    status = models.CharField(max_length=10,choices=STATUS_CHOICES,default='VACANT',null=True,blank=True,verbose_name=("Status"))
 
     class Meta:
         db_table = 'Realestateobjects'
         ordering = ['-id']
     def __str__(self):
-        return str(self.object_name)
         return str(self.object_name)
     
 #object detail model
@@ -276,7 +277,7 @@ class Realestatemeterhandover(BaseModel):
     meterno = models.CharField(max_length=200,null=True,blank=True,verbose_name=("Meter Number"))
     reading = models.CharField(max_length=200,null=True,blank=True,verbose_name=("Reading"))
     photos = models.ImageField(upload_to='master_meter_photos/',null=True,blank=True,verbose_name=("Photo"))
-    count = models.IntegerField(default=0,verbose_name=("Count"))
+    count = models.IntegerField(default=0,verbose_name=("Count"),null=True,blank=True)
     unit = models.CharField(max_length=10,choices=UNIT_CHOICES,null=True,blank=True,verbose_name=("Unit"))
     whochange = models.CharField(max_length=200,choices=WHO_CHANGES,null=True,blank=True,verbose_name=("Who Change"))
     company = models.CharField(max_length=100,choices=COMPANY_CHOICES,null=True,blank=True,verbose_name=("Company "))
@@ -312,9 +313,6 @@ class Realestatepropertymanagement(BaseModel):
     realestateobjectid = models.ForeignKey(Realestateobjects, models.DO_NOTHING,verbose_name=_("Property Object"))
     manageby = models.CharField(max_length=10, choices=(('owner', 'Owner'), ('agent', 'Agent')),verbose_name=_("Manage By"))
     manageby_id = models.CharField(max_length=100,null=True,blank=True,verbose_name=_("Manager Id"))
-    manager_name = models.CharField(max_length=100,null=True,blank=True,verbose_name=_("Manager Name"))
-    manager_email = models.CharField(max_length=100,null=True,blank=True,verbose_name=_("Manager Email"))
-    manager_Phone = models.CharField(max_length=100,null=True,blank=True,verbose_name=_("Manager Phone"))
 
     class Meta:
         db_table = 'Realestatepropertymanagement'
@@ -418,41 +416,9 @@ class Mettingtemplate(BaseModel):
         ordering = ['-id']
 
 
-class Tender(BaseModel):
-    property = models.ForeignKey(Realestateproperties,on_delete=models.CASCADE, null=True, blank=True,verbose_name=("Property")) 
-    object = models.ForeignKey(Realestateobjects,on_delete=models.CASCADE, null=True, blank=True,verbose_name=("Object")) 
-    net_rent_total_per_month = models.DecimalField(max_digits=10, decimal_places=2, null=True)
-    net_rent_total_per_year = models.DecimalField(max_digits=10, decimal_places=2, null=True)
-    incidental_cost = models.DecimalField(max_digits=10, decimal_places=2, null=True)
-    gross_rent_total_per_month = models.DecimalField(max_digits=10, decimal_places=2, null=True)
-    gross_rent_total_per_year = models.DecimalField(max_digits=10, decimal_places=2, null=True)
-    move_in_date = models.DateField(null=True)
-    display_rent_per_month = models.DecimalField(max_digits=10, decimal_places=2, null=True)
-    furnished = models.BooleanField(default=False)
-    unfurnished = models.BooleanField(default=False)
-    role_of_property = models.CharField(max_length=100, blank=True)
-    assigned_manager = models.CharField(max_length=100, blank=True)
-    contact_person = models.CharField(max_length=100, blank=True)
-    contact_number = models.CharField(max_length=20, blank=True)
-    start_date = models.DateField(null=True)
-    end_date = models.DateField(null=True)
-    link = models.CharField(max_length=255, blank=True)
-
-    class Meta:
-        db_table = 'Tender'
-        ordering = ['-id']
-
-    def __str__(self):
-        return str(self.role_of_property)
-    
-    def save(self, *args, **kwargs):
-        if not self.link:  # Generate link only if it is not already set
-            self.link = f"/tenders/{self.pk}/"
-        super().save(*args, **kwargs)
-
 class Appendicesmaster(BaseModel):
     photos = models.ImageField(upload_to='master_key_photos/',null=True, blank=True,verbose_name=("Photos"))
-    count = models.IntegerField(default=0,verbose_name=("Count"))
+    count = models.IntegerField(default=0,verbose_name=("Count"),null=True,blank=True)
     description = models.TextField(null=True, blank=True,verbose_name=("Description"))
     name = models.CharField(max_length=300,null=True, blank=True,verbose_name=("Name"))
 
@@ -462,6 +428,7 @@ class Appendicesmaster(BaseModel):
 
     def __str__(self):
         return str(self.name)  
+    
 
     
   

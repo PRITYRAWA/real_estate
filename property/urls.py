@@ -22,6 +22,12 @@ urlpatterns = (
         path(
             "checkin/", include("api.checkin.urls", namespace="checkin-api")
         ),
+        path(
+            "task/", include("api.task.urls", namespace="task-api")
+        ),
+        path(
+            "sales/", include("api.sales.urls", namespace="sales-api")
+        ),
         path("signup/", signup, name="socialaccount_signup"),
     ]
     + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

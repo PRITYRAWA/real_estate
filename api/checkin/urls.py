@@ -15,8 +15,6 @@ router.register(r'appendices', AppendTransViewSet,basename="properties"),
 router.register(r'room', ObjectListInspectionViewSet)
 router.register(r'comment', CommentViewSet)
 router.register(r'room-detail', ChildObjectListInspectionViewSet, basename='child-objectlistinspection')
-router.register(r'tenders', TenderViewSet,basename="tender")
-router.register(r'person-movein', PersonmoveinViewSet,basename="Personmovein")
 urlpatterns = [
         path('generate-report/', generate_pdf_report, name='generate_report'),
         path('generate-report-furniture/', generate_pdf_report_furniture, name='generate_report-furniture'),

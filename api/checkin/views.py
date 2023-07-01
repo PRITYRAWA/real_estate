@@ -29,11 +29,22 @@ class ObjectListInspectionViewSet(viewsets.ModelViewSet):
     serializer_class = ObjectListInspectionSerializer
     http_method_names = ['get', 'post', 'put', 'patch', 'delete']
 
+    # def get_queryset(self):
+    #     queryset = super().get_queryset()
+    #     queryset = queryset.filter(related_detail=None)  # Exclude self-related items
+    #     return queryset
     def get_queryset(self):
+        checkin_id = self.request.query_params.get('checkin')
         queryset = super().get_queryset()
         queryset = queryset.filter(related_detail=None)  # Exclude self-related items
+
+        if checkin_id:
+            queryset = queryset.filter(checkin=checkin_id)
         return queryset
-    
+
+
+
+
 class ChildObjectListInspectionViewSet(viewsets.ModelViewSet):
     queryset = ObjectListInspection.objects.all()
     serializer_class = ChildDetailSerializer
@@ -194,22 +205,6 @@ class CommentViewSet(viewsets.ModelViewSet):
         else:
             queryset = super().get_queryset() 
         return queryset
-        
-class TenderViewSet(viewsets.ModelViewSet):
-    queryset = Tender.objects.all()
-    serializer_class = TenderSerializer
-
-class PersonmoveinViewSet(viewsets.ModelViewSet):
-    queryset = Personmovein.objects.all()
-    serializer_class = PersonmoveinSerializer
-
-    def create(self, request, *args, **kwargs):
-        email = request.data.get('email')
-        if Realestatepropertytenant.objects.filter(email=email).exists():
-            return Response({'error': 'Email already exists in Realestatepropertytenant.'},
-                            status=status.HTTP_400_BAD_REQUEST)
-        return super().create(request, *args, **kwargs)
-
 
 def generate_pdf(request, pk):
     inspection = FurnitureInspection.objects.get(pk=pk)
