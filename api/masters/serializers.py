@@ -126,7 +126,56 @@ class RealEstateKeysSerializer(serializers.ModelSerializer):
         model = Realestatekeyhandover
         exclude = ('created_at', 'updated_at')
 
+class GetPropertymanagementserializer(serializers.ModelSerializer):
+    property_name = serializers.CharField(read_only=True, source="realestatepropertyid.name")
+    owner_name = serializers.CharField(read_only=True, source="realestateownerid.name")
+    agent_name = serializers.CharField(read_only=True, source="realestateagentid.name")
+    object_name = serializers.CharField(read_only=True, source="realestateobjectid.name")
+    
+
+    class Meta:
+        model = Realestatepropertymanagement
+        fields = (
+            "id",
+            "property_name",
+            "owner_name",
+            "agent_name",
+            "object_name",
+            "manageby",
+            "manageby_id",
+            "manager_name",
+            "manager_email",
+            "manager_Phone"
+
+        )
+
 class Propertymanagementserializer(serializers.ModelSerializer):
+    
+    class Meta:
+        model = Realestatepropertymanagement
+        exclude = ('created_at', 'updated_at')
+
+class CreatePropertymanagementserializer(serializers.ModelSerializer):
+
+    def create(self, validated_data):
+        data = self.context.get('request').data
+        model = self.Meta.model
+        instance = model.objects.create(**data)
+        if instance.manageby == 'owner':
+                instance.manageby_id = instance.realestateownerid.id
+                instance.manager_name = instance.realestateownerid.name
+                instance.manager_email = instance.realestateownerid.email
+                instance.manager_Phone = instance.realestateownerid.phonenumber
+        if instance.manageby == 'agent':
+            instance.manageby_id = instance.realestateagentid.id
+            instance.manager_name = instance.realestateagentid.name
+            instance.manager_email = instance.realestateagentid.email
+            instance.manager_Phone = instance.realestateagentid.phonenumber
+        instance.save()
+
+        return instance
+
+    
     class Meta:
         model = Realestatepropertymanagement
         exclude = ('created_at', 'updated_at')
