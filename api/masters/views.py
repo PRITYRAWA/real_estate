@@ -130,6 +130,38 @@ class PropertyManagementViewSet(viewsets.ModelViewSet):
     # end point to access Realestatepersons Model.
     queryset = Realestatepropertymanagement.objects.all()
     serializer_class = Propertymanagementserializer
+
+    def list(self,request):
+        try:
+            management = Realestatepropertymanagement.objects.filter().order_by('id').reverse()
+            serializer = GetPropertymanagementserializer(management, many=True)
+            return Response(serializer.data)
+        except:
+            return Response("Invalid Data")
+    
+    def retrieve(self, request, pk=None):
+        try:
+            management = Realestatepropertymanagement.objects.filter(id=pk).order_by('id').reverse()
+            serializer = GetPropertymanagementserializer(management, many=True)
+            return Response(serializer.data)
+        except:
+            return Response("Invalid Data")
+    
+    def create(self, request):
+        serializer = CreatePropertymanagementserializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        else:
+            print("errors",serializer.errors)
+            
+        
+    
+        
+
+
+
+
     
 class TenderViewSet(viewsets.ModelViewSet):
     queryset = Tender.objects.all()
