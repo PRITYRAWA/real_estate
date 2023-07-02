@@ -82,7 +82,7 @@ class TKDamageReport(BaseModel):
     KeyLocation = models.CharField(max_length=250,null=True,blank=True)
 
     class Meta:
-        db_table = 'Reportdamage'
+        db_table = 'TKDamageReport'
         ordering = ['-id']
 
 

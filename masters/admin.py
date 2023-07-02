@@ -3,9 +3,13 @@ from masters.models import *
 
 # Register your models here.
 admin.site.register([
-                     Feedbacks,  Realestateagents,
-                     Messages, Messagecomments,Messagerecipients,
-                     Realestateserviceproviders,Languages,Realestatepropertytenant,Realestatepropertiessubgroup,Realestatepropertyowner,Localestringresources,Localizedproperties,Realestatekeyhandover,Realestatemeterhandover,FurnitureInspectionMaster,Appendicesmaster])
+                     # Feedbacks,  
+                     # Messages, Messagecomments,Messagerecipients, Languages,
+                     Realestateagents,
+                     Realestateserviceproviders,Realestatepropertytenant,Realestatepropertiessubgroup,
+                     Realestatepropertyowner,Localestringresources,Localizedproperties,
+                     Realestatekeyhandover,Realestatemeterhandover,FurnitureInspectionMaster,
+                     Appendicesmaster])
 
 
 

@@ -18,6 +18,7 @@ class Realestateagents(BaseModel):
 
     class Meta:
         db_table = "Realestateagents"
+        verbose_name = "Agents"
         ordering = ['-id']
     def __str__(self):
         return str(self.name)
@@ -41,6 +42,7 @@ class Realestatepropertyowner(BaseModel):
 
     class Meta:
         db_table = "Realestatepropertyowner"
+        verbose_name = "Owners"
         ordering = ['-id']
 
     def __str__(self):
@@ -70,6 +72,7 @@ class Realestatepropertytenant(BaseModel):
     state = models.CharField(max_length=100,null=True,blank=True,verbose_name=("State"))  
     class Meta:
         db_table = "Realestatepropertytenant"
+        verbose_name = "Tenants"
         ordering = ['-id']
       
     def __str__(self):
@@ -91,6 +94,7 @@ class Messages(BaseModel):
 
     class Meta:
         db_table = "Messages"  
+        verbose_name = "not required"
         ordering = ['-id']
 
 class Messagecomments(BaseModel):
@@ -101,6 +105,7 @@ class Messagecomments(BaseModel):
 
     class Meta:
         db_table = "Messagecomments" 
+        verbose_name = "not required"
         ordering = ['-created_at']
 
 
@@ -112,6 +117,7 @@ class Messagerecipients(BaseModel):
 
     class Meta:
         db_table = "Messagerecipients" 
+        verbose_name = "not required"
         ordering = ['-created_at']
     
 
@@ -128,6 +134,7 @@ class Realestateproperties(BaseModel):
 
     class Meta:
         db_table = "Realestateproperties" 
+        verbose_name = "Properties"
         ordering = ['-id']
 
     def __str__(self):
@@ -137,6 +144,7 @@ class Feedbacks(BaseModel):
     comment = models.CharField(db_column='Comment', max_length=500,   )   
     class Meta:
         db_table = 'Feedbacks'
+        verbose_name = "not required"
         ordering = ['-id']
 
 
@@ -148,6 +156,7 @@ class Languages(BaseModel):
 
     class Meta:
         db_table = 'Languages'
+        verbose_name = "not required"
         ordering = ['-id']
     
 
@@ -159,6 +168,7 @@ class Localestringresources(BaseModel):
 
     class Meta:
         db_table = 'LocaleStringResources'
+        verbose_name = "not required"
         ordering = ['-id']
 
 class Localizedproperties(BaseModel):
@@ -171,6 +181,7 @@ class Localizedproperties(BaseModel):
 
     class Meta:
         db_table = 'LocalizedProperties'
+        verbose_name = "not required"
         ordering = ['-id']
 
 #model created for subgroup details in meeting 
@@ -183,6 +194,7 @@ class Realestatepropertiessubgroup(BaseModel):
 
     class Meta:
         db_table = 'Realestatepropertiessubgroup'
+        verbose_name = "Sub groups"
         ordering = ['-id']
 
 class Realestateobjects(BaseModel):
@@ -212,6 +224,7 @@ class Realestateobjects(BaseModel):
 
     class Meta:
         db_table = 'Realestateobjects'
+        verbose_name = "Objects"
         ordering = ['-id']
     def __str__(self):
         return str(self.object_name)
@@ -234,6 +247,7 @@ class Realestateobjectsdetail(BaseModel):
 
     class Meta:
         db_table = 'Realestateobjectsdetail'
+        verbose_name = "Object Details"
         ordering = ['-id']
 
     def __str__(self):
@@ -249,6 +263,7 @@ class Realestatekeyhandover(BaseModel):
    
     class Meta:
         db_table = 'Realestatekeyhandover'
+        verbose_name = "Keys"
         ordering = ['-id']
 
     def __str__(self):
@@ -286,6 +301,7 @@ class Realestatemeterhandover(BaseModel):
 
     class Meta:
         db_table = 'Realestatemeterhandover'
+        verbose_name = "Meters"
         ordering = ['-id']
 
     def __str__(self):
@@ -316,6 +332,7 @@ class Realestatepropertymanagement(BaseModel):
 
     class Meta:
         db_table = 'Realestatepropertymanagement'
+        verbose_name = "Property Managers"
         ordering = ['-id']
    
 
@@ -337,6 +354,7 @@ class Realestateserviceproviders(BaseModel):
 
     class Meta:
         db_table = 'Realestateserviceproviders'
+        verbose_name = "Service Providers"
         ordering = ['-id']
 
 
@@ -350,6 +368,7 @@ class Agenda(BaseModel):
     
     class Meta:
         db_table = 'Agenda'
+        verbose_name = "Agenda Template"
         ordering = ['-id']
 class AgendaDetails(BaseModel):
     agenda = models.ForeignKey(Agenda,related_name="agenda_detail",on_delete=models.CASCADE,verbose_name=("Agenda"))
@@ -357,6 +376,7 @@ class AgendaDetails(BaseModel):
 
     class Meta:
         db_table = 'AgendaDetails'
+        verbose_name = "Agenda Details"
         ordering = ['-id']
 class Quorums(BaseModel):
     types = (
@@ -370,6 +390,7 @@ class Quorums(BaseModel):
 
     class Meta:
         db_table = 'Quorums'
+        verbose_name = "Quorums"
         ordering = ['-id']
 
 class Votes(BaseModel):
@@ -404,6 +425,7 @@ class Votes(BaseModel):
     
     class Meta:
         db_table = 'Votes'
+        verbose_name = "Votes"
         ordering = ['-id']
 
 class Mettingtemplate(BaseModel):
@@ -413,6 +435,7 @@ class Mettingtemplate(BaseModel):
     
     class Meta:
         db_table = 'Mettingtemplate'
+        verbose_name = "Meeting Template"
         ordering = ['-id']
 
 
@@ -424,6 +447,7 @@ class Appendicesmaster(BaseModel):
 
     class Meta:
         db_table = 'Appendices_Master'
+        verbose_name = "Appendices"
         ordering = ['-id']
 
     def __str__(self):
