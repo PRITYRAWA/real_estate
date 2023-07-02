@@ -2,6 +2,7 @@ from django.db import models
 from django_countries.fields import CountryField
 from foundation.models import BaseModel
 from django.utils.translation import gettext_lazy as _
+from multiselectfield import MultiSelectField
 
 
 
@@ -231,8 +232,12 @@ class Realestateobjects(BaseModel):
     
 #object detail model
 class Realestateobjectsdetail(BaseModel):
+    CATEGORY_CHOICES = [
+        ('furniture_inspection', 'Furniture inspection'),
+        ('property_inspection', 'Property inspection'),
+    ]
     object_code = models.CharField(max_length=100,null=True,blank=True,verbose_name=("Object Code"))
-    category = models.CharField(max_length=100,null=True,blank=True,verbose_name=("Category"))
+    category = models.CharField(max_length=100, null=True, blank=True, choices=CATEGORY_CHOICES, verbose_name=("Category"))
     related_object = models.ForeignKey(Realestateobjects, on_delete=models.CASCADE,null=True,blank=True,related_name='object_detail',verbose_name=("Related Object"))
     related_property = models.ForeignKey(Realestateproperties, on_delete=models.CASCADE,null=True,blank=True,verbose_name=("Related Property"))
     object_name = models.TextField(verbose_name=("Object Name"))
@@ -254,6 +259,19 @@ class Realestateobjectsdetail(BaseModel):
         return str(self.object_name)
 
 class Realestatekeyhandover(BaseModel):
+    STATE_CHOICES = (
+        ('1_missing', '1 Missing'),
+        ('2_missing', '2 Missing'),
+        ('3_missing', '3 Missing'),
+    )
+    DETERIORATION_CHOICES = (
+        ('1_damaged', '1 Damaged'),
+        ('2_damaged', '2 Damaged'),
+        ('3_damaged', '3 Damaged'),
+    )
+    state = MultiSelectField(choices=STATE_CHOICES, max_length=30,null=True, blank=True, verbose_name="State")
+    deterioration = MultiSelectField(choices=DETERIORATION_CHOICES,max_length=30, null=True, blank=True, verbose_name="Deterioration")
+    others = models.CharField(max_length=50,null=True,blank=True)
     property = models.ForeignKey(Realestateproperties,on_delete=models.CASCADE, null=True, blank=True,verbose_name=("Property")) 
     object = models.ForeignKey(Realestateobjects,on_delete=models.CASCADE, null=True, blank=True,verbose_name=("Object")) 
     photo = models.ImageField(upload_to='master_key_photos/',null=True, blank=True,verbose_name=("Photo"))
@@ -286,6 +304,24 @@ class Realestatemeterhandover(BaseModel):
         ('user','user'),
         ('admin','admin'),
     ]
+    STATE_CHOICES = [
+        ('new', 'New'),
+        ('no_longer_works', 'No Longer Works'),
+        ('inaccessible', 'Inaccessible'),
+    ]
+    CLEANING_CHOICES = [
+        ('incomplete', 'Incomplete Cleaning'),
+    ]
+    DETERIORATION_CHOICES = [
+        ('leak', 'Leak'),
+        ('broken_glass', 'Broken Glass'),
+        ('damaged_items', 'Damaged Items'),
+        ('partially_erased', 'Partially Erased'),
+        ('erased', 'Erased'),
+    ]
+    ACCESSORIES_CHOICES = [
+        ('missing_accessories', 'Missing Accessories'),
+    ]
     name = models.CharField(max_length=300,null=True, blank=True,verbose_name=("Name"))
     property = models.ForeignKey(Realestateproperties,on_delete=models.CASCADE, null=True, blank=True,verbose_name=("Property")) 
     object = models.ForeignKey(Realestateobjects,on_delete=models.CASCADE, null=True, blank=True,verbose_name=("Object")) 
@@ -297,7 +333,11 @@ class Realestatemeterhandover(BaseModel):
     whochange = models.CharField(max_length=200,choices=WHO_CHANGES,null=True,blank=True,verbose_name=("Who Change"))
     company = models.CharField(max_length=100,choices=COMPANY_CHOICES,null=True,blank=True,verbose_name=("Company "))
     description = models.TextField(null=True,blank=True,verbose_name=("Description"))
-   
+    state = MultiSelectField(choices=STATE_CHOICES, max_length=30,null=True, blank=True, verbose_name=("State"))
+    cleaning = MultiSelectField(choices=CLEANING_CHOICES, max_length=30,null=True, blank=True, verbose_name=("Cleaning"))
+    deterioration = MultiSelectField(choices=DETERIORATION_CHOICES, max_length=30,null=True, blank=True, verbose_name=("Deterioration"))
+    accessories = MultiSelectField(choices=ACCESSORIES_CHOICES, max_length=30,null=True, blank=True, verbose_name=("Accessories"))
+    others = models.CharField(max_length=50,null=True,blank=True)
 
     class Meta:
         db_table = 'Realestatemeterhandover'
@@ -448,10 +488,32 @@ class Mettingtemplate(BaseModel):
 
 
 class Appendicesmaster(BaseModel):
+    STATE_CHOICES = [
+        ('satisfactory', 'Satisfactory'),
+        ('very_satisfactory', 'Very Satisfactory'),
+        ('good_enough', 'Good Enough'),
+        ('short', 'Short'),
+        ('to_repeat', 'To Repeat'),
+    ]
+    CLEANING_CHOICES = [
+        ('neat', 'Neat'),
+        ('well_maintained', 'Well Maintained'),
+        ('incomplete_cleaning', 'Incomplete Cleaning'),
+        ('mold', 'Mold'),
+        ('poorly_maintained', 'Poorly Maintained'),
+        ('very_poorly_maintained', 'Very Poorly Maintained'),
+        ('average_state_of_maintenance', 'Average State of Maintenance'),
+        ('trace_of_humidity', 'Trace of Humidity'),
+    ]
     photos = models.ImageField(upload_to='master_key_photos/',null=True, blank=True,verbose_name=("Photos"))
     count = models.IntegerField(default=0,verbose_name=("Count"),null=True,blank=True)
     description = models.TextField(null=True, blank=True,verbose_name=("Description"))
     name = models.CharField(max_length=300,null=True, blank=True,verbose_name=("Name"))
+    state = MultiSelectField(choices=STATE_CHOICES, max_length=30,null=True, blank=True, verbose_name=("State"))
+    cleaning = MultiSelectField(choices=CLEANING_CHOICES, max_length=30,null=True, blank=True, verbose_name=("Cleaning"))
+    others = models.CharField(max_length=50,null=True,blank=True)
+    is_done = models.BooleanField(default=False, verbose_name=("Is Done"),null=True,blank=True)
+    is_todo = models.BooleanField(default=False, verbose_name=("Is Todo"),null=True,blank=True)
 
     class Meta:
         db_table = 'Appendices_Master'

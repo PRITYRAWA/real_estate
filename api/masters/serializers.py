@@ -37,7 +37,7 @@ class MessagecommentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Messagecomments
         exclude = ('created_at', 'updated_at')
-        
+
 class RealestateserviceproviderSerializer(serializers.ModelSerializer):
     class Meta:
         model = Realestateserviceproviders
@@ -205,24 +205,9 @@ class FurnitureInspectionMasterSerializer(serializers.ModelSerializer):
         model = FurnitureInspectionMaster
         exclude = ('created_at', 'updated_at') 
 
-class TenderSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Tender
-        exclude = ('created_at', 'updated_at')
 
 class AppendicesMasterSerializer(serializers.ModelSerializer):
     class Meta:
         model = Appendicesmaster
         exclude = ('created_at', 'updated_at')
-
-class TkEnquiriesSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = TkGeneralEnquiries
-        exclude = ('created_at', 'updated_at')
-
-class TkInvoiceSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = TkInvoiceQuestion
-        exclude = ('created_at', 'updated_at')
-
 

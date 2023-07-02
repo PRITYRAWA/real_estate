@@ -167,3 +167,7 @@ class AppendicesTransSerializer(serializers.ModelSerializer):
         model = Appendicestransaction
         exclude = ('created_at', 'updated_at')
 
+class CheckinContactsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CheckinContacts
+        fields = '__all__'

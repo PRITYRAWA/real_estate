@@ -15,12 +15,14 @@ router.register(r'appendices', AppendTransViewSet,basename="properties"),
 router.register(r'room', ObjectListInspectionViewSet)
 router.register(r'comment', CommentViewSet)
 router.register(r'room-detail', ChildObjectListInspectionViewSet, basename='child-objectlistinspection')
+
+router.register(r'checkin-contacts', CheckinContactsViewSet, basename='checkin-contacts')
+
 urlpatterns = [
         path('generate-report/', generate_pdf_report, name='generate_report'),
         path('generate-report-furniture/', generate_pdf_report_furniture, name='generate_report-furniture'),
         path('inspection/<int:id>', generate_checkin_report, name='generate_pdf'),
 
 ]
-
 urlpatterns += router.urls
 

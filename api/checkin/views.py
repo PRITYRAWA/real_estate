@@ -46,11 +46,14 @@ class ObjectListInspectionViewSet(viewsets.ModelViewSet):
 
 
 class ChildObjectListInspectionViewSet(viewsets.ModelViewSet):
-    queryset = ObjectListInspection.objects.all()
     serializer_class = ChildDetailSerializer
     http_method_names = ['get', 'post', 'put', 'patch', 'delete']
 
-
+    def get_queryset(self):
+        queryset = ObjectListInspection.objects.all()
+        category = self.request.query_params.get('category')  
+        queryset = queryset.filter(category=category)
+        return queryset
 
 class KeysViewSet(viewsets.ModelViewSet):
     queryset = Realestatekey.objects.all()
@@ -471,3 +474,8 @@ def generate_checkin_report(request, id):
     pdf_response.write(pdf)
 
     return pdf_response
+
+class CheckinContactsViewSet(viewsets.ModelViewSet):
+    queryset = CheckinContacts.objects.all()
+    serializer_class = CheckinContactsSerializer
+    http_method_names = ['get', 'post']
