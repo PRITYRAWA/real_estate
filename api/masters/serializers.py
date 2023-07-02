@@ -37,17 +37,7 @@ class MessagecommentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Messagecomments
         exclude = ('created_at', 'updated_at')
-
-class TicketSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Tickets
-        exclude = ('created_at', 'updated_at')
-
-class TicketofferSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Ticketoffers
-        exclude = ('created_at', 'updated_at')
-
+        
 class RealestateserviceproviderSerializer(serializers.ModelSerializer):
     class Meta:
         model = Realestateserviceproviders
@@ -225,11 +215,6 @@ class AppendicesMasterSerializer(serializers.ModelSerializer):
         model = Appendicesmaster
         exclude = ('created_at', 'updated_at')
 
-class TkDamageSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = TicketDamage
-        exclude = ('created_at', 'updated_at')
-
 class TkEnquiriesSerializer(serializers.ModelSerializer):
     class Meta:
         model = TkGeneralEnquiries
@@ -240,27 +225,4 @@ class TkInvoiceSerializer(serializers.ModelSerializer):
         model = TkInvoiceQuestion
         exclude = ('created_at', 'updated_at')
 
-class TkPetSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = TkPetRequest
-        exclude = ('created_at', 'updated_at')
 
-class TkOrderKeySerializer(serializers.ModelSerializer):
-    class Meta:
-        model = TkOrderKey
-        exclude = ('created_at', 'updated_at')
-
-class TkPaymentSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = TkPaymentSlips
-        exclude = ('created_at', 'updated_at')
-
-class TkBankSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = TkBankDetails
-        exclude = ('created_at', 'updated_at')
-
-class TkOrderSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = TkOrderBadge
-        exclude = ('created_at', 'updated_at')
