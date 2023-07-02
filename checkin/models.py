@@ -46,7 +46,7 @@ class ObjectListInspection(BaseModel):
     category_type = models.CharField(max_length=30, null=True, blank=True, choices=CATEGORY_CHOICES, verbose_name=("Category_Type"))
     category = models.CharField(max_length=50, null=True, blank=True,verbose_name=("Category"))
     related_object = models.ForeignKey(Realestateobjects, on_delete=models.CASCADE,null=True,blank=True,verbose_name=("Related Object"))
-    object_name = models.TextField(verbose_name=("Object Name"))
+    object_name = models.CharField(max_length=50,null=True,blank=True,verbose_name=("Object Name"))
     object_description = models.CharField(max_length=100,null=True,blank=True,verbose_name="Object Description")   
     related_detail = models.ForeignKey('ObjectListInspection', on_delete=models.CASCADE, null=True, blank=True,verbose_name=("Related Detail"),related_name='child_details')
     new = models.BooleanField(blank=True,null=True,verbose_name=("New"))
