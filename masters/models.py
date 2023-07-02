@@ -236,8 +236,9 @@ class Realestateobjectsdetail(BaseModel):
         ('furniture_inspection', 'Furniture inspection'),
         ('property_inspection', 'Property inspection'),
     ]
-    object_code = models.CharField(max_length=100,null=True,blank=True,verbose_name=("Object Code"))
-    category = models.CharField(max_length=100, null=True, blank=True, choices=CATEGORY_CHOICES, verbose_name=("Category"))
+    object_code = models.CharField(max_length=15,null=True,blank=True,verbose_name=("Object Code"))
+    category_type = models.CharField(max_length=30, null=True, blank=True, choices=CATEGORY_CHOICES, verbose_name=("Category"))
+    category = models.CharField(max_length=50, null=True, blank=True, choices=CATEGORY_CHOICES, verbose_name=("Category"))
     related_object = models.ForeignKey(Realestateobjects, on_delete=models.CASCADE,null=True,blank=True,related_name='object_detail',verbose_name=("Related Object"))
     related_property = models.ForeignKey(Realestateproperties, on_delete=models.CASCADE,null=True,blank=True,verbose_name=("Related Property"))
     object_name = models.TextField(verbose_name=("Object Name"))

@@ -42,8 +42,9 @@ class ObjectListInspection(BaseModel):
     ]
     checkin = models.ForeignKey(CheckInOut, on_delete=models.CASCADE, null=True, blank=True)
     object_detail_list = models.ForeignKey(Realestateobjectsdetail, on_delete=models.CASCADE,null=True,blank=True,related_name='object_inspections')
-    object_code = models.CharField(max_length=100,null=True,blank=True,verbose_name=("Object Code"))
-    category = models.CharField(max_length=100, null=True, blank=True, choices=CATEGORY_CHOICES, verbose_name=("Category"))
+    object_code = models.CharField(max_length=15,null=True,blank=True,verbose_name=("Object Code"))
+    category_type = models.CharField(max_length=30, null=True, blank=True, choices=CATEGORY_CHOICES, verbose_name=("Category"))
+    category = models.CharField(max_length=50, null=True, blank=True, choices=CATEGORY_CHOICES, verbose_name=("Category"))
     related_object = models.ForeignKey(Realestateobjects, on_delete=models.CASCADE,null=True,blank=True,verbose_name=("Related Object"))
     object_name = models.TextField(verbose_name=("Object Name"))
     object_description = models.CharField(max_length=100,null=True,blank=True,verbose_name="Object Description")   
@@ -241,11 +242,10 @@ class Checkincomments(BaseModel):
     tenant_comment = models.CharField(max_length=500,null=True,blank=True)   
     office_comment = models.CharField(max_length=500,null=True,blank=True)   
     inspection_type = models.CharField(max_length=50, choices=INSPECTION_CHOICES, null=True, blank=True)
-    signatory = models.BooleanField(default=False)
-    email = models.BooleanField(default=False)
 
     class Meta:
         db_table = "Checkincomments" 
+        verbose_name = "Checkin Comment"
         ordering = ['-id']
 
 
@@ -254,14 +254,18 @@ class CheckinContacts(BaseModel):
     tenant_name = models.CharField(max_length=100, blank=True)
     tenant_email = models.EmailField(blank=True)
     tenant_tel = models.CharField(max_length=100, blank=True)
+    tenant_signatory = models.BooleanField(default=False)
+    send_email_tenant = models.BooleanField(default=False)
     managedby_name = models.CharField(max_length=100, blank=True)
     managedby_email = models.EmailField(blank=True)
     managedby_tel = models.CharField(max_length=100, blank=True)
+    manger_signatory = models.BooleanField(default=False)
+    send_email_manager = models.BooleanField(default=False)
     owner_name = models.CharField(max_length=100, blank=True)
     owner_email = models.EmailField(blank=True)
     owner_tel = models.CharField(max_length=100, blank=True)
-    signatory = models.BooleanField(default=False)
-    send_email = models.BooleanField(default=False)
+    owner_signatory = models.BooleanField(default=False)
+    send_email_owner = models.BooleanField(default=False)
 
     class Meta:
         db_table = "CheckinContacts"
