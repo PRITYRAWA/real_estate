@@ -322,6 +322,11 @@ class FurnitureInspectionMaster(BaseModel):
     def __str__(self):
         return f"{self.cleaning_type} - {self.pk}"
     
+    class Meta:
+        db_table = 'FurnitureInspectionMaster'
+        verbose_name = "Furniture Inspection Master"
+        ordering = ['-id']
+    
 class Realestatepropertymanagement(BaseModel):
     realestatepropertyid = models.OneToOneField(Realestateproperties, models.DO_NOTHING,verbose_name=_("Property") ) 
     realestateownerid = models.ForeignKey(Realestatepropertyowner, models.DO_NOTHING,verbose_name=_("Property Owner"))  
