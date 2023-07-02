@@ -131,14 +131,6 @@ class FurnitureInspection(BaseModel):
     def __str__(self):
         return f"{self.cleaning_type} - {self.pk}"
     
-# class Checkincomments(BaseModel):
-#     checkin = models.ForeignKey(CheckInOut, models.DO_NOTHING)   
-#     tenantcomment = models.CharField(max_length=500,null=True,blank=True)   
-#     comment = models.CharField(max_length=500,null=True,blank=True)   
-
-#     class Meta:
-#         db_table = "Checkincomments" 
-#         ordering = ['-created_at']
 
 class RentalDeduction(BaseModel):
     DEDUCTION_TYPES = [
@@ -186,23 +178,3 @@ class Checkincomments(BaseModel):
     class Meta:
         db_table = "Checkincomments" 
         ordering = ['-created_at']
-
-class Personmovein(BaseModel):
-    MOVE_IN_CHOICES = [
-        ('family', 'Family'),
-        ('single', 'Single'),
-        ('shared', 'Shared'),
-    ]
-    number_of_children = models.CharField(max_length=100,null=True,blank=True)
-    move_in_type = models.CharField(max_length=10, choices=MOVE_IN_CHOICES,null=True,blank=True)
-    first_name = models.CharField(max_length=100)
-    last_name = models.CharField(max_length=100)
-    email = models.EmailField()
-    phone_number = models.CharField(max_length=20)
-    birthday = models.DateField()
-    marital_status = models.CharField(max_length=20)
-    nationality = models.CharField(max_length=100)
-    address = models.CharField(max_length=200)
-
-    def __str__(self):
-        return self.first_name

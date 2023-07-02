@@ -167,14 +167,3 @@ class AppendicesTransSerializer(serializers.ModelSerializer):
         model = Appendicestransaction
         exclude = ('created_at', 'updated_at')
 
-class TenderSerializer(serializers.ModelSerializer):
-    
-    class Meta:
-        model = Tender
-        exclude = ('created_at', 'updated_at')
-
-class PersonmoveinSerializer(serializers.ModelSerializer):
-    
-    class Meta:
-        model = Personmovein
-        exclude = ('created_at', 'updated_at')
