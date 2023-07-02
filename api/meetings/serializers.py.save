@@ -202,3 +202,4 @@ class MeetingScheduleSerializer(serializers.ModelSerializer):
         instance.qr_code = qr_image_path
         instance.save()
         return instance
+>>>>>>> ba3c483def9cb424b1ef153af0076c8ae0692b1c
