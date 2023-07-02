@@ -32,6 +32,7 @@ class MeetingSchedule(BaseModel):
     quorum = models.ForeignKey(Quorums,related_name="quorums",on_delete=models.CASCADE)
     qr_code = models.ImageField(upload_to='qr_codes/', blank=True, null=True)
     status = models.TextField(max_length=50,choices= status,default='pending')
+    subassociation= models.CharField(max_length=100, blank=True, null=True)
     #voting_circle = models.ForeignKey(Realestatepropertyowner,related_name="voting_circles",on_delete=models.CASCADE)
 
     class Meta:
@@ -55,6 +56,7 @@ class MeetingVotingCircle(BaseModel):
     meeting = models.ForeignKey(MeetingSchedule,related_name="meeting_votingcircles",on_delete=models.CASCADE)
     participant_name=models.CharField(max_length=100, blank=False, null=False)
     email=models.CharField(max_length=100, blank=False, null=False)
+    email=models.CharField(max_length=100, blank=True, null=True)
     manageby = models.CharField(max_length=30,null=True,blank=True,verbose_name="Manage By")
     manageby_id = models.ForeignKey(Realestatepropertymanagement,null=True,blank=True,verbose_name="Manager Id",on_delete=models.CASCADE)
 
@@ -69,6 +71,11 @@ class MeetingParticipant(BaseModel):
     attendence_in_person= models.BooleanField(default=False)
     online_voting= models.BooleanField(default=False)
     meeting_attendence= models.BooleanField(default=False)
+    voting_attendence= models.BooleanField(default=False)
+    power_of_attroney= models.BooleanField(default=False)
+    attroney_attchment = models.FileField(upload_to="attachment", null=True, blank=True)
+    verified_attroney= models.BooleanField(default=False)
+
 
     class Meta:
         db_table = 'MeetingParticipant'

@@ -5,7 +5,7 @@ from masters.models import *
 admin.site.register([
                      Feedbacks,  Realestateagents,
                      Messages, Messagecomments,Messagerecipients,
-                     Realestateserviceproviders,Languages,Realestatepropertytenant,Realestatepropertiessubgroup,Realestatepropertyowner,Localestringresources,Localizedproperties,Realestatekeyhandover,Realestatemeterhandover,FurnitureInspectionMaster,Appendicesmaster])
+                     Realestateserviceproviders,Languages,Realestatepropertytenant,Realestatepropertiessubgroup,Realestatepropertyowner,Localestringresources,Localizedproperties,Realestatekeyhandover,Realestatemeterhandover,FurnitureInspectionMaster,Appendicesmaster,Tender])
 
 
 
@@ -65,15 +65,15 @@ class PropertyManagement(admin.ModelAdmin):
     def save_model(self, request, obj, form, change):
         manage_by=obj.manageby
         if not change:
-            print("id",obj.id)
             if manage_by == 'owner':
-                owner = obj.realestateownerid.id
-                record = Realestatepropertyowner.objects.get(id=owner)
-                print(record.email)
-                print("owner",owner)
+                obj.manageby_id = obj.realestateownerid.id
+                obj.manager_name = obj.realestateownerid.name
+                obj.manager_email = obj.realestateownerid.email
+                obj.manager_Phone = obj.realestateownerid.phonenumber
             if manage_by == 'agent':
-                agent = obj.realestateownerid
-                print("agent",agent)
-            if not change:  # Only populate the value if it's a new object
-                obj.some_field = "Value based on ID: {}".format(obj.id)
+                obj.manageby_id = obj.realestateagentid.id
+                obj.manager_name = obj.realestateagentid.name
+                obj.manager_email = obj.realestateagentid.email
+                obj.manager_Phone = obj.realestateagentid.phonenumber
+            obj.save()
         super().save_model(request, obj, form, change)

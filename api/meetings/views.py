@@ -33,6 +33,17 @@ class MeetingScheduleViewSet(viewsets.ModelViewSet):
             
         return Response('Scanned Sucessfully')
 
+    @action(detail=False, methods=['get'], name='get_meetings',url_path='get_meetings/(?P<id>[^/.]+)')
+    def get_meetings(self,request,id):
+        email = request.data.get['email']
+        properties = Realestatepropertymanagement.objects.filter(manageby_id=id,manager_email=email)
+        serializer = MeetingScheduleSerializer(properties,many=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        else:
+            return Response(serializer.errors)
+
 
 # Create your views here.
 class MeetingParticipantViewSet(viewsets.ModelViewSet):

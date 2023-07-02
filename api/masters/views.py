@@ -7,6 +7,7 @@ from checkin.models import *
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from django.http import HttpResponse
+from rest_framework.decorators import action
 from masters.utils import render_to_pdf #created in step 4
 
 
@@ -45,7 +46,15 @@ class MessagecommentsViewSet(viewsets.ModelViewSet):
     queryset = Messagecomments.objects.all()
     serializer_class = MessagecommentSerializer
 
+class TicketsViewSet(viewsets.ModelViewSet):
+    # end point to access Tickets Model.
+    queryset = Tickets.objects.all()
+    serializer_class = TicketSerializer
 
+class TicketoffersViewSet(viewsets.ModelViewSet):
+    # end point to access Ticketoffers Model.
+    queryset = Ticketoffers.objects.all()
+    serializer_class = TicketofferSerializer
 
 class RealestateserviceprovidersViewSet(viewsets.ModelViewSet):
     # end point to access Realestateserviceproviders Model.
@@ -147,6 +156,19 @@ class PropertyManagementViewSet(viewsets.ModelViewSet):
         else:
             print("errors",serializer.errors)
             
+    @action(detail=False, methods=['get'], name='get_manager',url_path='get_manager/(?P<id>[^/.]+)')
+    def get_manager(self, request, id):
+        try:
+            obj_id = request.data.get['obj_id']
+            if obj_id:
+                management = Realestatepropertymanagement.objects.filter(realestatepropertyid=id,realestateobjectid=obj_id).order_by('id').reverse()
+            else:
+                management = Realestatepropertymanagement.objects.filter(realestatepropertyid=id).order_by('id').reverse()
+            serializer = GetPropertymanagementserializer(management, many=True)
+            return Response(serializer.data)
+        except:
+            return Response("Invalid Data")
+            
         
     
         
@@ -155,7 +177,9 @@ class PropertyManagementViewSet(viewsets.ModelViewSet):
 
 
     
-
+class TenderViewSet(viewsets.ModelViewSet):
+    queryset = Tender.objects.all()
+    serializer_class = TenderSerializer
     
 class AppendMasterViewSet(viewsets.ModelViewSet):
     queryset = Appendicesmaster.objects.all()
@@ -185,3 +209,49 @@ class RealestateObjectDetailItemsViewSet(viewsets.ModelViewSet):
     http_method_names = ['get', 'post', 'put', 'patch', 'delete']
     
 
+class VacantPropertiesViewSet(viewsets.ModelViewSet):
+    serializer_class = RealestateobjectSerializer
+
+    def get_queryset(self):
+            return Realestateobjects.objects.filter(status='VACANT')
+
+
+class TkDamageViewSet(viewsets.ModelViewSet):
+    queryset = TicketDamage.objects.all()
+    serializer_class = TkDamageSerializer
+    http_method_names = ['get', 'post', 'put', 'patch', 'delete']
+
+class TkEnquiriesViewSet(viewsets.ModelViewSet):
+    queryset = TkGeneralEnquiries.objects.all()
+    serializer_class = TkEnquiriesSerializer
+    http_method_names = ['get', 'post', 'put', 'patch', 'delete']
+
+class TkInvoiceViewSet(viewsets.ModelViewSet):
+    queryset = TkInvoiceQuestion.objects.all()
+    serializer_class = TkInvoiceSerializer
+    http_method_names = ['get', 'post', 'put', 'patch', 'delete']
+
+class TkPetViewSet(viewsets.ModelViewSet):
+    queryset = TkPetRequest.objects.all()
+    serializer_class = TkPetSerializer
+    http_method_names = ['get', 'post', 'put', 'patch', 'delete']
+
+class TkOrderKeyViewSet(viewsets.ModelViewSet):
+    queryset = TkOrderKey.objects.all()
+    serializer_class = TkOrderKeySerializer
+    http_method_names = ['get', 'post', 'put', 'patch', 'delete']
+
+class TkPaymentSlipViewSet(viewsets.ModelViewSet):
+    queryset = TkPaymentSlips.objects.all()
+    serializer_class = TkPaymentSerializer
+    http_method_names = ['get', 'post', 'put', 'patch', 'delete']
+
+class TkBankDetailViewSet(viewsets.ModelViewSet):
+    queryset = TkBankDetails.objects.all()
+    serializer_class = TkBankSerializer
+    http_method_names = ['get', 'post', 'put', 'patch', 'delete']
+
+class TkOrderBadgeViewSet(viewsets.ModelViewSet):
+    queryset = TkOrderBadge.objects.all()
+    serializer_class = TkOrderSerializer
+    http_method_names = ['get', 'post', 'put', 'patch', 'delete']
