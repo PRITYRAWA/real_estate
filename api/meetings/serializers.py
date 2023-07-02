@@ -44,7 +44,7 @@ class VotingCircleSerializer(serializers.ModelSerializer):
             "manageby_id"
        
         )
-
+#create custom serializer for meeting.
 class MeetingScheduleSerializer(serializers.ModelSerializer):
     meeting_agendas = MeetingAgendaSerializer(many=True)
     meeting_participants = MeetingParticipantSerializer(many=True,read_only=True)
