@@ -219,7 +219,7 @@ class Realestateobjects(BaseModel):
     value = models.FloatField(default=0.0,  null=True, blank=True,verbose_name=("Value")) 
     surfacearea = models.IntegerField(blank=True, null=True,verbose_name=("Surface Area"))   
     isactive = models.BooleanField(default=False,verbose_name=("Is Active"))   
-    attachments = models.TextField(blank=True, null=True,verbose_name=("Attachments"))   
+    attachments = models.FileField(upload_to='attachement/',blank=True, null=True,verbose_name=("Attachments"))   
     status = models.CharField(max_length=10,choices=STATUS_CHOICES,default='VACANT',null=True,blank=True,verbose_name=("Status"))
 
     class Meta:
@@ -328,12 +328,15 @@ class FurnitureInspectionMaster(BaseModel):
         ordering = ['-id']
     
 class Realestatepropertymanagement(BaseModel):
-    realestatepropertyid = models.OneToOneField(Realestateproperties, models.DO_NOTHING,verbose_name=_("Property") ) 
-    realestateownerid = models.ForeignKey(Realestatepropertyowner, models.DO_NOTHING,verbose_name=_("Property Owner"))  
-    realestateagentid = models.ForeignKey(Realestateagents, models.DO_NOTHING,verbose_name=_("Property Agent")) 
-    realestateobjectid = models.ForeignKey(Realestateobjects, models.DO_NOTHING,verbose_name=_("Property Object"))
+    realestatepropertyid = models.OneToOneField(Realestateproperties, models.PROTECT,verbose_name=_("Property") ) 
+    realestateownerid = models.ForeignKey(Realestatepropertyowner, models.PROTECT,verbose_name=_("Property Owner"))  
+    realestateagentid = models.ForeignKey(Realestateagents, models.PROTECT,null=True,blank=True,verbose_name=_("Property Agent")) 
+    realestateobjectid = models.ForeignKey(Realestateobjects, models.PROTECT,null=True,blank=True,verbose_name=_("Property Object"))
     manageby = models.CharField(max_length=10, choices=(('owner', 'Owner'), ('agent', 'Agent')),verbose_name=_("Manage By"))
-    manageby_id = models.CharField(max_length=100,null=True,blank=True,verbose_name=_("Manager Id"))
+    manageby_id = models.CharField(max_length=100,null=True,blank=True,editable=False,verbose_name=_("Manager Id"))
+    manager_name = models.CharField(max_length=100,null=True,blank=True,editable=False,verbose_name=_("Manager Name"))
+    manager_email = models.CharField(max_length=100,null=True,blank=True,editable=False,verbose_name=_("Manager Email"))
+    manager_Phone = models.CharField(max_length=100,null=True,blank=True,editable=False,verbose_name=_("Manager Phone"))
 
     class Meta:
         db_table = 'Realestatepropertymanagement'
