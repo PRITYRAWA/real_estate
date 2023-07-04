@@ -251,7 +251,7 @@ class Realestateobjectsdetail(BaseModel):
     inorder = models.BooleanField(blank=True,null=True,verbose_name=("In Order"),default=False)
     normal_wear = models.BooleanField(blank=True,null=True,verbose_name=("Normal Wear"),default=False)
     notes = models.TextField(blank=True, null=True,verbose_name=("Notes"))
-    image = models.ImageField(upload_to='object_images_master/',verbose_name=("Image"))
+    image = models.ImageField(upload_to='object_images_master/',null=True,blank=True,verbose_name=("Image"))
     count = models.IntegerField(default=0,verbose_name=("Count"),null=True,blank=True)
 
     class Meta:
@@ -446,9 +446,13 @@ class Quorums(BaseModel):
         ("object", ("Object Votes")),
         ("value", ("Value Votes")),
     )
+    condition=(
+        ("greater than or equals to",(">=")),
+        ("greater than",(">")),
+    )
     voting_type=models.CharField(max_length=20, choices=types,verbose_name=("Voting Type"))
     present_votes=models.IntegerField(blank=False, null=False,verbose_name=("Present Votes"))
-    condition = models.CharField(max_length=20, blank=False, null=False,verbose_name=("Condition"))
+    condition = models.CharField(max_length=30,choices=condition, blank=False, null=False,verbose_name=("Condition"))
 
     class Meta:
         db_table = 'Quorums'
@@ -456,7 +460,7 @@ class Quorums(BaseModel):
         ordering = ['-id']
     
     def __str__(self):
-        return str(self.condition)
+        return str(self.voting_type)
 
 class Votes(BaseModel):
     
@@ -480,11 +484,15 @@ class Votes(BaseModel):
         ("qualified",("qualified Majority")),
         ("unanimous",("Unanimous Vote Tab")),
     )
+    condition=(
+        ("greater than or equals to",(">=")),
+        ("greater than",(">")),
+    )
     quorums = models.ForeignKey(Quorums,related_name="votes_detail",on_delete=models.PROTECT,verbose_name=("Quorums"))
     tabs = models.CharField(max_length=50, choices=tabs, default='qualified',verbose_name=("Tabs"))
     voting_type=models.CharField(max_length=50, choices=types,verbose_name=("Voting Type"))
     majority=models.IntegerField(blank=False, null=False,verbose_name=("Majority"))
-    condition = models.CharField(max_length=50, blank=False, null=False,verbose_name=("Condition"))
+    condition = models.CharField(max_length=30,choices=condition, blank=False, null=False,verbose_name=("Condition"))
     basic_set=models.CharField(max_length=50, choices=sets,verbose_name=("Basic Set"))
     tie_case= models.CharField(max_length=50, choices=cases,verbose_name=("Tie Case"))
     
@@ -494,7 +502,7 @@ class Votes(BaseModel):
         ordering = ['-id']
     
     def __str__(self):
-        return str(self.condition)
+        return str(self.voting_type)
 
 class Mettingtemplate(BaseModel):
     quorum = models.ForeignKey(Quorums,related_name="quorum",on_delete=models.PROTECT,verbose_name=("Quorums"))

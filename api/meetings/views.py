@@ -28,6 +28,14 @@ class MeetingScheduleViewSet(viewsets.ModelViewSet):
             return Response(serializer.data)
         else:
             return Response(serializer.errors)
+        
+    def list(self,request):
+        try:
+            management = MeetingSchedule.objects.filter().order_by('id').reverse()
+            serializer = GetMeetingScheduleSerializer(management, many=True)
+            return Response(serializer.data)
+        except Exception as e:
+            return Response(str(e))
 
 
     @action(detail=False, methods=['post'], name='scan_qr_code',url_path='scan_qr_code/(?P<id>[^/.]+)')
