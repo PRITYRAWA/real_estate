@@ -92,6 +92,16 @@ class SubgroupViewSet(viewsets.ModelViewSet):
     # end point to access Realestatepersons Model.
     queryset = Realestatepropertiessubgroup.objects.all()
     serializer_class = Subgroupserializer
+    
+    @action(detail=False, methods=['get'], name='get_subgroup',url_path='get_subgroup/(?P<id>[^/.]+)')
+    def get_subgroup(self, request, id):
+	try:
+		subgroup = Realestatepropertiessubgroup.objects.filter(property=id).order_by('id').reverse()
+		serializer = Subgroupserializer(subgroup, many=True)
+		return Response(serializer.data)
+	except Exception as e:
+	   return Response(str(e))
+
 
 class RealestatekeysViewSet(viewsets.ModelViewSet):
     queryset = Realestatekeyhandover.objects.all()
@@ -127,37 +137,38 @@ class PropertyManagementViewSet(viewsets.ModelViewSet):
             management = Realestatepropertymanagement.objects.filter().order_by('id').reverse()
             serializer = GetPropertymanagementserializer(management, many=True)
             return Response(serializer.data)
-        except:
-            return Response("Invalid Data")
+        except Exception as e:
+            return Response(str(e))
     
     def retrieve(self, request, pk=None):
         try:
             management = Realestatepropertymanagement.objects.filter(id=pk).order_by('id').reverse()
             serializer = GetPropertymanagementserializer(management, many=True)
             return Response(serializer.data)
-        except:
-            return Response("Invalid Data")
+        except Exception as e:
+            return Response(str(e))
     
     def create(self, request):
-        serializer = CreatePropertymanagementserializer(data=request.data)
+        serializer = CreatePropertymanagementserializer(data=request.data,,context={'request': request})
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)
         else:
-            print("errors",serializer.errors)
+            return Response(serializer.errors)
             
     @action(detail=False, methods=['get'], name='get_manager',url_path='get_manager/(?P<id>[^/.]+)')
     def get_manager(self, request, id):
         try:
-            obj_id = request.data.get['obj_id']
+            obj_id = request.data.get('obj_id')
+            print("obj_id")
             if obj_id:
                 management = Realestatepropertymanagement.objects.filter(realestatepropertyid=id,realestateobjectid=obj_id).order_by('id').reverse()
             else:
                 management = Realestatepropertymanagement.objects.filter(realestatepropertyid=id).order_by('id').reverse()
             serializer = GetPropertymanagementserializer(management, many=True)
             return Response(serializer.data)
-        except:
-            return Response("Invalid Data")
+        except Exception as e:
+            return Response(str(e))
     
 class AppendMasterViewSet(viewsets.ModelViewSet):
     queryset = Appendicesmaster.objects.all()

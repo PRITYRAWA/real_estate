@@ -57,7 +57,7 @@ class MeetingVotingCircle(BaseModel):
     participant_name=models.CharField(max_length=100, blank=False, null=False)
     email=models.CharField(max_length=100, blank=False, null=False)
     manageby = models.CharField(max_length=30,null=True,blank=True,verbose_name="Manage By")
-    manageby_id = models.ForeignKey(Realestatepropertymanagement,null=True,blank=True,verbose_name="Manager Id",on_delete=models.CASCADE)
+    manageby_id = models.CharField(max_length=30,null=True,blank=True,verbose_name="Manager Id")
 
     class Meta:
         db_table = 'MeetingVotingCircle'

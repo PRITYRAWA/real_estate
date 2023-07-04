@@ -369,15 +369,15 @@ class FurnitureInspectionMaster(BaseModel):
         ordering = ['-id']
     
 class Realestatepropertymanagement(BaseModel):
-    realestatepropertyid = models.OneToOneField(Realestateproperties, models.PROTECT,verbose_name=_("Property") ) 
+    realestatepropertyid = models.ForeignKey(Realestateproperties, models.PROTECT,verbose_name=_("Property") ) 
     realestateownerid = models.ForeignKey(Realestatepropertyowner, models.PROTECT,verbose_name=_("Property Owner"))  
     realestateagentid = models.ForeignKey(Realestateagents, models.PROTECT,null=True,blank=True,verbose_name=_("Property Agent")) 
     realestateobjectid = models.ForeignKey(Realestateobjects, models.PROTECT,null=True,blank=True,verbose_name=_("Property Object"))
     manageby = models.CharField(max_length=10, choices=(('owner', 'Owner'), ('agent', 'Agent')),verbose_name=_("Manage By"))
-    manageby_id = models.CharField(max_length=100,null=True,blank=True,editable=False,verbose_name=_("Manager Id"))
-    manager_name = models.CharField(max_length=100,null=True,blank=True,editable=False,verbose_name=_("Manager Name"))
-    manager_email = models.CharField(max_length=100,null=True,blank=True,editable=False,verbose_name=_("Manager Email"))
-    manager_Phone = models.CharField(max_length=100,null=True,blank=True,editable=False,verbose_name=_("Manager Phone"))
+    manageby_id = models.CharField(max_length=100,null=True,blank=True,verbose_name=_("Manager Id"))
+    manager_name = models.CharField(max_length=100,null=True,blank=True,verbose_name=_("Manager Name"))
+    manager_email = models.CharField(max_length=100,null=True,blank=True,verbose_name=_("Manager Email"))
+    manager_Phone = models.CharField(max_length=100,null=True,blank=True,verbose_name=_("Manager Phone"))
 
     class Meta:
         db_table = 'Realestatepropertymanagement'

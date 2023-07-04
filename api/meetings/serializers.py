@@ -60,15 +60,15 @@ class MeetingScheduleSerializer(serializers.ModelSerializer):
             "object",
             "subgroup",
             "chairman",
-            "mintue_taker",
+            "minute_taker",
             "meeting_date",
             "meeting_time",
             "date_defined",
             "visible_to_ownership_app",
             "submission_deadline",
-            "dispatch_invitaion",
+            "dispatch_invitation",
             "online_voting",
-            "attendence_in_person",
+            "attendance_in_person",
             "allow_power_of_attorney",
             "days_before_the_metting",
             "cover_picture_for_presenation",
@@ -90,8 +90,8 @@ class MeetingScheduleSerializer(serializers.ModelSerializer):
         #participants_detail = data.pop('meeting_participants', None)
         votingcircle_detail = data.pop('meeting_votingcircles', None)
         print("validateddata",data)
-        
-
+        dates = self.context.get('request').data
+        meeting_date = dates.pop('meeting_date',None)
         instance = model.objects.create(**data)
 
         agenda_list = []
@@ -130,6 +130,7 @@ class MeetingScheduleSerializer(serializers.ModelSerializer):
         qr_image.save(settings.MEDIA_ROOT / qr_image_path)
 
         instance.qr_code = qr_image_path
+        instance.meeting_date = meeting_date
         instance.save()
         return instance
     
@@ -141,7 +142,7 @@ class MeetingScheduleSerializer(serializers.ModelSerializer):
         votingcircle_detail = data.pop('meeting_votingcircles', None)
         agenda_detailss = validated_data.pop('meeting_agendas', None)
         votingcircle_details = validated_data.pop('meeting_votingcircles', None)
-
+        meeting_date = data.pop('meeting_date',None)
         # update the parent model.
         super(self.__class__, self).update(instance, validated_data)
         # update the related child model.
@@ -200,5 +201,6 @@ class MeetingScheduleSerializer(serializers.ModelSerializer):
         qr_image.save(settings.MEDIA_ROOT / qr_image_path)
 
         instance.qr_code = qr_image_path
+        instance.meeting_date = meeting_date
         instance.save()
         return instance

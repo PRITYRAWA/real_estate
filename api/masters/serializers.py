@@ -150,7 +150,7 @@ class CreatePropertymanagementserializer(serializers.ModelSerializer):
     def create(self, validated_data):
         data = self.context.get('request').data
         model = self.Meta.model
-        instance = model.objects.create(**data)
+        instance = model.objects.create(**validated_data)
         if instance.manageby == 'owner':
                 instance.manageby_id = instance.realestateownerid.id
                 instance.manager_name = instance.realestateownerid.name

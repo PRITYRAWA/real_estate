@@ -11,6 +11,14 @@ from rest_framework.response import Response
 class MeetingScheduleViewSet(viewsets.ModelViewSet):
     queryset = MeetingSchedule.objects.all()
     serializer_class = MeetingScheduleSerializer
+    
+    def create(self, request):
+        serializer = MeetingScheduleSerializer(data=request.data, context={'request': request})
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        else:
+            return Response(serializer.errors)
 
     def update(self, request, pk=None):
         instance = MeetingSchedule.objects.get(pk=pk)
@@ -33,16 +41,24 @@ class MeetingScheduleViewSet(viewsets.ModelViewSet):
             
         return Response('Scanned Sucessfully')
 
-    @action(detail=False, methods=['get'], name='get_meetings',url_path='get_meetings/(?P<id>[^/.]+)')
-    def get_meetings(self,request,id):
-        email = request.data.get['email']
-        properties = Realestatepropertymanagement.objects.filter(manageby_id=id,manager_email=email)
-        serializer = MeetingScheduleSerializer(properties,many=True)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)
-        else:
-            return Response(serializer.errors)
+    @action(detail=False, methods=['get'], name='get_meetings')
+    def get_meetings(self,request):
+        try:
+            email = request.query_params.get('email')
+            meetings = MeetingVotingCircle.objects.filter(email=email)
+            print("meetings_particpants")
+            meeting_list=[]
+            if meetings:
+                for records in meetings:
+                    print(records.meeting)
+                    meeting_list.append(records.meeting.id)
+                meeting_details = MeetingSchedule.objects.filter(id__in=meeting_list)
+                serializer = MeetingScheduleSerializer(meeting_details,many=True)
+                return Response(serializer.data)
+            else:
+                return Response("No Meeting found for this user")
+        except Exception as e:
+            return Response(str(e))
 
 
 # Create your views here.

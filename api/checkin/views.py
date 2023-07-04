@@ -478,4 +478,11 @@ def generate_checkin_report(request, id):
 class CheckinContactsViewSet(viewsets.ModelViewSet):
     queryset = CheckinContacts.objects.all()
     serializer_class = CheckinContactsSerializer
-    http_method_names = ['get', 'post']
+    http_method_names = ['get', 'post', 'put', 'patch', 'delete']
+    
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        checkin_id = self.request.query_params.get('checkin')
+        if checkin_id :
+            queryset = queryset.filter(checkin=checkin_id)
+        return queryset
