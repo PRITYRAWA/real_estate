@@ -95,12 +95,12 @@ class SubgroupViewSet(viewsets.ModelViewSet):
     
     @action(detail=False, methods=['get'], name='get_subgroup',url_path='get_subgroup/(?P<id>[^/.]+)')
     def get_subgroup(self, request, id):
-	try:
-		subgroup = Realestatepropertiessubgroup.objects.filter(property=id).order_by('id').reverse()
-		serializer = Subgroupserializer(subgroup, many=True)
-		return Response(serializer.data)
-	except Exception as e:
-	   return Response(str(e))
+        try:
+            subgroup = Realestatepropertiessubgroup.objects.filter(property=id).order_by('id').reverse()
+            serializer = Subgroupserializer(subgroup, many=True)
+            return Response(serializer.data)
+        except Exception as e:
+            return Response(str(e))
 
 
 class RealestatekeysViewSet(viewsets.ModelViewSet):
@@ -149,7 +149,7 @@ class PropertyManagementViewSet(viewsets.ModelViewSet):
             return Response(str(e))
     
     def create(self, request):
-        serializer = CreatePropertymanagementserializer(data=request.data,,context={'request': request})
+        serializer = CreatePropertymanagementserializer(data=request.data,context={'request': request})
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)
