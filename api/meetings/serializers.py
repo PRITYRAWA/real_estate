@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from meetings.models import *
+from masters.models import *
 import qrcode
 from PIL import Image
 from django.conf import settings
@@ -18,6 +19,7 @@ class MeetingAgendaSerializer(serializers.ModelSerializer):
     
 class MeetingParticipantSerializer(serializers.ModelSerializer):
     meeting = serializers.PrimaryKeyRelatedField(read_only=True)
+    participant = serializers.CharField(source='participant.participant_name', read_only=True)
     class Meta:
         model = MeetingParticipant
         fields = (
@@ -49,6 +51,12 @@ class MeetingScheduleSerializer(serializers.ModelSerializer):
     meeting_agendas = MeetingAgendaSerializer(many=True)
     meeting_participants = MeetingParticipantSerializer(many=True,read_only=True)
     meeting_votingcircles = VotingCircleSerializer(many=True)
+    property = serializers.CharField(source='property.name', read_only=True)
+    object = serializers.CharField(source='object.object_name', read_only=True)
+    subgroup = serializers.CharField(source='subgroup.name', read_only=True)
+    chairman = serializers.CharField(source='chairman.name', read_only=True)
+    minute_taker = serializers.CharField(source='minute_taker.name', read_only=True)
+    quorum = serializers.CharField(source='quorum.condition', read_only=True)
 
     class Meta:
         model = MeetingSchedule

@@ -22,10 +22,13 @@ class PersonVisit(BaseModel):
     class Meta:
         db_table = 'PersonVisit'
         ordering = ['-id']
+    
+    def __str__(self):
+        return str(self.first_name)+' '+str(self.last_name)
 
 class Tender(BaseModel):
-    property = models.ForeignKey(Realestateproperties,on_delete=models.CASCADE, null=True, blank=True,verbose_name=("Property")) 
-    object = models.ForeignKey(Realestateobjects,on_delete=models.CASCADE, null=True, blank=True,verbose_name=("Object")) 
+    property = models.ForeignKey(Realestateproperties,on_delete=models.PROTECT, null=True, blank=True,verbose_name=("Property")) 
+    object = models.ForeignKey(Realestateobjects,on_delete=models.PROTECT, null=True, blank=True,verbose_name=("Object")) 
     net_rent_total_per_month = models.DecimalField(max_digits=10, decimal_places=2, null=True)
     net_rent_total_per_year = models.DecimalField(max_digits=10, decimal_places=2, null=True)
     incidental_cost = models.DecimalField(max_digits=10, decimal_places=2, null=True)

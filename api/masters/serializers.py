@@ -1,7 +1,9 @@
 from rest_framework import serializers
 from masters.models import *
 from tasks.models import *
+
 class RealestateobjectSerializer(serializers.ModelSerializer):
+    realestatepropertyid = serializers.CharField(read_only=True, source='realestatepropertyid.name')
     class Meta:
         model = Realestateobjects
         exclude = ('created_at', 'updated_at')
@@ -29,16 +31,21 @@ class RealestateagentSerializer(serializers.ModelSerializer):
         exclude = ('created_at', 'updated_at')
 
 class MessageSerializer(serializers.ModelSerializer):
+    realestateagentid = serializers.CharField(read_only=True, source='realestateagentid.name')
+    createdrealestateownerid = serializers.CharField(read_only=True, source='createdrealestateownerid.name')
     class Meta:
         model = Messages
         exclude = ('created_at', 'updated_at')
 
 class MessagecommentSerializer(serializers.ModelSerializer):
+    messageid = serializers.CharField(read_only=True, source='messageid.subject')
+    realestateownerid = serializers.CharField(read_only=True, source='realestateownerid.name')
     class Meta:
         model = Messagecomments
         exclude = ('created_at', 'updated_at')
 
 class RealestateserviceproviderSerializer(serializers.ModelSerializer):
+    realestateagentid = serializers.CharField(read_only=True, source='realestateagentid.name')
     class Meta:
         model = Realestateserviceproviders
         exclude = ('created_at', 'updated_at')
@@ -62,6 +69,7 @@ class RealestatetenantSerializer(serializers.ModelSerializer):
         exclude = ('created_at', 'updated_at')
 
 class AgendaDetailSerializer(serializers.ModelSerializer):
+    agenda = serializers.CharField(source='agenda.topic', read_only=True)
     class Meta:
         model = AgendaDetails
         exclude = ('created_at', 'updated_at')
@@ -79,6 +87,7 @@ class Agendaserializer(serializers.ModelSerializer):
         )
 
 class Votesserializer(serializers.ModelSerializer):
+    quorums = serializers.CharField(source='quorums.condition', read_only=True)
     class Meta:
         model = Votes
         exclude = ('created_at', 'updated_at')
@@ -97,11 +106,16 @@ class Quorumsserializer(serializers.ModelSerializer):
        
 
 class Mettingtemplateserializer(serializers.ModelSerializer):
+    quorum = serializers.CharField(source='quorum.condition', read_only=True)
+    agenda = serializers.CharField(source='agenda.topic', read_only=True)
+    voting_circle = serializers.CharField(source='voting_circle.manager_name', read_only=True)
+
     class Meta:
         model = Mettingtemplate
         exclude = ('created_at', 'updated_at')
 
 class Subgroupserializer(serializers.ModelSerializer):
+    property = serializers.CharField(read_only=True, source='property.name')
     class Meta:
         model = Realestatepropertiessubgroup
         exclude = ('created_at', 'updated_at')
@@ -112,6 +126,8 @@ class Subgroupserializer(serializers.ModelSerializer):
 #         exclude = ('created_at', 'updated_at', 'createdby', 'lastmodifiedby')
     
 class RealEstateKeysSerializer(serializers.ModelSerializer):
+    property = serializers.CharField(read_only=True, source="property.name")
+    object = serializers.CharField(read_only=True, source="object.object_name")
     class Meta:
         model = Realestatekeyhandover
         exclude = ('created_at', 'updated_at')
@@ -171,13 +187,18 @@ class CreatePropertymanagementserializer(serializers.ModelSerializer):
         exclude = ('created_at', 'updated_at')
 
 class RealEstateMeterssSerializer(serializers.ModelSerializer):
+    property = serializers.CharField(read_only=True, source='property.name')
+    object = serializers.CharField(read_only=True, source='object.object_name')
     class Meta:
         model = Realestatemeterhandover
         exclude = ('created_at', 'updated_at')
 
 class RealestateobjectsdetailSerializer(serializers.ModelSerializer):
     child_details = serializers.SerializerMethodField()
-
+    related_object = serializers.CharField(read_only=True, source='related_object.object_name')
+    related_property = serializers.CharField(read_only=True, source='related_property.name')
+    related_detail = serializers.CharField(read_only=True, source='related_detail.object_name')
+    
     class Meta:
         model = Realestateobjectsdetail
         exclude = ('created_at', 'updated_at')
@@ -201,6 +222,8 @@ class RealEstateObjectsDetailsSerializer(serializers.ModelSerializer):
         exclude = ('created_at', 'updated_at')
 
 class FurnitureInspectionMasterSerializer(serializers.ModelSerializer):
+    property = serializers.CharField(read_only=True, source='property.name')
+    object = serializers.CharField(read_only=True, source='object.object_name')
     class Meta:
         model = FurnitureInspectionMaster
         exclude = ('created_at', 'updated_at') 

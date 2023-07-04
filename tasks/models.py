@@ -17,11 +17,11 @@ class Tickets(BaseModel):
         ('Messages','Messages')
     )
     tickettype_id=models.CharField(max_length=20, choices= ticket_choice ,default='draft',verbose_name=("ticket choice"))
-    manageby_id = models.ForeignKey(Realestatepropertymanagement,models.PROTECT,null=True,blank=True,verbose_name=_("Manage By"))
-    property_id = models.ForeignKey(Realestateproperties, models.PROTECT,verbose_name=_("Property"))   
-    object_id = models.ForeignKey(Realestateobjects, models.PROTECT, blank=True, null=True,verbose_name=_("Object"))   
-    tenant_id = models.ForeignKey(Realestatepropertytenant, models.PROTECT,verbose_name=_("Tenant"))   
-    responsible_user_id = models.ForeignKey(Realestatepropertyowner, models.PROTECT,related_name='tickets_responsibleuserid_set',verbose_name=("Responsible User"))
+    manageby_id = models.ForeignKey(Realestatepropertymanagement,on_delete=models.PROTECT,null=True,blank=True,verbose_name=_("Manage By"))
+    property_id = models.ForeignKey(Realestateproperties, on_delete=models.PROTECT,verbose_name=_("Property"))   
+    object_id = models.ForeignKey(Realestateobjects, on_delete=models.PROTECT, blank=True, null=True,verbose_name=_("Object"))   
+    tenant_id = models.ForeignKey(Realestatepropertytenant, on_delete=models.PROTECT,verbose_name=_("Tenant"))   
+    responsible_user_id = models.ForeignKey(Realestatepropertyowner, on_delete=models.PROTECT,related_name='tickets_responsibleuserid_set',verbose_name=("Responsible User"))
     title = models.CharField(max_length=50,null=True,blank=True,verbose_name=("title"))   
     message = models.CharField(max_length=250, blank=True, null=True,verbose_name=("Message"))   
     reporting_text = models.CharField(max_length=100, blank=True, null=True,verbose_name=("Reporting Text"))   
@@ -38,10 +38,13 @@ class Tickets(BaseModel):
         db_table = 'Tickets' 
         verbose_name = 'Tickets'
         ordering = ['-id']
+    
+    def __str__(self):
+        return str(self.title)
 
 class Ticketoffers(BaseModel):
     ticket = models.ForeignKey(Tickets,on_delete=models.PROTECT,verbose_name=("Ticket"))   
-    realestate_service_provider_id = models.ForeignKey(Realestateserviceproviders, models.PROTECT,verbose_name=("Service Provider"))   
+    realestate_service_provider_id = models.ForeignKey(Realestateserviceproviders, on_delete=models.PROTECT,verbose_name=("Service Provider"))   
     request_note = models.CharField(max_length=150, blank=True, null=True,verbose_name=("Request Note"))   
     offer_note = models.CharField(max_length=100, blank=True, null=True,verbose_name=("Note"))   
     price = models.DecimalField(max_digits=18, decimal_places=2, blank=True, null=True,verbose_name=("Price"))   
@@ -62,6 +65,9 @@ class Ticketoffers(BaseModel):
         db_table = 'Ticketoffers' 
         verbose_name = 'Ticket_offers'
         ordering = ['-id']
+    
+    def __str__(self):
+        return str(self.ticket.title)
    
 
 class TKDamageReport(BaseModel):
@@ -85,6 +91,8 @@ class TKDamageReport(BaseModel):
         db_table = 'TKDamageReport'
         ordering = ['-id']
 
+    def __str__(self):
+        return str(self.ticket.title)
 
 
 class TkGeneralEnquiries(BaseModel):
@@ -94,6 +102,9 @@ class TkGeneralEnquiries(BaseModel):
     class Meta:
         db_table = 'Generalenquiries'
         ordering = ['-id']
+    
+    def __str__(self):
+        return str(self.ticket.title)
 
 class TkInvoiceQuestion(BaseModel):
     ticket = models.ForeignKey(Tickets,on_delete=models.PROTECT)   
@@ -105,6 +116,9 @@ class TkInvoiceQuestion(BaseModel):
     class Meta:
         db_table = 'Invoicequestion'
         ordering = ['-id']
+    
+    def __str__(self):
+        return str(self.ticket.title)
 
 class TkPetRequest(BaseModel):
     PET_CHOICES = (
@@ -124,6 +138,9 @@ class TkPetRequest(BaseModel):
     class Meta:
         db_table = 'Petrequest'
         ordering = ['-id']
+    
+    def __str__(self):
+        return str(self.ticket.title)
 
 class TkOrderKey(BaseModel):
     KEY_CHOICES = (
@@ -151,6 +168,9 @@ class TkOrderKey(BaseModel):
     class Meta:
         db_table = 'Orderkey'
         ordering = ['-id']
+    
+    def __str__(self):
+        return str(self.ticket.title)
 
 class TkPaymentSlips(BaseModel):
     MONTH_CHOICES = (
@@ -196,6 +216,9 @@ class TkPaymentSlips(BaseModel):
     class Meta:
         db_table = 'Paymentslips'
         ordering = ['-id']
+    
+    def __str__(self):
+        return str(self.ticket.title)
 
 class TkBankDetails(BaseModel):
     ticket = models.ForeignKey(Tickets,on_delete=models.PROTECT)   
@@ -211,6 +234,9 @@ class TkBankDetails(BaseModel):
     class Meta:
         db_table = 'Bankdetails'
         ordering = ['-id']
+    
+    def __str__(self):
+        return str(self.ticket.title)
 
 class TkOrderBadge(BaseModel):
     ORDER_CHOICES = [
@@ -240,3 +266,6 @@ class TkOrderBadge(BaseModel):
     class Meta:
         db_table = 'Order badge'
         ordering = ['-id']
+    
+    def __str__(self):
+        return str(self.ticket.title)

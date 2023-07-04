@@ -8,8 +8,11 @@ from api.masters.serializers import *
 from reportlab.pdfgen import canvas
 from django.conf import settings
 import os
+from masters.models import *
 
 class GeneralInspectionSerializer(serializers.ModelSerializer):
+    service_id = serializers.CharField(source = 'service_id.service_ticket_number', read_only=True)
+    real_estate_object = serializers.CharField(source = 'real_estate_object.object_name', read_only=True)
     class Meta:
         model = GeneralInspection
         exclude = ('created_at', 'updated_at')
@@ -33,6 +36,11 @@ class GeneralInspectionSerializer(serializers.ModelSerializer):
 
 class ChildDetailSerializer(serializers.ModelSerializer):
     child_details = serializers.SerializerMethodField()
+    checkin = serializers.CharField(source = 'checkin.object_name', read_only=True)
+    object_detail_list = serializers.CharField(source = 'object_detail_list.object_name', read_only=True)
+    related_object = serializers.CharField(source = 'related_object.object_name', read_only=True)
+    related_detail = serializers.CharField(source = 'related_detail.object_name', read_only=True)
+    
 
     class Meta:
         model = ObjectListInspection
@@ -47,6 +55,10 @@ class ChildDetailSerializer(serializers.ModelSerializer):
     
 class ObjectListInspectionSerializer(serializers.ModelSerializer):
     child_details = ChildDetailSerializer(many=True, required=False)
+    checkin = serializers.CharField(source='checkin.user.name', read_only=True)
+    object_detail_list = serializers.CharField(source = 'object_detail_list.object_name', read_only=True)
+    related_object = serializers.CharField(source = 'related_object.object_name', read_only=True)
+    related_detail = serializers.CharField(source = 'related_detail.object_name', read_only=True)
 
     class Meta:
         model = ObjectListInspection
@@ -82,6 +94,7 @@ class CheckInOutSerializer(serializers.ModelSerializer):
     user_name = serializers.SerializerMethodField()
     object_check_in = serializers.PrimaryKeyRelatedField(queryset=Realestateobjects.objects.all())
     property_check_in = serializers.SerializerMethodField()
+    object_detail_list = serializers.CharField(source='object_detail_list.object_detail_list.object_name', read_only=True)
     # furniture_check_in = serializers.PrimaryKeyRelatedField(queryset=Realestateobjects.objects.all())
 
     class Meta:
@@ -117,12 +130,15 @@ class CheckInOutSerializer(serializers.ModelSerializer):
         return check_in_out
     
 class KeysSerializer(serializers.ModelSerializer):
-
+    checkin = serializers.CharField(source='checkin.user.name', read_only=True)
+    obj = serializers.CharField(source='obj.name', read_only=True)
     class Meta:
         model = Realestatekey
         exclude = ('created_at', 'updated_at')
 
 class MetersSerializer(serializers.ModelSerializer):
+    checkin = serializers.CharField(source='checkin.user.name', read_only=True)
+    obj = serializers.CharField(source='obj.object_name', read_only=True)
     class Meta:
         model = Realestatemeter
         exclude = ('created_at', 'updated_at')
@@ -136,6 +152,8 @@ class FurnitureInspectionSerializer(serializers.ModelSerializer):
         exclude = ('created_at', 'updated_at')
 
 class CommentSerializer(serializers.ModelSerializer):
+    realestatemanageid = serializers.CharField(source='realestatemanageid.manager_name', read_only=True)
+    checkin = serializers.CharField(source='checkin.user.name', read_only=True)
     class Meta:
         model = Checkincomments
         exclude = ('created_at', 'updated_at')
@@ -157,17 +175,20 @@ class CommentSerializer(serializers.ModelSerializer):
     #     return pdf_path
 
 class RentaldeductionSerializer(serializers.ModelSerializer):
-
+    checkin = serializers.CharField(source='checkin.user.name', read_only=True)
     class Meta:
         model = RentalDeduction
         exclude = ('created_at', 'updated_at')
 
 class AppendicesTransSerializer(serializers.ModelSerializer):
+    checkin = serializers.CharField(source='checkin.user.name', read_only=True)
+    obj = serializers.CharField(source='obj.name', read_only=True)
     class Meta:
         model = Appendicestransaction
         exclude = ('created_at', 'updated_at')
 
 class CheckinContactsSerializer(serializers.ModelSerializer):
+    checkin = serializers.CharField(source='checkin.user.name', read_only=True)
     class Meta:
         model = CheckinContacts
         fields = '__all__'
