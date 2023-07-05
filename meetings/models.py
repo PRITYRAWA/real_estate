@@ -87,6 +87,7 @@ class MeetingVotingCircle(BaseModel):
 class MeetingParticipant(BaseModel):
     meeting = models.ForeignKey(MeetingSchedule,related_name="meeting_participants",on_delete=models.PROTECT)
     participant=models.ForeignKey(MeetingVotingCircle,related_name="participants",on_delete=models.PROTECT)
+    participant_email=models.EmailField(blank=True,null=True,max_length=50)
     attendence_in_person= models.BooleanField(default=False)
     online_voting= models.BooleanField(default=False)
     meeting_attendence= models.BooleanField(default=False)
@@ -94,14 +95,15 @@ class MeetingParticipant(BaseModel):
     power_of_attroney= models.BooleanField(default=False)
     attroney_attchment = models.FileField(upload_to="attachment", null=True, blank=True)
     verified_attroney= models.BooleanField(default=False)
-
-
+    power_of_attroney_name=models.CharField(max_length=100, blank=True, null=True,verbose_name=("Power of attroney Name"))
+    apartment=models.CharField(max_length=100, blank=True, null=True,verbose_name=("Apartment"))
     class Meta:
         db_table = 'MeetingParticipant'
     
     def __str__(self):
         return str(self.participant.participant_name)
 
+    
 
 class MeetingQuorums(BaseModel):
     types = (

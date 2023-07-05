@@ -73,5 +73,15 @@ class MeetingScheduleViewSet(viewsets.ModelViewSet):
 class MeetingParticipantViewSet(viewsets.ModelViewSet):
     queryset = MeetingParticipant.objects.all()
     serializer_class = MeetingParticipantSerializer
+
+    @action(detail=False, methods=['put'], name='update_users',url_path='update_users/(?P<email>[^/.@]+@[^/.@]+\.[^/.@]+)/(?P<meetid>[^/.]+)')
+    def update_users(self, request,email,meetid):
+        instance = MeetingParticipant.objects.get(participant_email=email,meeting=meetid)
+        serializer = MeetingParticipantSerializer(instance,data=request.data, context={'request': request})
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        else:
+            return Response(serializer.errors)
     
     

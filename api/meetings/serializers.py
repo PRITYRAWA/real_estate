@@ -56,6 +56,7 @@ class MeetingParticipantSerializer(serializers.ModelSerializer):
             "id",
             "meeting",
             "participant",
+            "participant_email",
             "attendence_in_person",
             "online_voting",
             "meeting_attendence",
@@ -75,6 +76,7 @@ class GetMeetingParticipantSerializer(serializers.ModelSerializer):
             "id",
             "meeting",
             "participant",
+            "participant_email",
             "attendence_in_person",
             "online_voting",
             "meeting_attendence",
@@ -307,7 +309,7 @@ class MeetingScheduleSerializer(serializers.ModelSerializer):
         if bulk_voting_details:
             for votes in bulk_voting_details:
                 votes.save()
-                participant_list.append(MeetingParticipant(meeting=instance,participant=votes))
+                participant_list.append(MeetingParticipant(meeting=instance,participant=votes,participant_email=votes.email))
             bulk_participants_details = MeetingParticipant.objects.bulk_create(participant_list)
         print("bulk_voting_details ", bulk_voting_details)
         quorums_list=[]
