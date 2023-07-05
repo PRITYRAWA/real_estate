@@ -26,6 +26,7 @@ router.register(r'meters', RealestatemetersViewSet,basename="properties"),
 router.register(r'property-management', PropertyManagementViewSet,basename="property-management"),
 router.register(r'appendices', AppendMasterViewSet,basename="property-management"),
 router.register(r'furniture', RealestateFurnitureViewSet,basename="property-management"),
+router.register(r'property-contact/(?P<property_id>\d+)(?:/(?P<object_id>\d+))?', PropertyContactViewSet, basename="property-contact")
 
 urlpatterns = [
     # path('properties/vacant/', VacantPropertyListView.as_view(), name='vacant-property-list'),

@@ -45,7 +45,7 @@ class MessagecommentSerializer(serializers.ModelSerializer):
         exclude = ('created_at', 'updated_at')
 
 class RealestateserviceproviderSerializer(serializers.ModelSerializer):
-    realestateagentid = serializers.CharField(read_only=True, source='realestateagentid.name')
+    realestateproperty = serializers.CharField(read_only=True, source='realestatepropertyid.name')
     class Meta:
         model = Realestateserviceproviders
         exclude = ('created_at', 'updated_at')
@@ -234,3 +234,49 @@ class AppendicesMasterSerializer(serializers.ModelSerializer):
         model = Appendicesmaster
         exclude = ('created_at', 'updated_at')
 
+
+
+class PropertyContactSerializer(serializers.ModelSerializer):
+    property_id = serializers.SerializerMethodField('get_alternate_id')
+    property_name = serializers.SerializerMethodField('get_alternate_name')
+
+    def get_alternate_name(self, obj):
+        return obj.name
+    
+    def get_alternate_id(self, obj):
+        return obj.id
+    
+    def to_representation(self, instance): 
+        property_id = self.context['view'].kwargs['property_id']
+        object_id = self.context['view'].kwargs.get('object_id')
+
+        representation = super().to_representation(instance)
+        if object_id:
+            queryset = Realestatepropertymanagement.objects.filter(realestatepropertyid = property_id, realestateobjectid = object_id).first()
+            representation['object_id'] = object_id
+            representation['object_name'] = Realestateobjects.objects.get(id=object_id).object_name
+        else:
+            queryset = Realestatepropertymanagement.objects.filter(realestatepropertyid = property_id).first()
+            
+        representation['manager'] = {}
+        representation['owner'] = {}
+        representation['manager']['email'] = queryset.manager_email
+        representation['manager']['name'] = queryset.manager_name
+        representation['manager']['phone'] = queryset.manager_Phone
+        representation['owner']['name'] = queryset.realestateownerid.name
+        representation['owner']['email'] = queryset.realestateownerid.email
+        representation['owner']['phone'] = queryset.realestateownerid.phonenumber
+       
+        queryset2 = Realestateserviceproviders.objects.filter(realestatepropertyid = property_id, job='manager').first()
+        if queryset2:
+            representation['serviceprovider'] = {}
+            representation['serviceprovider']['name'] = queryset2.name
+            representation['serviceprovider']['email'] = queryset2.email
+            representation['serviceprovider']['phone'] = queryset2.phonenumber
+           
+        return representation
+    
+    class Meta:
+        model = Realestateproperties
+        exclude = ("id","created_at", "updated_at", "name", "street","zip", "city",
+        "country", "isactive", "attachment", "realestateagentid")

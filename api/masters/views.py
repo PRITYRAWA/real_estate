@@ -191,10 +191,13 @@ class RealestateObjectDetailItemsViewSet(viewsets.ModelViewSet):
         
         try:
             queryset = Realestateobjectsdetail.objects.get( related_object=obj_id, related_detail=obj_detail_id)
-            print(queryset)
             return queryset
         except Realestateobjectsdetail.DoesNotExist:
             return Realestateobjectsdetail.objects.none()
     http_method_names = ['get', 'post', 'put', 'patch', 'delete']
     
 
+class PropertyContactViewSet(viewsets.ModelViewSet):
+    queryset = Realestateproperties.objects.all()
+    serializer_class = PropertyContactSerializer
+    http_method_names = ['get']

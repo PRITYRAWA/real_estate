@@ -391,7 +391,11 @@ class Realestatepropertymanagement(BaseModel):
         return str(self.manager_name)
 
 class Realestateserviceproviders(BaseModel):
-    realestateagentid = models.ForeignKey(Realestateagents, on_delete=models.PROTECT,null=True,blank=True,verbose_name=("Realestate Agent Id"))   
+    jobs = (
+        ("manager", ("Manager")),
+        ("others", ("Others")),
+    )
+    realestatepropertyid = models.ForeignKey(Realestateproperties, on_delete=models.PROTECT,null=True,blank=True,verbose_name=("Realestate Property"))   
     name = models.CharField(max_length=50,verbose_name=("Name"))   
     field = models.CharField(max_length=50, blank=True, null=True,verbose_name=("Field"))   
     languageid = models.IntegerField(null=True,blank=True,verbose_name=("Language Id"))   
@@ -402,7 +406,8 @@ class Realestateserviceproviders(BaseModel):
     zip = models.CharField(max_length=10,verbose_name=("Zip"))   
     city = models.CharField(max_length=50,verbose_name=("City")) 
     country = CountryField( blank=True, null=True)  
-    isactive = models.BooleanField(default=False,verbose_name=("Is Active"))    
+    isactive = models.BooleanField(default=False,verbose_name=("Is Active"))
+    job = models.CharField(max_length=20, choices= jobs ,default='others',verbose_name=("Job") )  
 
     class Meta:
         db_table = 'Realestateserviceproviders'
