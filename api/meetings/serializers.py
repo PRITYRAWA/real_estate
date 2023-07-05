@@ -129,7 +129,8 @@ class VotingCircleSerializer(serializers.ModelSerializer):
             "participant_name",
             "email",
             "manageby",
-            "manageby_id"
+            "manageby_id",
+            "category"
        
         )
 
@@ -144,7 +145,8 @@ class GetVotingCircleSerializer(serializers.ModelSerializer):
             "participant_name",
             "email",
             "manageby",
-            "manageby_id"
+            "manageby_id",
+            "category"
        
         )
 

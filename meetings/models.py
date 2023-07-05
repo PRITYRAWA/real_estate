@@ -13,7 +13,7 @@ class MeetingSchedule(BaseModel):
     venue = models.CharField(max_length=100,blank=True, null=True)
     property = models.ForeignKey(Realestateproperties,related_name="properties",on_delete=models.PROTECT)
     object = models.ForeignKey(Realestateobjects,related_name="property_objects",on_delete=models.PROTECT)
-    subgroup = models.ForeignKey(Realestatepropertiessubgroup,related_name="subgroups",on_delete=models.PROTECT)
+    subgroup = models.ForeignKey(Realestateproperties,related_name="subgroups",on_delete=models.PROTECT)
     chairman = models.ForeignKey(Realestatepropertyowner,related_name="chairmans",on_delete=models.PROTECT)
     minute_taker = models.ForeignKey(Realestateagents,related_name="mintue_takers",on_delete=models.PROTECT)
     meeting_date = models.DateField(auto_now_add=True)
@@ -58,7 +58,7 @@ class MeetingAgenda(BaseModel):
         return str(self.topic)
         
 class MeetingSubAgendaDetails(BaseModel):
-    meeting_agenda = models.ForeignKey(MeetingAgenda,related_name="meetingagenda_detail",on_delete=models.CASCADE,verbose_name=("Meeting Agenda"))
+    meeting_agenda = models.ForeignKey(MeetingAgenda,blank=True,null=True,related_name="meetingagenda_detail",on_delete=models.CASCADE,verbose_name=("Meeting Agenda"))
     sub_item=models.CharField(max_length=100, blank=True, null=True,verbose_name=("Sub Agenda"))
     description=models.TextField(blank=True, null=True,verbose_name=("Description"))
     notes_to_mintue=models.TextField(blank=True, null=True,verbose_name=("Notes To mintue"))
@@ -70,13 +70,17 @@ class MeetingSubAgendaDetails(BaseModel):
         ordering = ['-id']
 
 class MeetingVotingCircle(BaseModel):
+    types = (
+        ("main", ("Main")),
+        ("subassociation", ("Sub Association")),
+    )
 
     meeting = models.ForeignKey(MeetingSchedule,related_name="meeting_votingcircles",on_delete=models.CASCADE)
     participant_name=models.CharField(max_length=100, blank=False, null=False)
     email=models.CharField(max_length=100, blank=False, null=False)
     manageby = models.CharField(max_length=30,null=True,blank=True,verbose_name="Manage By")
     manageby_id = models.CharField(max_length=30,null=True,blank=True,verbose_name="Manager Id")
-
+    category = models.CharField(max_length=20, choices=types, default='main',verbose_name=("Category"))
     class Meta:
         db_table = 'MeetingVotingCircle'
     

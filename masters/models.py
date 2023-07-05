@@ -121,7 +121,8 @@ class Messagerecipients(BaseModel):
     
 
 class Realestateproperties(BaseModel):
-    realestateagentid = models.ForeignKey(Realestateagents, on_delete=models.PROTECT,verbose_name=("Agent Id"),null=True,blank=True)   
+    realestateagentid = models.ForeignKey(Realestateagents, on_delete=models.PROTECT,verbose_name=("Agent Id"),null=True,blank=True) 
+    realted_property = models.ForeignKey('Realestateproperties',null=True, blank=True,on_delete=models.PROTECT,related_name="sub_group",verbose_name=("Realted Property"))  
     name = models.CharField(max_length=50,verbose_name=("Name"))   
     street = models.CharField(max_length=100,verbose_name=("Street"))   
     zip = models.CharField(max_length=10,verbose_name=("Zip"))   
@@ -194,7 +195,7 @@ class Realestatepropertiessubgroup(BaseModel):
 
     class Meta:
         db_table = 'Realestatepropertiessubgroup'
-        verbose_name = "Sub groups"
+        verbose_name = "not required"
         ordering = ['-id']
     
     def __str__(self):

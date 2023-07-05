@@ -19,6 +19,16 @@ class RealestatepropertyViewSet(viewsets.ModelViewSet):
     serializer_class = RealestatepropertySerializer
     http_method_names = ['get', 'post', 'put', 'patch', 'delete']
 
+    @action(detail=False, methods=['get'], name='get_subgroup',url_path='get_subgroup/(?P<id>[^/.]+)')
+    def get_subgroup(self, request, id):
+        try:
+            subgroup = Realestateproperties.objects.filter(realted_property=id).order_by('id').reverse()
+            serializer = RealestatepropertySerializer(subgroup, many=True)
+            return Response(serializer.data)
+        except Exception as e:
+            return Response(str(e))
+
+
 class RealestateobjectsViewSet(viewsets.ModelViewSet):
     # end point to access RealEstateObjects Model.
     queryset = Realestateobjects.objects.all()

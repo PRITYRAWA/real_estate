@@ -11,10 +11,25 @@ class RealestateobjectSerializer(serializers.ModelSerializer):
 
 class RealestatepropertySerializer(serializers.ModelSerializer):
     objects_detail=RealestateobjectSerializer(many=True,read_only=True)
+    realted_property=serializers.CharField(read_only=True, source='realted_property.name')
+    realestateagentid=serializers.CharField(read_only=True, source='realestateagentid.name')
     
     class Meta:
         model = Realestateproperties
-        exclude = ('created_at', 'updated_at')
+        fields = (
+            "id",
+            "realestateagentid",
+            'objects_detail',
+            "realted_property",
+            "name",
+            "street",
+            "zip",
+            "city",
+            "country",
+            "isactive",
+            "attachment",
+            
+        )
 
     def create(self, validated_data):
         realestatepropertyobjects_detail = validated_data.pop('objects_detail', None)
