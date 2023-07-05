@@ -8,6 +8,7 @@ router = routers.DefaultRouter()
 
 router.register(r"meetings", MeetingScheduleViewSet,basename="meetings")
 router.register(r"meeting_participants", MeetingParticipantViewSet,basename="meeting_participants")
+router.register(r"participants_agendas", MeetingParticipantAgendaViewSet,basename="participants_agendas")
 urlpatterns = []
 
 urlpatterns += router.urls

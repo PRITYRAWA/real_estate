@@ -94,13 +94,13 @@ class CheckInOutSerializer(serializers.ModelSerializer):
     user_name = serializers.SerializerMethodField()
     object_check_in = serializers.PrimaryKeyRelatedField(queryset=Realestateobjects.objects.all())
     property_check_in = serializers.SerializerMethodField()
-    object_detail_list = serializers.CharField(source='object_detail_list.object_detail_list.object_name', read_only=True)
+    object_detail_list = serializers.CharField(source='object_detail_list.object_name', read_only=True)
     # furniture_check_in = serializers.PrimaryKeyRelatedField(queryset=Realestateobjects.objects.all())
 
     class Meta:
         model = CheckInOut
         fields = ('id', 'user', 'user_name', 'service_ticket_number', 'object_check_in',
-                  'check_in_date', 'check_in_time', 'check_out_date', 'check_out_time', 'inspection_date_time','property_check_in')
+                  'check_in_date', 'check_in_time', 'check_out_date', 'check_out_time', 'inspection_date_time','property_check_in','object_detail_list')
 
     def get_user_name(self, obj):
         return obj.user.name

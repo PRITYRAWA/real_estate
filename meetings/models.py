@@ -9,8 +9,8 @@ class MeetingSchedule(BaseModel):
         ("live", ("Live")),
       
     )
-    title = models.CharField(max_length=100, blank=False, null=False)
-    venue = models.TextField(blank=True, null=True)
+    title = models.CharField(max_length=50, blank=False, null=False)
+    venue = models.CharField(max_length=100,blank=True, null=True)
     property = models.ForeignKey(Realestateproperties,related_name="properties",on_delete=models.PROTECT)
     object = models.ForeignKey(Realestateobjects,related_name="property_objects",on_delete=models.PROTECT)
     subgroup = models.ForeignKey(Realestatepropertiessubgroup,related_name="subgroups",on_delete=models.PROTECT)
@@ -47,7 +47,7 @@ class MeetingAgenda(BaseModel):
         ("definitive", ("Definitive")),
       
     )
-    meeting = models.ForeignKey(MeetingSchedule,related_name="meeting_agendas",on_delete=models.PROTECT)
+    meeting = models.ForeignKey(MeetingSchedule,related_name="meeting_agendas",on_delete=models.CASCADE)
     topic = models.CharField(max_length=100, blank=False, null=False)
     status = models.TextField(max_length=20,choices= status,default='draft')
     
@@ -71,7 +71,7 @@ class MeetingSubAgendaDetails(BaseModel):
 
 class MeetingVotingCircle(BaseModel):
 
-    meeting = models.ForeignKey(MeetingSchedule,related_name="meeting_votingcircles",on_delete=models.PROTECT)
+    meeting = models.ForeignKey(MeetingSchedule,related_name="meeting_votingcircles",on_delete=models.CASCADE)
     participant_name=models.CharField(max_length=100, blank=False, null=False)
     email=models.CharField(max_length=100, blank=False, null=False)
     manageby = models.CharField(max_length=30,null=True,blank=True,verbose_name="Manage By")
@@ -85,8 +85,8 @@ class MeetingVotingCircle(BaseModel):
 
         
 class MeetingParticipant(BaseModel):
-    meeting = models.ForeignKey(MeetingSchedule,related_name="meeting_participants",on_delete=models.PROTECT)
-    participant=models.ForeignKey(MeetingVotingCircle,related_name="participants",on_delete=models.PROTECT)
+    meeting = models.ForeignKey(MeetingSchedule,related_name="meeting_participants",on_delete=models.CASCADE)
+    participant=models.ForeignKey(MeetingVotingCircle,related_name="participants",on_delete=models.CASCADE)
     participant_email=models.EmailField(blank=True,null=True,max_length=50)
     attendence_in_person= models.BooleanField(default=False)
     online_voting= models.BooleanField(default=False)
@@ -103,7 +103,20 @@ class MeetingParticipant(BaseModel):
     def __str__(self):
         return str(self.participant.participant_name)
 
-    
+class MeetingParticipantAgenda(BaseModel):
+    meeting_participant = models.ForeignKey(MeetingParticipant,related_name="meeting_participant",on_delete=models.CASCADE)
+    participant_email=models.EmailField(blank=True,null=True,max_length=50)
+    owner_name = models.CharField(max_length=30, blank=True, null=True,verbose_name=("Owner Name"))
+    apartment_name = models.CharField(max_length=50, blank=True, null=True,verbose_name=("Apartment Name"))
+    title = models.CharField(max_length=100, blank=False, null=False)
+    voting_ques= models.CharField(max_length=100, blank=False, null=False)
+    explaination = models.CharField(max_length=100, blank=True, null=True)
+    attachment = models.FileField(upload_to="attachment", null=True, blank=True)
+
+    class Meta:
+        db_table = 'MeetingParticipantAgenda'
+        verbose_name = "MeetingParticipant Agenda"
+        ordering = ['-id']   
 
 class MeetingQuorums(BaseModel):
     types = (

@@ -49,7 +49,7 @@ class GetMeetingAgendaSerializer(serializers.ModelSerializer):
         )
     
 class MeetingParticipantSerializer(serializers.ModelSerializer):
-    meeting = serializers.PrimaryKeyRelatedField(read_only=True)
+    meeting = serializers.PrimaryKeyRelatedField(read_only=True,source="meeting.title")
     class Meta:
         model = MeetingParticipant
         fields = (
@@ -63,9 +63,38 @@ class MeetingParticipantSerializer(serializers.ModelSerializer):
             "voting_attendence",
             "power_of_attroney",
             "attroney_attchment",
-            "verified_attroney"
+            "verified_attroney",
+            "power_of_attroney_name",
+            "apartment"
        
         )
+
+
+class MeetingParticipantAgendaSerializer(serializers.ModelSerializer):
+    meeting_participant = serializers.PrimaryKeyRelatedField(read_only=True,source="meeting_participant.meeting.title")
+    
+    class Meta:
+        model = MeetingParticipantAgenda
+        fields = (
+            "id",
+            "meeting_participant",
+            "participant_email",
+            "owner_name",
+            "apartment_name",
+            "title",
+            "voting_ques",
+            "explaination",
+            "attachment"
+        )
+
+    def create(self, data):
+        params=self.context.get('request')
+        email =params['email']
+        meetid=params['meetid']
+        user_obj= MeetingParticipant.objects.get(meeting=meetid,participant_email=email)
+        instance = MeetingParticipantAgenda.objects.create(meeting_participant=user_obj,**data)
+        instance.save()
+        return instance
 
 class GetMeetingParticipantSerializer(serializers.ModelSerializer):
     meeting = serializers.PrimaryKeyRelatedField(read_only=True,source="meeting.title")
@@ -83,7 +112,9 @@ class GetMeetingParticipantSerializer(serializers.ModelSerializer):
             "voting_attendence",
             "power_of_attroney",
             "attroney_attchment",
-            "verified_attroney"
+            "verified_attroney",
+            "power_of_attroney_name",
+            "apartment"
        
         )
 
