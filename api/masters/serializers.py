@@ -108,7 +108,7 @@ class Votesserializer(serializers.ModelSerializer):
         exclude = ('created_at', 'updated_at')
 
 class Quorumsserializer(serializers.ModelSerializer):
-    votes_detail = Votesserializer(many=True)
+    meeting_votes = Votesserializer(many=True)
     class Meta:
         model = Quorums
         fields = (
@@ -116,7 +116,7 @@ class Quorumsserializer(serializers.ModelSerializer):
             "voting_type",
             "present_votes",
             "condition",
-            "votes_detail",
+            "meeting_votes",
         )
        
 

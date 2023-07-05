@@ -494,7 +494,7 @@ class Votes(BaseModel):
         ("greater than or equals to",(">=")),
         ("greater than",(">")),
     )
-    quorums = models.ForeignKey(Quorums,related_name="votes_detail",on_delete=models.PROTECT,verbose_name=("Quorums"))
+    quorums = models.ForeignKey(Quorums,related_name="meeting_votes",on_delete=models.PROTECT,verbose_name=("Quorums"))
     tabs = models.CharField(max_length=50, choices=tabs, default='qualified',verbose_name=("Tabs"))
     voting_type=models.CharField(max_length=50, choices=types,verbose_name=("Voting Type"))
     majority=models.IntegerField(blank=False, null=False,verbose_name=("Majority"))

@@ -72,7 +72,7 @@ class MeetingScheduleViewSet(viewsets.ModelViewSet):
                 serializer = MeetingScheduleSerializer(meeting_details,many=True)
                 return Response(serializer.data)
             else:
-                return Response("No Meeting found for this user")
+                return Response(meeting_list)
         except Exception as e:
             return Response(str(e))
 
