@@ -172,7 +172,7 @@ class MeetingVotesSerializer(serializers.ModelSerializer):
 
 
 class GetMeetingVotesSerializer(serializers.ModelSerializer):
-    meeting_quorums = serializers.CharField(read_only=True, source="meeting_quorums.meeting.title")
+    meeting = serializers.CharField(read_only=True, source="meeting.title")
     
     class Meta:
         model = MeetingVotes
@@ -180,7 +180,7 @@ class GetMeetingVotesSerializer(serializers.ModelSerializer):
             "id",
             "tabs",
             "voting_type",
-            "meeting_quorums",
+            "meeting",
             "majority",
             "condition",
             "basic_set",
@@ -190,7 +190,7 @@ class GetMeetingVotesSerializer(serializers.ModelSerializer):
 class GetMeetingQuorumsSerializer(serializers.ModelSerializer):
     meeting = serializers.CharField(read_only=True, source="meeting.title")
     # meeting_votes = serializers.SerializerMethodField()
-    meeting_votes = GetMeetingVotesSerializer(many=True)
+    #meeting_votes = GetMeetingVotesSerializer(many=True)
 
     # def get_meeting_votes(self, obj):
     #     result = MeetingVotesSerializer(MeetingVotes.objects.filter(meeting_quorums=obj.id), many=True)
@@ -204,18 +204,18 @@ class GetMeetingQuorumsSerializer(serializers.ModelSerializer):
             "voting_type",
             "present_votes",
             "condition",
-            "meeting_votes"
+            #"meeting_votes"
        
         )
 
 class CreateMeetingVotesSerializer(serializers.ModelSerializer):
-    meeting_quorums = serializers.PrimaryKeyRelatedField(read_only=True)
+    meeting = serializers.PrimaryKeyRelatedField(read_only=True)
 
     class Meta:
         model = MeetingVotes
         fields = (
             "id",
-            "meeting_quorums",
+            "meeting",
             "tabs",
             "voting_type",
             "majority",
@@ -239,7 +239,7 @@ class CreateMeetingSubAgendaSerializer(serializers.ModelSerializer):
         )
 
 class CreateMeetingQuorumsSerializer(serializers.ModelSerializer):
-    meeting_votes = CreateMeetingVotesSerializer(many=True)
+    #meeting_votes = CreateMeetingVotesSerializer(many=True)
     meeting = serializers.PrimaryKeyRelatedField(read_only=True)
     class Meta:
         model = MeetingQuorums
@@ -249,7 +249,7 @@ class CreateMeetingQuorumsSerializer(serializers.ModelSerializer):
             "voting_type",
             "present_votes",
             "condition",
-            "meeting_votes"
+            #"meeting_votes"
         )
 
 class CreateMeetingAgendaSerializer(serializers.ModelSerializer):
@@ -271,7 +271,7 @@ class MeetingScheduleSerializer(serializers.ModelSerializer):
     meeting_participants = MeetingParticipantSerializer(many=True,read_only=True)
     meeting_votingcircles = VotingCircleSerializer(many=True)
     meeting_quorums = CreateMeetingQuorumsSerializer(many=True)
-
+    meeting_votingcretrieas = CreateMeetingVotesSerializer(many = True)
     class Meta:
         model = MeetingSchedule
         fields = (
@@ -302,7 +302,8 @@ class MeetingScheduleSerializer(serializers.ModelSerializer):
             "status",
             "meeting_participants",
            "meeting_votingcircles",
-           "meeting_quorums"
+           "meeting_quorums",
+           "meeting_votingcretrieas"
         )
     
     def create(self, data):
@@ -311,6 +312,7 @@ class MeetingScheduleSerializer(serializers.ModelSerializer):
         votingcircle_detail = data.pop('meeting_votingcircles', None)
         meeting_quorums = data.pop('meeting_quorums', None)
         meeting_votes = data.pop('meeting_votes', None)
+        meeting_votingcretriea= data.pop('meeting_votingcretriea', None)
         dates = self.context.get('request').data
         meeting_date = dates.pop('meeting_date',None)
         meeting_time = dates.pop('meeting_time',None)
@@ -348,16 +350,14 @@ class MeetingScheduleSerializer(serializers.ModelSerializer):
         if meeting_quorums:
             for quorums in meeting_quorums:
                 print("quorms",quorums)
-                meeting_votes= quorums.pop("meeting_votes", None)
+                #meeting_votes= quorums.pop("meeting_votes", None)
                 quorums_list.append(MeetingQuorums(meeting=instance, **quorums))    
-            #bulk_quorums_details = MeetingQuorums.objects.bulk_create(quorums_list)
-            meeting_votes_list=[]
-            if quorums_list:
-                for quorums in quorums_list:
-                    quorums.save()
-                    for quorum_votes in meeting_votes:
-                        meeting_votes_list.append(MeetingVotes(meeting_quorums=quorums, **quorum_votes))    
-                    bulk_votes_details = MeetingVotes.objects.bulk_create(meeting_votes_list)       
+            bulk_quorums_details = MeetingQuorums.objects.bulk_create(quorums_list)
+        meeting_votes_list=[]
+        if meeting_votingcretriea:
+            for votecretriea in meeting_votingcretriea:
+                meeting_votes_list.append(MeetingVotes(meeting=instance, **votecretriea))    
+            bulk_votes_details = MeetingVotes.objects.bulk_create(meeting_votes_list)       
 
 
         qr = qrcode.QRCode(
@@ -385,9 +385,11 @@ class MeetingScheduleSerializer(serializers.ModelSerializer):
         agenda_details = data.pop('meeting_agendas', None)
         votingcircle_detail = data.pop('meeting_votingcircles', None)
         quorums_detail = data.pop('meeting_quorums', None)
+        meeting_votingcretriea= data.pop('meeting_votingcretriea', None)
         agenda_detailss = validated_data.pop('meeting_agendas', None)
         votingcircle_details = validated_data.pop('meeting_votingcircles', None)
         quorums_details = validated_data.pop('meeting_quorums', None)
+        meeting_votingcretrieas= data.pop('meeting_votingcretriea', None)
         meeting_date = data.pop('meeting_date',None)
         meeting_time = data.pop('meeting_time',None)
         # update the parent model.
@@ -440,49 +442,7 @@ class MeetingScheduleSerializer(serializers.ModelSerializer):
         for agenda in instance.meeting_agendas.all():
                 if agenda.id not in agenda_list:
                     agenda.delete()
-
-        # update the related meeting quroms and their voting model.
-        quoroms_list=[]
-        meetingvotes_list=[]
-        for quorums in quorums_detail:
-            print("quorums",quorums)
-            votes_details= quorums.pop('meeting_votes',None)
-            if "id" in quorums.keys():
-                quorums_id = quorums["id"]
-                quorums_obj = MeetingQuorums.objects.filter(id=quorums_id)
-                print("quorums_obj",quorums_obj)
-                if quorums_obj.exists():
-                    quorums_data = quorums_obj.update(**quorums)
-                    quoroms_list.append(quorums_id)
-                else:
-                    continue
-                for vdetail in votes_details:
-                    if "id" in vdetail.keys():
-                        vdetail_id = vdetail["id"]
-                        vdetail_obj = MeetingVotes.objects.filter(id=vdetail_id)
-                        print("vdetail_obj",vdetail_obj)
-                        if vdetail_obj.exists():
-                            vdetail_data = vdetail_obj.update(**vdetail)
-                            meetingvotes_list.append(vdetail_id)
-                        else:
-                            continue
-                    else:
-                        print("flow is in else quromscondition")
-                        quorom_id = MeetingQuorums.objects.get(id=quorums_id)
-                        vdetail_data = MeetingVotes.objects.create(**vdetail,meeting_quorums=quorom_id)
-                        meetingvotes_list.append(vdetail_data.id)
-                for mvdetails in instance.meeting_quorums.all():
-                    for vmmeet_details in mvdetails.meeting_votes.all():
-                        if vmmeet_details.id not in meetingvotes_list:
-                            print("delete floe quorums")
-                            vmmeet_details.delete()
-            else:
-                continue
-        print("flow is here correctly")
-        for mquorms in instance.meeting_quorums.all():
-                if mquorms.id not in quoroms_list:
-                    mquorms.delete()
-
+        
         voting_list = []
         for voting in votingcircle_detail:
             if "id" in voting.keys():
@@ -501,6 +461,46 @@ class MeetingScheduleSerializer(serializers.ModelSerializer):
         for voting in instance.meeting_votingcircles.all():
                 if voting.id not in voting_list:
                     voting.delete()
+        
+        #update meeting quroms
+        quoroms_list=[] = []
+        for quorums in quorums_detail:
+            if "id" in quorums.keys():
+                quorums_id = quorums["id"]
+                quorums_obj = MeetingQuorums.objects.filter(id=quorums_id)
+                if quorums_obj.exists():
+                    quorums_data = quorums_obj.update(**quorums)
+                    quoroms_list.append(quorums_id)
+                else:
+                    continue
+            else:
+                quorums.pop("meeting", None)
+                quorums_data = MeetingQuorums.objects.create(**quorums, meeting=instance)
+                quoroms_list.append(quorums_data.id)
+
+        for quorums in instance.meeting_quorums.all():
+                if quorums.id not in quoroms_list:
+                    quorums.delete()
+
+        #update meeting votes
+        meetingvotes_list=[]
+        for vcretriea in meeting_votingcretriea:
+            if "id" in vcretriea.keys():
+                cretriea_id = vcretriea["id"]
+                votes_obj = MeetingVotes.objects.filter(id=cretriea_id)
+                if votes_obj.exists():
+                    voting_data = votes_obj.update(**vcretriea)
+                    meetingvotes_list.append(cretriea_id)
+                else:
+                    continue
+            else:
+                vcretriea.pop("meeting", None)
+                voting_data = MeetingVotes.objects.create(**vcretriea, meeting=instance)
+                meetingvotes_list.append(voting_data.id)
+
+        for vcretriea in instance.meeting_votingcretriea.all():
+                if vcretriea.id not in meetingvotes_list:
+                    vcretriea.delete()
 		 
         qr = qrcode.QRCode(
             version=1,
@@ -528,6 +528,7 @@ class GetMeetingScheduleSerializer(serializers.ModelSerializer):
     meeting_participants = GetMeetingParticipantSerializer(many=True)
     meeting_votingcircles = GetVotingCircleSerializer(many=True)
     meeting_quorums = GetMeetingQuorumsSerializer(many=True)
+    meeting_vote_cretriea = GetMeetingVotesSerializer(many=True)
     property = serializers.CharField(read_only=True, source="property.name")
     chairman = serializers.CharField(read_only=True, source="chairman.name")
     minute_taker = serializers.CharField(read_only=True, source="minute_taker.name")
@@ -564,7 +565,8 @@ class GetMeetingScheduleSerializer(serializers.ModelSerializer):
             "status",
             "meeting_participants",
            "meeting_votingcircles",
-           "meeting_quorums"
+           "meeting_quorums",
+           "meeting_vote_cretriea"
         )
     
     
