@@ -7,8 +7,8 @@ app_name = "api.task"
 router = routers.DefaultRouter()
 
 router.register(r'tickets', TicketsViewSet,basename="tickets")
-# router.register(r'ticket-offers', TicketoffersViewSet,basename="offers")
-# router.register(r'ticket-damage', TkDamageViewSet,basename="task")
+router.register(r'ticket-offers', TicketoffersViewSet,basename="offers")
+router.register(r'ticket-damage', TkDamageViewSet,basename="task")
 router.register(r'ticket-enquiry', TkEnquiriesViewSet,basename="task")
 router.register(r'ticket-invoice', TkInvoiceViewSet,basename="task")
 router.register(r'ticket-pet', TkPetViewSet,basename="task")

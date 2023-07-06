@@ -62,6 +62,13 @@ class RealestateserviceprovidersViewSet(viewsets.ModelViewSet):
     serializer_class = RealestateserviceproviderSerializer
     http_method_names = ['get', 'post', 'put', 'patch', 'delete']
 
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        property_id = self.request.query_params.get('property-id')
+        if property_id :
+            queryset = queryset.filter(realestatepropertyid_id=property_id)
+        return queryset
+
 class FeedbacksViewSet(viewsets.ModelViewSet):
     # end point to access Feedbacks Model.
     queryset = Feedbacks.objects.all()
@@ -211,3 +218,13 @@ class PropertyContactViewSet(viewsets.ModelViewSet):
     queryset = Realestateproperties.objects.all()
     serializer_class = PropertyContactSerializer
     http_method_names = ['get']
+
+    def get_queryset(self):
+        property_id = self.kwargs['property_id']
+
+        queryset = Realestatepropertymanagement.objects.filter(realestatepropertyid_id = property_id)
+        if 'object_id' in self.kwargs:
+            object_id = self.kwargs['object_id']
+            queryset = Realestatepropertymanagement.objects.filter(realestatepropertyid = property_id, realestateobjectid = object_id)
+
+        return queryset

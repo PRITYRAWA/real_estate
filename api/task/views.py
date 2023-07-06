@@ -6,10 +6,14 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 
 class TicketsViewSet(viewsets.ModelViewSet):
-    # end point to access Tickets Model.
     queryset = Tickets.objects.all()
-    serializer_class = TicketSerializer
-    http_method_names = ['get', 'post', 'put', 'patch', 'delete']
+    serializer_class = TicketsSerializer
+
+    def get_queryset(self):
+        ticket_type = self.request.query_params.get('ticket_type', None)
+        if ticket_type:
+            return self.queryset.filter(tickettype_id=ticket_type)
+        return self.queryset
 
 
 class TicketoffersViewSet(viewsets.ModelViewSet):

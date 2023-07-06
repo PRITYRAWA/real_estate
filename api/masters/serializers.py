@@ -256,10 +256,10 @@ class PropertyContactSerializer(serializers.ModelSerializer):
     property_name = serializers.SerializerMethodField('get_alternate_name')
 
     def get_alternate_name(self, obj):
-        return obj.name
+        return obj.realestatepropertyid.name
     
     def get_alternate_id(self, obj):
-        return obj.id
+        return obj.realestatepropertyid.id
     
     def to_representation(self, instance): 
         property_id = self.context['view'].kwargs['property_id']
@@ -272,7 +272,6 @@ class PropertyContactSerializer(serializers.ModelSerializer):
             representation['object_name'] = Realestateobjects.objects.get(id=object_id).object_name
         else:
             queryset = Realestatepropertymanagement.objects.filter(realestatepropertyid = property_id).first()
-            
         representation['manager'] = {}
         representation['owner'] = {}
         representation['manager']['email'] = queryset.manager_email

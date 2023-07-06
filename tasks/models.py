@@ -5,8 +5,8 @@ from django.utils.translation import gettext_lazy as _
 from masters.models import *
 
 class TicketAttachments(models.Model):
-    attachment = models.FileField(upload_to='ticket_attachments/')
-    image = models.ImageField(upload_to='ticket_attachments/')
+    attachment = models.FileField(upload_to='ticket/attachements/', null=True, blank=True)
+    image = models.ImageField(upload_to='ticket/images/', null=True, blank=True)
 
 
 class Tickets(BaseModel):
@@ -21,6 +21,12 @@ class Tickets(BaseModel):
         ('OrderBadge','OrderBadge'),
         ('Messages','Messages')
     )
+    status_choice = (
+        ("pending", ("Pending")),
+        ("inprogress", ("In Progress")),
+        ("completed", ("Completed")),
+        ("cancelled", ("Cancelled")),
+    )
     tickettype_id=models.CharField(max_length=20, choices= ticket_choice ,default='draft',verbose_name=("ticket choice"))
     manageby_id = models.ForeignKey(Realestatepropertymanagement,on_delete=models.PROTECT,null=True,blank=True,verbose_name=_("Manage By"))
     property_id = models.ForeignKey(Realestateproperties, on_delete=models.PROTECT,verbose_name=_("Property"),null=True,blank=True)   
@@ -31,14 +37,13 @@ class Tickets(BaseModel):
     message = models.CharField(max_length=250, blank=True, null=True,verbose_name=("Message"))   
     reporting_text = models.TextField(blank=True, null=True,verbose_name=("Reporting Text"))   
     due_date = models.DateTimeField(blank=True, null=True,verbose_name=("Due-Date"))   
-    status = models.CharField(null=True,blank=True, choices=ticket_choice, max_length=20, verbose_name=("Status"))   
+    status = models.CharField(null=True,blank=True, choices=status_choice, max_length=20, verbose_name=("Status"))   
     contact_name = models.CharField(max_length=30, blank=True, null=True,verbose_name=("Contact Name"))   
     contact_phone = models.CharField(max_length=30, blank=True, null=True,verbose_name=("Contact Phone"))   
     contact_email = models.CharField(max_length=100, blank=True, null=True,verbose_name=("Contact Email"))   
     contact_time = models.CharField(max_length=50,blank=True,null=True,verbose_name=("Contact Time"))  
     info = models.TextField(blank=True, null=True,verbose_name=("Information"))
-    images = models.ManyToManyField('TicketAttachments', related_name='ticket_images', verbose_name=("Ticket Images"))
-    attachments = models.ManyToManyField('TicketAttachments', related_name='ticket_attachments', verbose_name=('Ticket Attachments'))
+    attachments = models.ManyToManyField('TicketAttachments', related_name='ticket_attachments', verbose_name=('Ticket Attachments'), null=True, blank=True)
     created_date = models.DateField(blank=True, null=True)
 
     class Meta:
