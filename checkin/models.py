@@ -74,12 +74,12 @@ class Realestatekey(BaseModel):
         ('2_damaged', '2 Damaged'),
         ('3_damaged', '3 Damaged'),
     )
-    state = MultiSelectField(choices=STATE_CHOICES, max_length=30,null=True, blank=True, verbose_name="State")
-    deterioration = MultiSelectField(choices=DETERIORATION_CHOICES, max_length=30,null=True, blank=True, verbose_name="Deterioration")
+    state = MultiSelectField(choices=STATE_CHOICES, max_length=300,null=True, blank=True, verbose_name="State")
+    deterioration = MultiSelectField(choices=DETERIORATION_CHOICES, max_length=300,null=True, blank=True, verbose_name="Deterioration")
     others = models.CharField(max_length=50,null=True,blank=True)
-    checkin = models.ForeignKey(CheckInOut,on_delete=models.PROTECT, null=True, blank=True) 
-    obj = models.ForeignKey(Realestatekeyhandover,on_delete=models.PROTECT, null=True, blank=True) 
-    photos = models.ImageField(upload_to='key_photos/',null=True,blank=True)
+    checkin = models.ForeignKey(CheckInOut,on_delete=models.CASCADE, null=True, blank=True) 
+    obj = models.ForeignKey(Realestatekeyhandover,on_delete=models.CASCADE, null=True, blank=True) 
+    images = models.ManyToManyField("CheckinImage", related_name='realestatekeys')
     count = models.IntegerField(default=0,null=True,blank=True)
     description = models.TextField(null=True,blank=True)
     name = models.CharField(max_length=300,null=True, blank=True)
@@ -91,9 +91,17 @@ class Realestatekey(BaseModel):
     def __str__(self):
         return str(self.name)
     
+class CheckinImage(models.Model):
+    image = models.FileField(upload_to='checkin_images', max_length=255)
+
+    def __str__(self):
+        return str(self.image)   
+    
 class Realestatemeter(BaseModel):
     checkin = models.ForeignKey(CheckInOut,on_delete=models.PROTECT, null=True, blank=True) 
     obj = models.ForeignKey(Realestatemeterhandover,on_delete=models.PROTECT, null=True, blank=True) 
+    images = models.ManyToManyField("CheckinImage", related_name='realestatemeter')
+
     UNIT_CHOICES = [
         ('Kwh', 'Kwh'),
         ('m3', 'm3'),
@@ -128,10 +136,27 @@ class Realestatemeter(BaseModel):
     ACCESSORIES_CHOICES = [
         ('missing_accessories', 'Missing Accessories'),
     ]
+    STATE_CHOICES = [
+        ('new', 'New'),
+        ('no_longer_works', 'No Longer Works'),
+        ('inaccessible', 'Inaccessible'),
+    ]
+    CLEANING_CHOICES = [
+        ('incomplete', 'Incomplete Cleaning'),
+    ]
+    DETERIORATION_CHOICES = [
+        ('leak', 'Leak'),
+        ('broken_glass', 'Broken Glass'),
+        ('damaged_items', 'Damaged Items'),
+        ('partially_erased', 'Partially Erased'),
+        ('erased', 'Erased'),
+    ]
+    ACCESSORIES_CHOICES = [
+        ('missing_accessories', 'Missing Accessories'),
+    ]
     name = models.CharField(max_length=300,null=True, blank=True,verbose_name=("Name"))
     meterno = models.CharField(max_length=200,null=True,blank=True,verbose_name=("Meter Number"))
     reading = models.CharField(max_length=200,null=True,blank=True,verbose_name=("Reading"))
-    photos = models.ImageField(upload_to='meter_photos/',null=True,blank=True,verbose_name=("Photo"))
     count = models.IntegerField(default=0,null=True,blank=True,verbose_name=("Count"))
     unit = models.CharField(max_length=10,choices=UNIT_CHOICES,default='Kwh',null=True,blank=True,verbose_name=("Unit"))
     whochange = models.CharField(max_length=200,choices=WHO_CHANGES,null=True,blank=True,verbose_name=("Who Change"))
@@ -219,7 +244,8 @@ class Appendicestransaction(BaseModel):
     count = models.IntegerField(default=0,verbose_name=("Count"),null=True,blank=True)
     description = models.TextField(null=True, blank=True,verbose_name=("Description"))
     name = models.CharField(max_length=300,null=True, blank=True,verbose_name=("Name"))
-    state = MultiSelectField(choices=STATE_CHOICES,max_length=30,null=True, blank=True, verbose_name=("State"))
+    state = models.CharField(choices=STATE_CHOICES,max_length=30,null=True, blank=True, verbose_name=("State"))
+    # state = MultiSelectField(choices=STATE_CHOICES,max_length=30,null=True, blank=True, verbose_name=("State"))
     cleaning = MultiSelectField(choices=CLEANING_CHOICES, max_length=30,null=True, blank=True, verbose_name=("Cleaning"))
     others = models.CharField(max_length=50,null=True,blank=True)
     is_done = models.BooleanField(default=False, verbose_name=("Is Done"),null=True,blank=True)
@@ -254,19 +280,19 @@ class Checkincomments(BaseModel):
 
 class CheckinContacts(BaseModel):
     checkin = models.ForeignKey(CheckInOut, on_delete=models.PROTECT, null=True, blank=True)
-    tenant_name = models.CharField(max_length=100, null=True, blank=True,)
-    tenant_email = models.EmailField(null=True, blank=True,)
-    tenant_tel = models.CharField(max_length=100, null=True, blank=True,)
+    tenant_name = models.CharField(max_length=100, blank=True)
+    tenant_email = models.EmailField(blank=True)
+    tenant_tel = models.CharField(max_length=100, blank=True)
     tenant_signatory = models.BooleanField(default=False)
     send_email_tenant = models.BooleanField(default=False)
-    managedby_name = models.CharField(max_length=100, null=True, blank=True,)
-    managedby_email = models.EmailField(null=True, blank=True,)
-    managedby_tel = models.CharField(max_length=100, null=True, blank=True,)
+    managedby_name = models.CharField(max_length=100, blank=True)
+    managedby_email = models.EmailField(blank=True)
+    managedby_tel = models.CharField(max_length=100, blank=True)
     manger_signatory = models.BooleanField(default=False)
     send_email_manager = models.BooleanField(default=False)
-    owner_name = models.CharField(max_length=100, null=True, blank=True,)
-    owner_email = models.EmailField(null=True, blank=True,)
-    owner_tel = models.CharField(max_length=100, null=True, blank=True,)
+    owner_name = models.CharField(max_length=100, blank=True)
+    owner_email = models.EmailField(blank=True)
+    owner_tel = models.CharField(max_length=100, blank=True)
     owner_signatory = models.BooleanField(default=False)
     send_email_owner = models.BooleanField(default=False)
     serviceprovider_name = models.CharField(null=True, blank=True, max_length=100)
@@ -275,10 +301,15 @@ class CheckinContacts(BaseModel):
     serviceprovider_signatory = models.BooleanField(default=False)
     send_email_serviceprovider = models.BooleanField(default=False)
 
+
+
     class Meta:
         db_table = "CheckinContacts"
         ordering = ['-id']
     
     def __str__(self):
+        return str(self.tenant_name)
+
+
         return str(self.tenant_name)
 

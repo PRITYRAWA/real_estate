@@ -9,30 +9,12 @@ from reportlab.pdfgen import canvas
 from django.conf import settings
 import os
 from masters.models import *
-
 class GeneralInspectionSerializer(serializers.ModelSerializer):
     service_id = serializers.CharField(source = 'service_id.service_ticket_number', read_only=True)
     real_estate_object = serializers.CharField(source = 'real_estate_object.object_name', read_only=True)
     class Meta:
         model = GeneralInspection
         exclude = ('created_at', 'updated_at')
-
-# class ChildDetailSerializer(serializers.ModelSerializer):
-#     class Meta:
-#         model = Realestateobjectsdetail
-#         fields = '__all__'
-    # def get_child_details(self, obj):
-    #     if self.context.get('exclude_child_details'):
-    #         return []
-    #     child_details = obj.child_details.all()
-    #     serialized_child_details = self.__class__(child_details, many=True, context={'exclude_child_details': True}).data
-    #     return serialized_child_details
-
-    # def to_representation(self, instance):
-    #     representation = super().to_representation(instance)
-    #     representation.pop('child_details')  # Remove child_details from the main representation
-    #     representation['child_details'] = self.get_child_details(instance)
-    #     return representation
 
 class ChildDetailSerializer(serializers.ModelSerializer):
     child_details = serializers.SerializerMethodField()
@@ -73,21 +55,7 @@ class ObjectListInspectionSerializer(serializers.ModelSerializer):
             ChildDetailSerializer().create(child_detail_data)
 
         return inspection
-    # def to_representation(self, instance):
-    #     representation = super().to_representation(instance)
-    #     representation.pop('child_details')  # Remove child_details from the main representation
-    #     representation['child_details'] = self.get_child_details(instance)
-    #     return representation
 
-
-    # def create(self, validated_data):
-    #     object_id = self.context.get('object_id')
-    #     if object_id is not None:
-    #         validated_data['related_detail'] = object_id  
-    #         inspection = ObjectListInspection.objects.create(**validated_data)
-    #         return inspection
-    #     else:
-    #         raise serializers.ValidationError('object_id is missing.')
         
 class CheckInOutSerializer(serializers.ModelSerializer):
     user = serializers.PrimaryKeyRelatedField(queryset=Realestatepropertytenant.objects.all())
@@ -101,6 +69,7 @@ class CheckInOutSerializer(serializers.ModelSerializer):
         model = CheckInOut
         fields = ('id', 'user', 'user_name', 'service_ticket_number', 'object_check_in',
                   'check_in_date', 'check_in_time', 'check_out_date', 'check_out_time', 'inspection_date_time','property_check_in','object_detail_list')
+                  
 
     def get_user_name(self, obj):
         return obj.user.name
@@ -129,16 +98,69 @@ class CheckInOutSerializer(serializers.ModelSerializer):
 
         return check_in_out
     
+class KeyImageSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CheckinImage
+        fields = ('id', 'image')
+
 class KeysSerializer(serializers.ModelSerializer):
-    checkin = serializers.CharField(source='checkin.user.name', read_only=True)
-    obj = serializers.CharField(source='obj.name', read_only=True)
+    state = serializers.MultipleChoiceField(choices=Realestatekey.STATE_CHOICES)
+    deterioration = serializers.MultipleChoiceField(choices=Realestatekey.DETERIORATION_CHOICES)
+    images = serializers.SerializerMethodField()
+    # checkin = serializers.CharField(source='checkin.user.name', read_only=True)
+    # obj = serializers.CharField(source='obj.name', read_only=True)
+
+    def get_images(self, obj):
+        imgId = obj.images.all()
+        req = self.context['request']
+        base_uri = req.build_absolute_uri('/')
+        imgRecord = CheckinImage.objects.filter(id__in=imgId)
+        imgData = KeyImageSerializer(imgRecord, many=True)
+        result = []
+        for data in imgData.data:
+            imgPath = str(data.get('image'))
+            imgPath = imgPath[1:]
+            imageUrl = base_uri+imgPath
+            imageId = data.get('id')
+            ret = {}
+            ret['imageId'] = imageId
+            ret['imageURL'] = imageUrl
+            result.append(ret)
+        return result
+
+
     class Meta:
         model = Realestatekey
         exclude = ('created_at', 'updated_at')
 
+    
 class MetersSerializer(serializers.ModelSerializer):
-    checkin = serializers.CharField(source='checkin.user.name', read_only=True)
-    obj = serializers.CharField(source='obj.object_name', read_only=True)
+    state = serializers.MultipleChoiceField(choices=Realestatemeter.STATE_CHOICES)
+    cleaning = serializers.MultipleChoiceField(choices=Realestatemeter.CLEANING_CHOICES)
+    deterioration = serializers.MultipleChoiceField(choices=Realestatemeter.DETERIORATION_CHOICES)
+    accessories = serializers.MultipleChoiceField(choices=Realestatemeter.ACCESSORIES_CHOICES)
+    # checkin = serializers.CharField(source='checkin.user.name', read_only=True)
+    # obj = serializers.CharField(source='obj.object_name', read_only=True)
+
+    images = serializers.SerializerMethodField()
+
+    def get_images(self, obj):
+        imgId = obj.images.all()
+        req = self.context['request']
+        base_uri = req.build_absolute_uri('/')
+        imgRecord = CheckinImage.objects.filter(id__in=imgId)
+        imgData = KeyImageSerializer(imgRecord, many=True)
+        result = []
+        for data in imgData.data:
+            imgPath = str(data.get('image'))
+            imgPath = imgPath[1:]
+            imageUrl = base_uri+imgPath
+            m = {}
+            m['id'] = data.get('id')
+            m['imageURL'] = imageUrl
+            result.append(m)
+        return result
+
     class Meta:
         model = Realestatemeter
         exclude = ('created_at', 'updated_at')
@@ -158,21 +180,7 @@ class CommentSerializer(serializers.ModelSerializer):
         model = Checkincomments
         exclude = ('created_at', 'updated_at')
 
-    # def generate_pdf(self, data):
-    #     pdf_filename = f'furniture_inspection_{data["id"]}.pdf'
-    #     pdf_path = os.path.join(settings.MEDIA_ROOT, pdf_filename)
 
-    #     # Create the PDF document
-    #     c = canvas.Canvas(pdf_path)
-    #     c.drawString(100, 750, 'Furniture Inspection Details')
-    #     c.drawString(100, 700, f'ID: {data["id"]}')
-    #     c.drawString(100, 650, f'Cleaning Type: {data["cleaning_type"]}')
-    #     # Add more fields as needed
-
-    #     c.showPage()
-    #     c.save()
-
-    #     return pdf_path
 
 class RentaldeductionSerializer(serializers.ModelSerializer):
     checkin = serializers.CharField(source='checkin.user.name', read_only=True)
@@ -181,14 +189,36 @@ class RentaldeductionSerializer(serializers.ModelSerializer):
         exclude = ('created_at', 'updated_at')
 
 class AppendicesTransSerializer(serializers.ModelSerializer):
-    checkin = serializers.CharField(source='checkin.user.name', read_only=True)
-    obj = serializers.CharField(source='obj.name', read_only=True)
+    state = serializers.CharField()
+    cleaning = serializers.MultipleChoiceField(choices=Appendicestransaction.CLEANING_CHOICES)
+    # checkin = serializers.CharField(source='checkin.user.name', read_only=True)
+    # obj = serializers.CharField(source='obj.name', read_only=True)
+
+    images = serializers.SerializerMethodField()
+
+    def get_images(self, obj):
+        imgId = obj.images.all()
+        req = self.context['request']
+        base_uri = req.build_absolute_uri('/')
+        imgRecord = CheckinImage.objects.filter(id__in=imgId)
+        imgData = KeyImageSerializer(imgRecord, many=True)
+        result = []
+        for data in imgData.data:
+            imgPath = str(data.get('image'))
+            imgPath = imgPath[1:]
+            imageUrl = base_uri+imgPath
+            m = {}
+            m['id'] = data.get('id')
+            m['imageURL'] = imageUrl
+            result.append(m)
+        return result
     class Meta:
         model = Appendicestransaction
         exclude = ('created_at', 'updated_at')
 
 class CheckinContactsSerializer(serializers.ModelSerializer):
     checkin = serializers.CharField(source='checkin.user.name', read_only=True)
+
     class Meta:
         model = CheckinContacts
-        fields = '__all__'
+        exclude = ('created_at', 'updated_at')

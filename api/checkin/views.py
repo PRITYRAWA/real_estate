@@ -17,8 +17,7 @@ from reportlab.lib import colors
 from django.shortcuts import get_object_or_404
 from reportlab.lib.styles import getSampleStyleSheet
 from io import BytesIO
-
-
+from rest_framework.decorators import api_view
 
 class CheckInOutListCreateView(viewsets.ModelViewSet):
     queryset = CheckInOut.objects.all()
@@ -38,9 +37,14 @@ class ObjectListInspectionViewSet(viewsets.ModelViewSet):
         queryset = super().get_queryset()
         queryset = queryset.filter(related_detail=None)  # Exclude self-related items
 
+
         if checkin_id:
             queryset = queryset.filter(checkin=checkin_id)
         return queryset
+
+
+
+
 
 
 
@@ -72,11 +76,168 @@ class KeysViewSet(viewsets.ModelViewSet):
         elif obj_id:
             queryset = queryset.filter(obj=obj_id)
         return queryset
+    
+    def create(self, request, *args, **kwargs):
+        getData = request.data
+        print('rjvrv',getData)
+        haveImg = False
+        result = []
+        if 'images' in getData:
+            imgs = getData.pop('images')
+            haveImg = True
+        newRec = KeysSerializer(data=getData, context={'request':request})
+        if newRec.is_valid(raise_exception=True):
+            newRec.save()
+            recDetails = Realestatekey.objects.get(id=newRec.data.get('id'))
+            if haveImg:
+                for img in imgs:
+                    new_image = CheckinImage.objects.create(image=img)
+                    recDetails.images.add(new_image)
+        result = KeysSerializer(recDetails, context={'request':request})
+        return Response(result.data)
+    
+    def update(self, request, *args, **kwargs):
+        print(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>",request.data)
+        m = {}
+        data = request.data
+        
+        if 'deterioration' in data:
+            deterioration = data['deterioration']
+            det = deterioration.split(",")
+            m['deterioration'] = det
+        if 'state' in data:
+            state = data['state']
+            st = state.split(",")
+            m['state'] = st
+        if 'count' in data:
+            m['count'] = data['count']
+        if 'others' in data:
+            m['others'] = data['others']
+        if 'description' in data:
+            m['description'] = data['description']
+        if 'object' in data:
+            m['object'] = data['object']
+        if 'checkin' in data:
+            m['checkin'] = data['checkin']
+        
+        instance = self.get_object()
+        getData = request.data.copy()  # Create a mutable copy of the QueryDict
+        haveImg = False
 
+        if 'images' in getData:
+            imgs = getData.pop('images')
+            haveImg = True
+
+        serializer = KeysSerializer(instance, data=m, partial=True, context={'request': request})
+        serializer.is_valid(raise_exception=True)
+        self.perform_update(serializer)
+        getKeys = Realestatekey.objects.get(id=instance.id)
+        # Update associated images
+        if haveImg:
+            # instance.images.clear()  # Remove existing images
+
+            for img in imgs:
+                new_image = CheckinImage.objects.create(image=img)
+                getKeys.images.add(new_image)
+
+        result = KeysSerializer(instance, context={'request': request})
+        return Response(result.data)
+    
+    
 class MetersViewSet(viewsets.ModelViewSet):
     queryset = Realestatemeter.objects.all()
     serializer_class = MetersSerializer
     http_method_names = ['get', 'post', 'put', 'patch', 'delete']
+
+    def create(self, request, *args, **kwargs):
+        getData = request.data
+        print('ejfvnn',getData)
+        haveImg = False
+        result = []
+        if 'images' in getData:
+            imgs = getData.pop('images')
+            haveImg = True
+        newRec = MetersSerializer(data=getData, context={'request':request})
+        if newRec.is_valid(raise_exception=True):
+            newRec.save()
+            recDetails = Realestatemeter.objects.get(id=newRec.data.get('id'))
+            if haveImg:
+                for img in imgs:
+                    new_image = CheckinImage.objects.create(image=img)
+                    recDetails.images.add(new_image)
+        result = MetersSerializer(recDetails, context={'request':request})
+        return Response(result.data)
+
+    def update(self, request, *args, **kwargs):
+        print(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>",request.data)
+        m = {}
+        data = request.data
+        if 'deterioration' in data:
+            deterioration = data['deterioration']
+            det = deterioration.split(",")
+            m['deterioration'] = det
+        if 'state' in data:
+            state = data['state']
+            st = state.split(",")
+            m['state'] = st
+        if 'count' in data:
+            m['count'] = data['count']
+        if 'others' in data:
+            m['others'] = data['others']
+        if 'description' in data:
+            m['description'] = data['description']
+        if 'obj' in data:
+            m['obj'] = data['obj']
+        if 'checkin' in data:
+            m['checkin'] = data['checkin']
+        if 'name' in data:
+            m['name'] = data['name']
+        if 'meterno' in data:
+            m['meterno'] = data['meterno']
+        if 'reading' in data:
+            m['reading'] = data['reading']
+        if 'unit' in data:
+            m['unit'] = data['unit']
+        if 'whochange' in data:
+            m['whochange'] = data['whochange']
+        if 'company' in data:
+            m['company'] = data['company']
+        if 'cleaning' in data:
+            cleaning = data['cleaning']
+            cleaning = cleaning.split(",")
+            m['cleaning'] = cleaning
+        if 'accessories' in data:
+            accessories = data['accessories']
+            accessories = accessories.split(",")
+            m['accessories'] = accessories
+
+        print("<<<<<<<<<<<<<<<<<<<<<<m?????????/",m)
+        
+        instance = self.get_object()
+        getData = request.data.copy()  # Create a mutable copy of the QueryDict
+        haveImg = False
+
+        if 'images' in getData:
+            imgs = getData.pop('images')
+
+            haveImg = True
+
+        
+        if len(m) > 0:
+            serializer = MetersSerializer(instance, data=m, partial=True, context={'request': request})
+            serializer.is_valid(raise_exception=True)
+            self.perform_update(serializer)
+        getmeters = Realestatemeter.objects.get(id=instance.id)
+
+        
+        if haveImg:
+            for img in imgs:
+                new_image = CheckinImage.objects.create(image=img)
+                print("newImage????????????????????????????",new_image)
+                getmeters.images.add(new_image)
+
+        result = MetersSerializer(instance, context={'request': request})
+        return Response(result.data)
 
     def get_queryset(self):
         checkin_id = self.request.query_params.get('checkin')
@@ -196,18 +357,80 @@ class AppendTransViewSet(viewsets.ModelViewSet):
             queryset = queryset.filter(obj=obj_id)
         return queryset
     
+    def update(self, request, *args, **kwargs):
+        print(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>",request.data)
+        m = {}
+        data = request.data
+        
+        if 'cleaning' in data:
+            cleaning = data['cleaning']
+            cleaning = cleaning.split(",")
+            m['cleaning'] = cleaning
+        if 'state' in data:
+            m['state'] = data['state']
+            # st = state.split(",")
+            # m['state'] = st
+        if 'count' in data:
+            m['count'] = data['count']
+        if 'others' in data:
+            m['others'] = data['others']
+        if 'description' in data:
+            m['description'] = data['description']
+        if 'obj' in data:
+            m['obj'] = data['obj']
+        if 'checkin' in data:
+            m['checkin'] = data['checkin']
+        if 'name' in data:
+            m['name'] = data['name']
+        if 'is_done' in data:
+            m['is_done'] = data['is_done']
+        if 'is_todo' in data:
+            m['is_todo'] = data['is_todo']
+        print("<<<<<<<<<<<<<<<<<<<<<<m?????????/",m)
+        
+        instance = self.get_object()
+        # getData = request.data.copy()
+        # haveImg = False
+
+        if len(m) > 0:
+            serializer = AppendicesTransSerializer(instance, data=m, partial=True, context={'request': request})
+            serializer.is_valid(raise_exception=True)
+            self.perform_update(serializer)
+        # getAppendence = Appendicestransaction.objects.get(id=instance.id)
+        result = AppendicesTransSerializer(instance, context={'request': request})
+        return Response(result.data)
+    
+class AppendicescheckboxViewSet(viewsets.ModelViewSet):
+    queryset = Appendicestransaction.objects.all()
+    serializer_class = AppendicesTransSerializer
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        is_done = self.request.query_params.get('is_done')
+        is_todo = self.request.query_params.get('is_todo')
+
+        if is_done:
+            queryset = queryset.filter(is_done=True)
+
+        if is_todo:
+            queryset = queryset.filter(is_todo=True)
+
+        return queryset
+       
 class CommentViewSet(viewsets.ModelViewSet):
     queryset = Checkincomments.objects.all()
     serializer_class = CommentSerializer
 
     def get_queryset(self):
-        queryset = Checkincomments.objects.all()
-        checkin_id = self.request.query_params.get('checkin')
-        if checkin_id:
-            queryset = Checkincomments.objects.filter(checkin=checkin_id)
-        else:
-            queryset = super().get_queryset() 
+        queryset = super().get_queryset()
+        checkin_id = self.request.query_params.get('checkin_id')
+        inspection_type = self.request.query_params.get('comment')
+
+        if checkin_id and inspection_type:
+            queryset = queryset.filter(checkin_id=checkin_id, inspection_type=inspection_type)
+
         return queryset
+
 
 def generate_pdf(request, pk):
     inspection = FurnitureInspection.objects.get(pk=pk)
@@ -218,8 +441,6 @@ def generate_pdf(request, pk):
         response = HttpResponse(pdf_file.read(), content_type='application/pdf')
         response['Content-Disposition'] = f'attachment; filename=furniture_inspection_{pk}.pdf'
         return response
-    
-
 
 def generate_pdf_report_furniture(request: HttpRequest) -> HttpResponse:
     # Get the data from the serializer
@@ -480,9 +701,104 @@ class CheckinContactsViewSet(viewsets.ModelViewSet):
     serializer_class = CheckinContactsSerializer
     http_method_names = ['get', 'post', 'put', 'patch', 'delete']
     
-    def get_queryset(self):
+    def get_queryset(self, *kwargs):
         queryset = super().get_queryset()
-        checkin_id = self.request.query_params.get('checkin')
-        if checkin_id :
-            queryset = queryset.filter(checkin=checkin_id)
+        checkin_id = self.kwargs.get('checkin') 
+        if checkin_id is not None:
+            queryset = queryset.filter(id=checkin_id)
+        if 'checkin' in self.request.query_params:
+            checkin_id = self.request.query_params.get('checkin')
+            queryset = queryset.filter(checkin__id=checkin_id)
+        
         return queryset
+    
+
+# from your_app.models import CheckinImage
+
+
+@api_view(['GET'])
+def realestatekey_images(request, realestatekey_id):
+    try:
+        realestatekey = Realestatekey.objects.get(id=realestatekey_id)
+    except Realestatekey.DoesNotExist:
+        return Response({'error': 'Invalid realestatekey_id'}, status=status.HTTP_404_NOT_FOUND)
+
+    images = realestatekey.images.all()
+    serializer = KeyImageSerializer(images, many=True)
+
+    return Response(serializer.data, status=status.HTTP_200_OK)
+
+@api_view(['POST'])
+def update_realestatekey_image(request, realestatekey_id):
+    try:
+        realestatekey = Realestatekey.objects.get(id=realestatekey_id)
+    except Realestatekey.DoesNotExist:
+        return Response({'error': 'Invalid realestatekey_id'}, status=status.HTTP_404_NOT_FOUND)
+
+    # Update the image based on the request data
+    image_data = request.data.get('image')
+
+    if image_data:
+        # Handle the image update logic here
+        # For example, you can replace the existing image with the new one
+        realestatekey.images.clear()  # Clear existing images
+        new_image = CheckinImage.objects.create(image=image_data)
+        realestatekey.images.add(new_image)
+
+    return Response({'message': 'Image updated successfully'}, status=status.HTTP_200_OK)
+
+
+@api_view(['GET'])
+def realestatemeter_images(request, realestatemeter_id):
+    try:
+        realestatemeter = Realestatemeter.objects.get(id=realestatemeter_id)
+    except Realestatemeter.DoesNotExist:
+        return Response({'error': 'Invalid realestatemeter_id'}, status=status.HTTP_404_NOT_FOUND)
+
+    images = realestatemeter.images.all()
+    serializer = KeyImageSerializer(images, many=True)
+
+    return Response(serializer.data, status=status.HTTP_200_OK)
+
+@api_view(['POST'])
+def update_realestatemeter_image(request, realestatemeter_id):
+    try:
+        realestatemeter = Realestatemeter.objects.get(id=realestatemeter_id)
+    except Realestatemeter.DoesNotExist:
+        return Response({'error': 'Invalid realestatemeter_id'}, status=status.HTTP_404_NOT_FOUND)
+
+    # Update the image based on the request data
+    image_data = request.data.get('image')
+
+    if image_data:
+        # Handle the image update logic here
+        # For example, you can replace the existing image with the new one
+        realestatemeter.images.clear()  # Clear existing images
+        new_image = CheckinImage.objects.create(image=image_data)
+        realestatemeter.images.add(new_image)
+
+    return Response({'message': 'Image updated successfully'}, status=status.HTTP_200_OK)
+
+@api_view(['DELETE'])
+def delete_realestatekey_images(request, realestatekey_id):
+    try:
+        realestatekey = Realestatekey.objects.get(id=realestatekey_id)
+    except Realestatekey.DoesNotExist:
+        return Response({'error': 'Invalid realestatekey_id'}, status=status.HTTP_404_NOT_FOUND)
+
+    # Delete all images associated with the realestatekey
+    realestatekey.images.clear()
+
+    return Response({'message': 'Images deleted successfully'}, status=status.HTTP_200_OK)
+
+@api_view(['DELETE'])
+def delete_realestatemeter_images(request, realestatemeter_id):
+    try:
+        realestatemeter = Realestatemeter.objects.get(id=realestatemeter_id)
+    except Realestatemeter.DoesNotExist:
+        return Response({'error': 'Invalid realestatemeter_id'}, status=status.HTTP_404_NOT_FOUND)
+
+    # Delete all images associated with the realestatemeter
+    realestatemeter.images.clear()
+
+    return Response({'message': 'Images deleted successfully'}, status=status.HTTP_200_OK)
