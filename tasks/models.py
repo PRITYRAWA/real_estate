@@ -4,6 +4,11 @@ from foundation.models import BaseModel
 from django.utils.translation import gettext_lazy as _
 from masters.models import *
 
+class TicketAttachments(models.Model):
+    attachment = models.FileField(upload_to='ticket_attachments/')
+    image = models.ImageField(upload_to='ticket_attachments/')
+
+
 class Tickets(BaseModel):
     ticket_choice = (
         ('TicketDamage','TicketDamage'),
@@ -18,21 +23,23 @@ class Tickets(BaseModel):
     )
     tickettype_id=models.CharField(max_length=20, choices= ticket_choice ,default='draft',verbose_name=("ticket choice"))
     manageby_id = models.ForeignKey(Realestatepropertymanagement,on_delete=models.PROTECT,null=True,blank=True,verbose_name=_("Manage By"))
-    property_id = models.ForeignKey(Realestateproperties, on_delete=models.PROTECT,verbose_name=_("Property"))   
+    property_id = models.ForeignKey(Realestateproperties, on_delete=models.PROTECT,verbose_name=_("Property"),null=True,blank=True)   
     object_id = models.ForeignKey(Realestateobjects, on_delete=models.PROTECT, blank=True, null=True,verbose_name=_("Object"))   
-    tenant_id = models.ForeignKey(Realestatepropertytenant, on_delete=models.PROTECT,verbose_name=_("Tenant"))   
-    responsible_user_id = models.ForeignKey(Realestatepropertyowner, on_delete=models.PROTECT,related_name='tickets_responsibleuserid_set',verbose_name=("Responsible User"))
+    tenant_id = models.ForeignKey(Realestatepropertytenant, on_delete=models.PROTECT,verbose_name=_("Tenant"),null=True,blank=True)   
+    responsible_user_id = models.ForeignKey(Realestatepropertyowner, on_delete=models.PROTECT,related_name='tickets_responsibleuserid_set',verbose_name=("Responsible User"),null=True,blank=True)
     title = models.CharField(max_length=50,null=True,blank=True,verbose_name=("title"))   
     message = models.CharField(max_length=250, blank=True, null=True,verbose_name=("Message"))   
-    reporting_text = models.CharField(max_length=100, blank=True, null=True,verbose_name=("Reporting Text"))   
+    reporting_text = models.TextField(blank=True, null=True,verbose_name=("Reporting Text"))   
     due_date = models.DateTimeField(blank=True, null=True,verbose_name=("Due-Date"))   
-    status = models.IntegerField(null=True,blank=True,verbose_name=("Status"))   
+    status = models.CharField(null=True,blank=True, choices=ticket_choice, max_length=20, verbose_name=("Status"))   
     contact_name = models.CharField(max_length=30, blank=True, null=True,verbose_name=("Contact Name"))   
     contact_phone = models.CharField(max_length=30, blank=True, null=True,verbose_name=("Contact Phone"))   
     contact_email = models.CharField(max_length=100, blank=True, null=True,verbose_name=("Contact Email"))   
-    contact_time = models.CharField(max_length=50,blank=True,null=True,verbose_name=("Contact Time"))
-    attachments = models.TextField(blank=True, null=True,verbose_name=("Attachments"))   
-    info = models.TextField(blank=True, null=True,verbose_name=("Information"))   
+    contact_time = models.CharField(max_length=50,blank=True,null=True,verbose_name=("Contact Time"))  
+    info = models.TextField(blank=True, null=True,verbose_name=("Information"))
+    images = models.ManyToManyField('TicketAttachments', related_name='ticket_images', verbose_name=("Ticket Images"))
+    attachments = models.ManyToManyField('TicketAttachments', related_name='ticket_attachments', verbose_name=('Ticket Attachments'))
+    created_date = models.DateField(blank=True, null=True)
 
     class Meta:
         db_table = 'Tickets' 
@@ -43,8 +50,20 @@ class Tickets(BaseModel):
         return str(self.title)
 
 class Ticketoffers(BaseModel):
+    offer_choices = (
+        ("pending", ("Pending")),
+        ("received", ("Received")),
+        ("selected", ("Selected")),
+        ("rejected", ("Rejected")),
+    )
+    invoice_choices = (
+        ("pending", ("Pending")),
+        ("invoiced", ("Invoiced")),
+        ("paid", ("Paid")),
+        ("dispute", ("Dispute")),
+    )
     ticket = models.ForeignKey(Tickets,on_delete=models.PROTECT,verbose_name=("Ticket"))   
-    realestate_service_provider_id = models.ForeignKey(Realestateserviceproviders, on_delete=models.PROTECT,verbose_name=("Service Provider"))   
+    realestate_service_provider_id = models.ForeignKey(Realestateserviceproviders, on_delete=models.PROTECT,verbose_name=("Service Provider"),null=True,blank=True)   
     request_note = models.CharField(max_length=150, blank=True, null=True,verbose_name=("Request Note"))   
     offer_note = models.CharField(max_length=100, blank=True, null=True,verbose_name=("Note"))   
     price = models.DecimalField(max_digits=18, decimal_places=2, blank=True, null=True,verbose_name=("Price"))   
@@ -57,9 +76,10 @@ class Ticketoffers(BaseModel):
     service_provider_comment_by_manager = models.CharField(max_length=200, blank=True, null=True, verbose_name=("Service Provider Comment by Manager"))
     our_rating = models.IntegerField(blank=True, null=True, verbose_name=("Our Rating"))
     problem_comment = models.CharField(max_length=200, blank=True, null=True, verbose_name=("Problem Comment"))
-    status = models.IntegerField(verbose_name=("Status"))
+    offer_status = models.CharField(choices=offer_choices, max_length=20,null=True, blank=True, verbose_name=("Offer Status"))
     offer_note_attachements = models.TextField(blank=True, null=True, verbose_name=("Offer Note Attachments"))
     request_note_attachments = models.TextField(blank=True, null=True, verbose_name=("Request Note Attachments"))
+    invoice_status = models.CharField(choices=invoice_choices, max_length=20,null=True, blank=True, verbose_name=("Invoice Status"))
 
     class Meta:
         db_table = 'Ticketoffers' 
@@ -68,8 +88,7 @@ class Ticketoffers(BaseModel):
     
     def __str__(self):
         return str(self.ticket.title)
-   
-
+    
 class TKDamageReport(BaseModel):
     TIME_CHOICES = (
     ('MORNING', 'Morning (8 to 12)'),
@@ -82,9 +101,9 @@ class TKDamageReport(BaseModel):
     ('NEIGHBOR_DEPOSIT', 'At the neighbour\'s/deposit'),
     )
     ticket = models.ForeignKey(Tickets,on_delete=models.PROTECT)   
-    date = models.DateField()
-    time_range = models.CharField(max_length=20, choices=TIME_CHOICES)
-    contact_person = models.CharField(max_length=30, choices=CONTACT_PERSON_CHOICES)
+    damagr_date = models.DateField(null=True, blank=True)
+    time_range = models.CharField(max_length=20, choices=TIME_CHOICES,null=True,blank=True)
+    contact_person = models.CharField(max_length=30, choices=CONTACT_PERSON_CHOICES,null=True,blank=True)
     KeyLocation = models.CharField(max_length=250,null=True,blank=True)
 
     class Meta:
@@ -97,7 +116,6 @@ class TKDamageReport(BaseModel):
 
 class TkGeneralEnquiries(BaseModel):
     ticket = models.ForeignKey(Tickets,on_delete=models.PROTECT)   
-    attachments = models.FileField(upload_to='manager_enquiries',null=True,blank=True)
 
     class Meta:
         db_table = 'Generalenquiries'
@@ -111,7 +129,6 @@ class TkInvoiceQuestion(BaseModel):
     refrence_number = models.CharField(max_length=100,null=True,blank=True)
     invoice_amount = models.CharField(max_length=100,null=True,blank=True)
     question = models.TextField(null=True,blank=True)
-    attachments = models.FileField(upload_to='manager_invoice',null=True,blank=True)
 
     class Meta:
         db_table = 'Invoicequestion'
@@ -131,9 +148,8 @@ class TkPetRequest(BaseModel):
     ('other_pets', 'Other pets'),
     )
     ticket = models.ForeignKey(Tickets,on_delete=models.PROTECT)   
-    pet_type = models.CharField(max_length=20, choices=PET_CHOICES)
+    pet_type = models.CharField(max_length=20, choices=PET_CHOICES,null=True,blank=True)
     quantity = models.CharField(max_length=100,null=True,blank=True)
-    attachments = models.FileField(upload_to='pet_request',null=True,blank=True)
 
     class Meta:
         db_table = 'Petrequest'
@@ -158,12 +174,11 @@ class TkOrderKey(BaseModel):
     ('other', 'Other (enter reason in remarks)'),
     )
     ticket = models.ForeignKey(Tickets,on_delete=models.PROTECT)   
-    key_type = models.CharField(max_length=20, choices=KEY_CHOICES)
+    key_type = models.CharField(max_length=20, choices=KEY_CHOICES,null=True,blank=True)
     quantity = models.CharField(max_length=100,null=True,blank=True)
     locking_system = models.CharField(max_length=100,null=True,blank=True)
     serial_number = models.CharField(max_length=100,null=True,blank=True)
-    order_reason = models.CharField(max_length=20, choices=REASON_CHOICES)
-    attachments = models.FileField(upload_to='order-key',null=True,blank=True)
+    order_reason = models.CharField(max_length=20, choices=REASON_CHOICES,null=True,blank=True)
 
     class Meta:
         db_table = 'Orderkey'
@@ -210,8 +225,7 @@ class TkPaymentSlips(BaseModel):
     from_year = models.CharField(max_length=50,choices=YEAR_CHOICES,null=True,blank=True)
     to_month = models.CharField(max_length=50,choices=MONTH_CHOICES,null=True,blank=True)
     to_year =  models.CharField(max_length=50,choices=YEAR_CHOICES,null=True,blank=True)
-    payment_slip_delivery = models.CharField(max_length=10, choices=PAYMENT_SLIP_DELIVERY_CHOICES)
-    attachments = models.FileField(upload_to='payment-slip',null=True,blank=True)
+    payment_slip_delivery = models.CharField(max_length=10, choices=PAYMENT_SLIP_DELIVERY_CHOICES,null=True,blank=True)
 
     class Meta:
         db_table = 'Paymentslips'
@@ -253,15 +267,15 @@ class TkOrderBadge(BaseModel):
         max_length=20,
         choices=ORDER_CHOICES,
         default='complete_set',
-        verbose_name='Order Type',
+        verbose_name='Order Type',null=True,blank=True
     )
     valid_from = models.CharField(
         max_length=20,
         choices=VALID_FROM_CHOICES,
         default='assembly',
-        verbose_name='Valid From'
+        verbose_name='Valid From',null=True,blank=True
     )
-    labeling = models.CharField(max_length=300)
+    labeling = models.CharField(max_length=300,null=True,blank=True)
 
     class Meta:
         db_table = 'Order badge'
