@@ -318,15 +318,14 @@ class MeetingScheduleSerializer(serializers.ModelSerializer):
 
         agenda_list = []
         for agenda in agenda_details:
-            #agenda.pop("meeting", None)
             sub_agendas= agenda.pop("meetingagenda_detail", None)
             agenda_list.append(MeetingAgenda(meeting=instance, **agenda))
 
-        bulk_agendas_details = MeetingAgenda.objects.bulk_create(agenda_list)
-        print("bulk_agendas_details ", bulk_agendas_details)
+        #bulk_agendas_details = MeetingAgenda.objects.bulk_create(agenda_list)
+        #print("bulk_agendas_details ", bulk_agendas_details)
         subagendas_list=[]
-        if bulk_agendas_details:
-            for subagenda in bulk_agendas_details:
+        if agenda_list:
+            for subagenda in agenda_list:
                 subagenda.save()
                 for aub_agenda in sub_agendas:
                     subagendas_list.append(MeetingSubAgendaDetails(meeting_agenda=subagenda, **aub_agenda))    
@@ -337,24 +336,24 @@ class MeetingScheduleSerializer(serializers.ModelSerializer):
             voting.pop("meeting", None)
             voting_list.append(MeetingVotingCircle(meeting=instance, **voting))
 
-        bulk_voting_details = MeetingVotingCircle.objects.bulk_create(voting_list)
+        #bulk_voting_details = MeetingVotingCircle.objects.bulk_create(voting_list)
         participant_list=[]
-        if bulk_voting_details:
-            for votes in bulk_voting_details:
+        if voting_list:
+            for votes in voting_list:
                 votes.save()
                 participant_list.append(MeetingParticipant(meeting=instance,participant=votes,participant_email=votes.email))
             bulk_participants_details = MeetingParticipant.objects.bulk_create(participant_list)
-        print("bulk_voting_details ", bulk_voting_details)
+        #print("bulk_voting_details ", bulk_voting_details)
         quorums_list=[]
         if meeting_quorums:
             for quorums in meeting_quorums:
                 print("quorms",quorums)
                 meeting_votes= quorums.pop("meeting_votes", None)
                 quorums_list.append(MeetingQuorums(meeting=instance, **quorums))    
-            bulk_quorums_details = MeetingQuorums.objects.bulk_create(quorums_list)
+            #bulk_quorums_details = MeetingQuorums.objects.bulk_create(quorums_list)
             meeting_votes_list=[]
-            if bulk_quorums_details:
-                for quorums in bulk_quorums_details:
+            if quorums_list:
+                for quorums in quorums_list:
                     quorums.save()
                     for quorum_votes in meeting_votes:
                         meeting_votes_list.append(MeetingVotes(meeting_quorums=quorums, **quorum_votes))    
