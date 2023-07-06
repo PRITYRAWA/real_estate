@@ -15,7 +15,7 @@ class MeetingSchedule(BaseModel):
     object = models.ForeignKey(Realestateobjects,related_name="property_objects",on_delete=models.PROTECT)
     subgroup = models.ForeignKey(Realestateproperties,related_name="subgroups",on_delete=models.PROTECT)
     chairman = models.ForeignKey(Realestatepropertyowner,related_name="chairmans",on_delete=models.PROTECT)
-    minute_taker = models.ForeignKey(Realestateagents,related_name="mintue_takers",on_delete=models.PROTECT)
+    minute_taker = models.ForeignKey(Realestatepropertyowner,related_name="mintue_takers",on_delete=models.PROTECT)
     meeting_date = models.DateField(auto_now_add=True)
     meeting_time=models.TimeField(auto_now_add=True)
     date_defined =models.BooleanField(default=False)
@@ -29,11 +29,9 @@ class MeetingSchedule(BaseModel):
     cover_picture_for_presenation=models.FileField(upload_to="images", null=True, blank=True)
     association_information=models.TextField(null=True, blank=True)
     information_for_current_meeting=models.TextField(null=True, blank=True)
-    #quorum = models.ForeignKey(Quorums,related_name="quorums",on_delete=models.PROTECT)
     qr_code = models.ImageField(upload_to='qr_codes/', blank=True, null=True)
     status = models.TextField(max_length=50,choices= status,default='pending')
     subassociation= models.CharField(max_length=100, blank=True, null=True)
-    #voting_circle = models.ForeignKey(Realestatepropertyowner,related_name="voting_circles",on_delete=models.CASCADE)
 
     class Meta:
         db_table = 'MeetingSchedule'
@@ -53,6 +51,9 @@ class MeetingAgenda(BaseModel):
     
     class Meta:
         db_table = 'MeetingAgenda'
+        constraints = [
+            models.UniqueConstraint(fields=['meeting', 'topic'], name='meetingtopic')
+        ]
     
     def __str__(self):
         return str(self.topic)
@@ -68,6 +69,9 @@ class MeetingSubAgendaDetails(BaseModel):
         db_table = 'MeetingAgendaDetails'
         verbose_name = "MeetingAgenda Details"
         ordering = ['-id']
+        constraints = [
+            models.UniqueConstraint(fields=['meeting_agenda', 'sub_item'], name='agendasubitem')
+        ]
 
 class MeetingVotingCircle(BaseModel):
     types = (
@@ -83,6 +87,9 @@ class MeetingVotingCircle(BaseModel):
     category = models.CharField(max_length=20, choices=types, default='main',verbose_name=("Category"))
     class Meta:
         db_table = 'MeetingVotingCircle'
+        constraints = [
+            models.UniqueConstraint(fields=['meeting', 'email'], name='votingemail')
+        ]
     
     def __str__(self):
         return str(self.participant_name)
@@ -141,6 +148,10 @@ class MeetingQuorums(BaseModel):
         db_table = 'MeetingQuorums'
         verbose_name = "Meeting Quorums"
         ordering = ['-id']
+        
+        constraints = [
+            models.UniqueConstraint(fields=['meeting', 'voting_type'], name='meetingquorom')
+        ]
 
 class MeetingVotes(BaseModel):
     

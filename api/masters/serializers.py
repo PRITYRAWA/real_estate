@@ -102,7 +102,7 @@ class Agendaserializer(serializers.ModelSerializer):
         )
 
 class Votesserializer(serializers.ModelSerializer):
-    quorums = serializers.CharField(source='quorums.condition', read_only=True)
+    quorums = serializers.CharField(read_only=True)
     class Meta:
         model = Votes
         exclude = ('created_at', 'updated_at')
