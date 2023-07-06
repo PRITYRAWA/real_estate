@@ -8,9 +8,9 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from reportlab.pdfgen import canvas
 from reportlab.lib.pagesizes import letter
-from property.settings import BASE_DIR
+from property.settings import BASE_DIR,MEDIA_ROOT
 import base64
-
+import os
 # Create your views here.
 class MeetingScheduleViewSet(viewsets.ModelViewSet):
     queryset = MeetingSchedule.objects.all()
@@ -42,16 +42,17 @@ class MeetingScheduleViewSet(viewsets.ModelViewSet):
             return Response(str(e))
 
 
-    @action(detail=False, methods=['post'], name='scan_qr_code',url_path='scan_qr_code/(?P<email>[^/.@]+@[^/.@]+\.[^/.@]+)/(?P<meetid>[^/.]+)')
+    @action(detail=False, methods=['post'], name='scan_qr_code',url_path='scan_qr_code/(?P<email>[^/]+[@._][^/]+)/(?P<meetid>[^/.]+)')
     def scan_qr_code(self,request,email,meetid):
         meeting_id = MeetingSchedule.objects.get(id=meetid)
         attendence = MeetingParticipant.objects.get(meeting=meetid,participant_email=email)
         attendence.meeting_attendence= True
         attendence.attendence_in_person = True
         attendence.save()
-        return Response('Scanned Sucessfully')
+        serializer = MeetingParticipantSerializer(attendence)
+        return Response(serializer.data)
 
-    @action(detail=False, methods=['get'], name='present_participants',url_path='present_participants/(?P<email>[^/.@]+@[^/.@]+\.[^/.@]+)/(?P<meetid>[^/.]+)')
+    @action(detail=False, methods=['get'], name='present_participants',url_path='present_participants/(?P<email>[^/]+[@._][^/]+)/(?P<meetid>[^/.]+)')
     def present_participants(self,request,email,meetid):
         attendence = MeetingParticipant.objects.filter(meeting=meetid,meeting_attendence=True)
         serializer = GetMeetingParticipantSerializer(attendence, many=True)
@@ -82,7 +83,7 @@ class MeetingParticipantViewSet(viewsets.ModelViewSet):
     queryset = MeetingParticipant.objects.all()
     serializer_class = MeetingParticipantSerializer
 
-    @action(detail=False, methods=['put'], name='update_users',url_path='update_users/(?P<email>[^/.@]+@[^/.@]+\.[^/.@]+)/(?P<meetid>[^/.]+)')
+    @action(detail=False, methods=['put'], name='update_users',url_path='update_users/(?P<email>[^/]+[@._][^/]+)/(?P<meetid>[^/.]+)')
     def update_users(self, request,email,meetid):
         try:
             instance = MeetingParticipant.objects.get(participant_email=email,meeting=meetid)
@@ -95,7 +96,7 @@ class MeetingParticipantViewSet(viewsets.ModelViewSet):
         except Exception as e:
             return Response(str(e))
 
-    @action(detail=False, methods=['post'], name='attorney_data',url_path='attorney_data/(?P<email>[^/.@]+@[^/.@]+\.[^/.@]+)/(?P<meetid>[^/.]+)')
+    @action(detail=False, methods=['post'], name='attorney_data',url_path='attorney_data/(?P<email>[^/]+[@._][^/]+)/(?P<meetid>[^/.]+)')
     def attorney_data(self, request, email, meetid):
         getData = request.data
         base64_image = request.POST.get('signature')
@@ -106,13 +107,14 @@ class MeetingParticipantViewSet(viewsets.ModelViewSet):
         owner = getData.get('owner_name')
         print(attorney_name,appartment_name,owner)
         if image_data:
-                #write the decoded data back to original format in  file
-                img_file = open('image.jpeg', 'wb')
+            #write the decoded data back to original format in  file
+            file_path = os.path.join(BASE_DIR, 'image.jpeg')
+            with open(file_path, 'wb') as img_file:
                 img_file.write(image_data)
                 img_file.close()
 
         # Create a new PDF document
-        output_pdf_path = f'{BASE_DIR}/pdf/{owner}.pdf'
+        output_pdf_path = f'{MEDIA_ROOT}/pdf/{owner}.pdf'
         c = canvas.Canvas(output_pdf_path, pagesize=letter)
         c.drawString(50, 750, "Authorize", c.setFont("Helvetica", 14))
         c.drawString(50, 720, attorney_name, c.setFont("Helvetica", 10))
@@ -128,24 +130,26 @@ class MeetingParticipantViewSet(viewsets.ModelViewSet):
         c.line(x1=50, y1=565, x2=550, y2=565)
         x=200
         y=400
-        img = f'{BASE_DIR}/{img_file.name}'
+        img =file_path #f'{BASE_DIR}/{img_file.name}'
         c.drawImage(img, x, y, width=150, height=70, mask=None)
         c.showPage()  # Move to the next page for the next order
         c.save()
+        pdf_path = f'pdf/{owner}.pdf'
         instance = MeetingParticipant.objects.get(participant_email=email,meeting=meetid)
         instance.power_of_attroney= True
-        instance.attroney_attchment =output_pdf_path
+        instance.attroney_attchment =pdf_path
         instance.power_of_attroney_name =attorney_name
         instance.apartment = appartment_name
         instance.save()
-        return Response("sucessfully saved data") 
+        serializer=MeetingParticipantSerializer(instance)
+        return Response(serializer.data) 
 
 # Create your views here.
 class MeetingParticipantAgendaViewSet(viewsets.ModelViewSet):
     queryset = MeetingParticipantAgenda.objects.all()
     serializer_class = MeetingParticipantAgendaSerializer
 
-    @action(detail=False, methods=['post'], name='submit_agenda',url_path='submit_agenda/(?P<email>[^/.@]+@[^/.@]+\.[^/.@]+)/(?P<meetid>[^/.]+)')    
+    @action(detail=False, methods=['post'], name='submit_agenda',url_path='submit_agenda/(?P<email>[^/]+[@._][^/]+)/(?P<meetid>[^/.]+)')    
     def submit_agenda(self, request,email,meetid):
         participant_id= MeetingParticipant.objects.get(participant_email=email,meeting=meetid)
         if participant_id:
