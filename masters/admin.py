@@ -9,7 +9,7 @@ admin.site.register([
                      Realestateserviceproviders,Realestatepropertytenant,Realestatepropertiessubgroup,
                      Realestatepropertyowner,Localestringresources,Localizedproperties,
                      Realestatekeyhandover,Realestatemeterhandover,FurnitureInspectionMaster,
-                     Appendicesmaster])
+                     Appendicesmaster,Quorums,Votes])
 
 
 
@@ -26,18 +26,6 @@ class CustomAgenda(admin.ModelAdmin):
         AgendaDetailsInline,
     ]
 
-# creating parent child model for quroms   
-class VotesInline(admin.TabularInline):
-    model = Votes
-    extra = 1
-
-
-@admin.register(Quorums)
-class CustomQuorums(admin.ModelAdmin):
-    exclude = ("createdby","lastmodifiedby")
-    inlines = [
-        VotesInline,
-    ]
 
 
 class ObjectsInline(admin.TabularInline):

@@ -102,13 +102,13 @@ class Agendaserializer(serializers.ModelSerializer):
         )
 
 class Votesserializer(serializers.ModelSerializer):
-    quorums = serializers.CharField(read_only=True)
+    #quorums = serializers.CharField(read_only=True)
     class Meta:
         model = Votes
         exclude = ('created_at', 'updated_at')
 
 class Quorumsserializer(serializers.ModelSerializer):
-    meeting_votes = Votesserializer(many=True)
+    #meeting_votes = Votesserializer(many=True)
     class Meta:
         model = Quorums
         fields = (
@@ -116,18 +116,25 @@ class Quorumsserializer(serializers.ModelSerializer):
             "voting_type",
             "present_votes",
             "condition",
-            "meeting_votes",
+            #"meeting_votes",
         )
        
 
 class Mettingtemplateserializer(serializers.ModelSerializer):
-    quorum = serializers.CharField(source='quorum.condition', read_only=True)
+    quorum = serializers.CharField(source='quorum.voting_type', read_only=True)
+    votes = serializers.CharField(source='votes.voting_type', read_only=True)
     agenda = serializers.CharField(source='agenda.topic', read_only=True)
     voting_circle = serializers.CharField(source='voting_circle.manager_name', read_only=True)
 
     class Meta:
         model = Mettingtemplate
-        exclude = ('created_at', 'updated_at')
+        fields = (
+            "id",
+            "quorum",
+            "votes",
+            "agenda",
+            "voting_circle",
+        )
 
 class Subgroupserializer(serializers.ModelSerializer):
     property = serializers.CharField(read_only=True, source='property.name')
