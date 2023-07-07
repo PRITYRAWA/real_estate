@@ -9,12 +9,12 @@ class TicketAttachmentsSerializer(serializers.ModelSerializer):
         fields = '__all__'  # Include all fields or specify the required fields
 
 class TicketsSerializer(serializers.ModelSerializer):
-    manageby_id = serializers.CharField(read_only=True, source='manageby_id.manager_name')
-    property_id = serializers.CharField(read_only=True, source='property_id.name')
-    object_id = serializers.CharField(read_only=True, source='object_id.object_name')  
-    tenant_id = serializers.CharField(read_only=True, source='tenant_id.name')  
-    responsible_user_id = serializers.CharField(read_only=True, source='responsible_user_id.name')
-    attachments = TicketAttachmentsSerializer(many=True)
+    manageby = serializers.CharField(read_only=True, source='manageby_id.manager_name')
+    property = serializers.CharField(read_only=True, source='property_id.name')
+    object = serializers.CharField(read_only=True, source='object_id.object_name')  
+    tenant = serializers.CharField(read_only=True, source='tenant_id.name')  
+    responsible_user = serializers.CharField(read_only=True, source='responsible_user_id.name')
+    attachments = TicketAttachmentsSerializer(many=True, read_only=True)
 
     class Meta:
         model = Tickets
