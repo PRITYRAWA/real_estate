@@ -20,6 +20,7 @@ class TicketsViewSet(viewsets.ModelViewSet):
         haveImg = False
         haveAtt = False
         result = []
+        imgs, atts = [], []
         if 'image' in getData:
             imgs = getData.pop('image')
             haveImg = True

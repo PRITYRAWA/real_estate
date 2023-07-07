@@ -53,7 +53,7 @@ class ObjectListInspection(BaseModel):
     inorder = models.BooleanField(blank=True,null=True,verbose_name=("In Order"),default=False)
     normal_wear = models.BooleanField(blank=True,null=True,verbose_name=("Normal Wear"),default=False)
     notes = models.TextField(blank=True, null=True,verbose_name=("Notes"))
-    photos = models.ImageField(upload_to='object_images_transaction/',blank=True, null=True,verbose_name=("Image"))
+    images = models.ManyToManyField("CheckinImage", related_name='objectlist')
     count = models.IntegerField(default=0,verbose_name=("Count"),null=True,blank=True)
 
     class Meta:
@@ -240,7 +240,7 @@ class Appendicestransaction(BaseModel):
     ]
     checkin = models.ForeignKey(CheckInOut, on_delete=models.PROTECT,null=True,blank=True)   
     obj = models.ForeignKey(Appendicesmaster,on_delete=models.PROTECT, null=True, blank=True) 
-    photos = models.ImageField(upload_to='master_key_photos/',null=True, blank=True,verbose_name=("Photos"))
+    images = models.ManyToManyField("CheckinImage", related_name='appendicestrans')    
     count = models.IntegerField(default=0,verbose_name=("Count"),null=True,blank=True)
     description = models.TextField(null=True, blank=True,verbose_name=("Description"))
     name = models.CharField(max_length=300,null=True, blank=True,verbose_name=("Name"))

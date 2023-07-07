@@ -245,7 +245,7 @@ class Realestateobjectsdetail(BaseModel):
     category = models.CharField(max_length=50, null=True, blank=True, verbose_name=("Category"))
     related_object = models.ForeignKey(Realestateobjects, on_delete=models.PROTECT,null=True,blank=True,related_name='object_detail',verbose_name=("Related Object"))
     related_property = models.ForeignKey(Realestateproperties, on_delete=models.PROTECT,null=True,blank=True,verbose_name=("Related Property"))
-    object_name = models.TextField(verbose_name=("Object Name"))
+    object_name = models.CharField(max_length=100,verbose_name=("Object Name"))
     object_description = models.CharField(max_length=100,null=True,blank=True,verbose_name="Object Description")   
     related_detail = models.ForeignKey('Realestateobjectsdetail', on_delete=models.PROTECT, null=True, blank=True,verbose_name=("Related Detail"),related_name='child_details')
     new = models.BooleanField(blank=True,null=True,verbose_name=("New"))
@@ -280,7 +280,7 @@ class Realestatekeyhandover(BaseModel):
     property = models.ForeignKey(Realestateproperties, null=True, blank=True,verbose_name=("Property"), on_delete=models.PROTECT) 
     object = models.ForeignKey(Realestateobjects,on_delete=models.PROTECT, null=True, blank=True,verbose_name=("Object")) 
     photo = models.ImageField(upload_to='master_key_photos/',null=True, blank=True,verbose_name=("Photo"))
-    count = models.IntegerField(default=0,verbose_name=("Count"))
+    count = models.IntegerField(default=0,verbose_name=("Count"), null=True, blank=True)
     description = models.TextField(null=True, blank=True,verbose_name=("Description"))
     name = models.CharField(max_length=300,null=True, blank=True,verbose_name=("Name"))
    

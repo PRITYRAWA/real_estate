@@ -22,7 +22,7 @@ class ChildDetailSerializer(serializers.ModelSerializer):
     # object_detail_list = serializers.CharField(source = 'object_detail_list.object_name', read_only=True)
     # related_object = serializers.CharField(source = 'related_object.object_name', read_only=True)
     # related_detail = serializers.CharField(source = 'related_detail.object_name', read_only=True)
-    
+    images = serializers.SerializerMethodField()
 
     class Meta:
         model = ObjectListInspection
@@ -35,12 +35,31 @@ class ChildDetailSerializer(serializers.ModelSerializer):
         serialized_child_details = self.__class__(child_details, many=True, context={'exclude_child_details': True}).data
         return serialized_child_details
     
+    def get_images(self, obj):
+        imgId = obj.images.all()
+        req = self.context['request']
+        base_uri = req.build_absolute_uri('/')
+        imgRecord = CheckinImage.objects.filter(id__in=imgId)
+        imgData = KeyImageSerializer(imgRecord, many=True)
+        result = []
+        for data in imgData.data:
+            imgPath = str(data.get('image'))
+            imgPath = imgPath[1:]
+            imageUrl = base_uri+imgPath
+            imageId = data.get('id')
+            ret = {}
+            ret['imageId'] = imageId
+            ret['imageURL'] = imageUrl
+            result.append(ret)
+        return result
+    
 class ObjectListInspectionSerializer(serializers.ModelSerializer):
     child_details = ChildDetailSerializer(many=True, required=False)
     # checkin = serializers.CharField(source='checkin.user.name', read_only=True)
     # object_detail_list = serializers.CharField(source = 'object_detail_list.object_name', read_only=True)
     # related_object = serializers.CharField(source = 'related_object.object_name', read_only=True)
     # related_detail = serializers.CharField(source = 'related_detail.object_name', read_only=True)
+    images = serializers.SerializerMethodField()
 
     class Meta:
         model = ObjectListInspection
@@ -55,6 +74,25 @@ class ObjectListInspectionSerializer(serializers.ModelSerializer):
             ChildDetailSerializer().create(child_detail_data)
 
         return inspection
+    
+    def get_images(self, obj):
+        imgId = obj.images.all()
+        print(imgId)
+        req = self.context['request']
+        base_uri = req.build_absolute_uri('/')
+        imgRecord = CheckinImage.objects.filter(id__in=imgId)
+        imgData = KeyImageSerializer(imgRecord, many=True)
+        result = []
+        for data in imgData.data:
+            imgPath = str(data.get('image'))
+            imgPath = imgPath[1:]
+            imageUrl = base_uri+imgPath
+            imageId = data.get('id')
+            ret = {}
+            ret['imageId'] = imageId
+            ret['imageURL'] = imageUrl
+            result.append(ret)
+        return result
 
         
 class CheckInOutSerializer(serializers.ModelSerializer):
@@ -194,24 +232,26 @@ class AppendicesTransSerializer(serializers.ModelSerializer):
     # checkin = serializers.CharField(source='checkin.user.name', read_only=True)
     # obj = serializers.CharField(source='obj.name', read_only=True)
 
-    #images = serializers.SerializerMethodField()
+    images = serializers.SerializerMethodField()
 
-    # def get_images(self, obj):
-    #     imgId = obj.images.all()
-    #     req = self.context['request']
-    #     base_uri = req.build_absolute_uri('/')
-    #     imgRecord = CheckinImage.objects.filter(id__in=imgId)
-    #     imgData = KeyImageSerializer(imgRecord, many=True)
-    #     result = []
-    #     for data in imgData.data:
-    #         imgPath = str(data.get('image'))
-    #         imgPath = imgPath[1:]
-    #         imageUrl = base_uri+imgPath
-    #         m = {}
-    #         m['id'] = data.get('id')
-    #         m['imageURL'] = imageUrl
-    #         result.append(m)
-    #     return result
+    def get_images(self, obj):
+        print(obj)
+        imgId = obj.images.all()
+        print(imgId)
+        req = self.context['request']
+        base_uri = req.build_absolute_uri('/')
+        imgRecord = CheckinImage.objects.filter(id__in=imgId)
+        imgData = KeyImageSerializer(imgRecord, many=True)
+        result = []
+        for data in imgData.data:
+            imgPath = str(data.get('image'))
+            imgPath = imgPath[1:]
+            imageUrl = base_uri+imgPath
+            m = {}
+            m['id'] = data.get('id')
+            m['imageURL'] = imageUrl
+            result.append(m)
+        return result
     class Meta:
         model = Appendicestransaction
         exclude = ('created_at', 'updated_at')

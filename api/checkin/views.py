@@ -35,15 +35,96 @@ class ObjectListInspectionViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         checkin_id = self.request.query_params.get('checkin')
         category = self.request.query_params.get('category')
+        room_id = self.kwargs.get('pk') 
         queryset = super().get_queryset()
         queryset = queryset.filter(related_detail=None)  # Exclude self-related items
+        if room_id is not None:
+            queryset = queryset.filter(id=room_id)
         if checkin_id:
             if category:
                 queryset = queryset.filter(checkin=checkin_id, category_type=category)
-        else:
-            queryset = queryset.filter(checkin=checkin_id)
+            else:
+                queryset = queryset.filter(checkin=checkin_id)
         
         return queryset
+    
+    def create(self, request, *args, **kwargs):
+        getData = request.data
+        print('rjvrv',getData)
+        haveImg = False
+        result = []
+        if 'images' in getData:
+            imgs = getData.pop('images')
+            haveImg = True
+        newRec = ObjectListInspectionSerializer(data=getData, context={'request':request})
+        if newRec.is_valid(raise_exception=True):
+            newRec.save()
+            recDetails = ObjectListInspection.objects.get(id=newRec.data.get('id'))
+            if haveImg:
+                for img in imgs:
+                    new_image = CheckinImage.objects.create(image=img)
+                    recDetails.images.add(new_image)
+        result = ObjectListInspectionSerializer(recDetails, context={'request':request})
+        return Response(result.data)
+
+    def update(self, request, *args, **kwargs):
+        print(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>",request.data)
+        m = {}
+        data = request.data
+
+        if 'count' in data:
+            m['count'] = data['count']
+        if 'others' in data:
+            m['others'] = data['others']
+        if 'object_name' in data:
+            m['object_name'] = data['object_name']
+        if 'checkin' in data:
+            m['checkin'] = data['checkin']
+        if 'object_code' in data:
+            m['object_code'] = data['object_code']
+        if 'category_type' in data:
+            m['category_type'] = data['category_type']
+        if 'category' in data:
+            m['category'] = data['category']
+        if 'object_description' in data:
+            m['object_description'] = data['object_description']
+        if 'new' in data:
+            m['new'] = data['new']
+        if 'inorder' in data:
+            m['inorder'] = data['inorder']
+        if 'normal_wear' in data:
+            m['normal_wear'] = data['normal_wear']
+        if 'notes' in data:
+            m['notes'] = data['notes']
+        if 'object_detail_list' in data:
+            m['object_detail_list'] = data['object_detail_list']
+        if 'related_object' in data:
+            m['related_object'] = data['related_object']
+        if 'related_detail' in data:
+            m['related_detail'] = data['related_detail']
+
+        instance = self.get_object()
+        getData = request.data.copy()  # Create a mutable copy of the QueryDict
+        haveImg = False
+
+        if 'images' in getData:
+            imgs = getData.pop('images')
+            haveImg = True
+
+        serializer = ObjectListInspectionSerializer(instance, data=m, partial=True, context={'request': request})
+        serializer.is_valid(raise_exception=True)
+        self.perform_update(serializer)
+        getKeys = ObjectListInspection.objects.get(id=instance.id)
+        # Update associated images
+        if haveImg:
+            # instance.images.clear()  # Remove existing images
+
+            for img in imgs:
+                new_image = CheckinImage.objects.create(image=img)
+                getKeys.images.add(new_image)
+
+        result = ObjectListInspectionSerializer(instance, context={'request': request})
+        return Response(result.data)
 
 
 
@@ -53,8 +134,12 @@ class ChildObjectListInspectionViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         queryset = ObjectListInspection.objects.all()
-        category = self.request.query_params.get('category')  
-        queryset = queryset.filter(category_type=category)
+        pk = self.kwargs.get('pk') 
+        if pk is not None:
+            queryset = queryset.filter(id=pk)
+        category = self.request.query_params.get('category') 
+        if category:
+            queryset = queryset.filter(category_type=category)
         return queryset
 
 class KeysViewSet(viewsets.ModelViewSet):
@@ -342,19 +427,25 @@ class AppendTransViewSet(viewsets.ModelViewSet):
     queryset = Appendicestransaction.objects.all()
     serializer_class = AppendicesTransSerializer
 
-    def get_queryset(self):
-        checkin_id = self.request.query_params.get('checkin')
-        obj_id = self.request.query_params.get('obj')
-        queryset = Appendicestransaction.objects.all()
+    def create(self, request, *args, **kwargs):
+        getData = request.data
+        print('ejfvnn',getData)
+        haveImg = False
+        result = []
+        if 'images' in getData:
+            imgs = getData.pop('images')
+            haveImg = True
+        newRec = AppendicesTransSerializer(data=getData, context={'request':request})
+        if newRec.is_valid(raise_exception=True):
+            newRec.save()
+            recDetails = Appendicestransaction.objects.get(id=newRec.data.get('id'))
+            if haveImg:
+                for img in imgs:
+                    new_image = CheckinImage.objects.create(image=img)
+                    recDetails.images.add(new_image)
+        result = AppendicesTransSerializer(recDetails, context={'request':request})
+        return Response(result.data)
 
-        if checkin_id and obj_id:
-            queryset = queryset.filter(Q(checkin=checkin_id) & Q(obj=obj_id))
-        elif checkin_id:
-            queryset = queryset.filter(checkin=checkin_id)
-        elif obj_id:
-            queryset = queryset.filter(obj=obj_id)
-        return queryset
-    
     def update(self, request, *args, **kwargs):
         print(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>",request.data)
         m = {}
@@ -387,16 +478,40 @@ class AppendTransViewSet(viewsets.ModelViewSet):
         print("<<<<<<<<<<<<<<<<<<<<<<m?????????/",m)
         
         instance = self.get_object()
-        # getData = request.data.copy()
-        # haveImg = False
+        getData = request.data.copy()
+        haveImg = False
+        if 'images' in getData:
+            imgs = getData.pop('images')
 
+            haveImg = True
+        print(imgs)
         if len(m) > 0:
             serializer = AppendicesTransSerializer(instance, data=m, partial=True, context={'request': request})
             serializer.is_valid(raise_exception=True)
             self.perform_update(serializer)
-        # getAppendence = Appendicestransaction.objects.get(id=instance.id)
+        getAppendence = Appendicestransaction.objects.get(id=instance.id)
+        
+        if haveImg:
+            for img in imgs:
+                new_image = CheckinImage.objects.create(image=img)
+                print("newImage????????????????????????????",new_image)
+                getAppendence.images.add(new_image)
         result = AppendicesTransSerializer(instance, context={'request': request})
         return Response(result.data)
+
+    def get_queryset(self):
+        checkin_id = self.request.query_params.get('checkin')
+        obj_id = self.request.query_params.get('obj')
+        queryset = Appendicestransaction.objects.all()
+
+        if checkin_id and obj_id:
+            queryset = queryset.filter(Q(checkin=checkin_id) & Q(obj=obj_id))
+        elif checkin_id:
+            queryset = queryset.filter(checkin=checkin_id)
+        elif obj_id:
+            queryset = queryset.filter(obj=obj_id)
+        return queryset
+    
     
 class AppendicescheckboxViewSet(viewsets.ModelViewSet):
     queryset = Appendicestransaction.objects.all()
