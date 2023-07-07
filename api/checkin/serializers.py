@@ -257,7 +257,7 @@ class AppendicesTransSerializer(serializers.ModelSerializer):
         exclude = ('created_at', 'updated_at')
 
 class CheckinContactsSerializer(serializers.ModelSerializer):
-    checkin = serializers.CharField(source='checkin.user.name', read_only=True)
+    checkin_name = serializers.CharField(source='checkin.user.name', read_only=True)
 
     class Meta:
         model = CheckinContacts
