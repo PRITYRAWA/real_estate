@@ -22,7 +22,7 @@ class TicketsSerializer(serializers.ModelSerializer):
 
 
 class TicketofferSerializer(serializers.ModelSerializer):
-    realestate_service_provider_id = serializers.CharField(read_only=True, source='Realestateserviceproviders.name')   
+    realestate_service_provider = serializers.CharField(read_only=True, source='Realestateserviceproviders.name')   
     class Meta:
         model = Ticketoffers
         exclude = ('created_at', 'updated_at')

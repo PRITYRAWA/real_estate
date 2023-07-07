@@ -11,5 +11,8 @@ class TicketAttachmentsInline(admin.TabularInline):
 class TicketsAdmin(admin.ModelAdmin):
     inlines = [TicketAttachmentsInline]
 
+@admin.register(TicketAttachments)
+class TicketAttachmentsAdmin(admin.ModelAdmin):
+    pass
 
 admin.site.register([Ticketoffers,TKDamageReport,TkGeneralEnquiries,TkInvoiceQuestion,TkPetRequest,TkOrderKey,TkPaymentSlips,TkBankDetails,TkOrderBadge])

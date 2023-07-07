@@ -34,18 +34,16 @@ class ObjectListInspectionViewSet(viewsets.ModelViewSet):
     #     return queryset
     def get_queryset(self):
         checkin_id = self.request.query_params.get('checkin')
+        category = self.request.query_params.get('category')
         queryset = super().get_queryset()
         queryset = queryset.filter(related_detail=None)  # Exclude self-related items
-
-
         if checkin_id:
+            if category:
+                queryset = queryset.filter(checkin=checkin_id, category_type=category)
+        else:
             queryset = queryset.filter(checkin=checkin_id)
+        
         return queryset
-
-
-
-
-
 
 
 
@@ -56,7 +54,7 @@ class ChildObjectListInspectionViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         queryset = ObjectListInspection.objects.all()
         category = self.request.query_params.get('category')  
-        queryset = queryset.filter(category=category)
+        queryset = queryset.filter(category_type=category)
         return queryset
 
 class KeysViewSet(viewsets.ModelViewSet):
@@ -703,7 +701,7 @@ class CheckinContactsViewSet(viewsets.ModelViewSet):
     
     def get_queryset(self, *kwargs):
         queryset = super().get_queryset()
-        checkin_id = self.kwargs.get('checkin') 
+        checkin_id = self.kwargs.get('pk') 
         if checkin_id is not None:
             queryset = queryset.filter(id=checkin_id)
         if 'checkin' in self.request.query_params:

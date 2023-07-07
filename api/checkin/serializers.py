@@ -18,10 +18,10 @@ class GeneralInspectionSerializer(serializers.ModelSerializer):
 
 class ChildDetailSerializer(serializers.ModelSerializer):
     child_details = serializers.SerializerMethodField()
-    checkin = serializers.CharField(source = 'checkin.object_name', read_only=True)
-    object_detail_list = serializers.CharField(source = 'object_detail_list.object_name', read_only=True)
-    related_object = serializers.CharField(source = 'related_object.object_name', read_only=True)
-    related_detail = serializers.CharField(source = 'related_detail.object_name', read_only=True)
+    # checkin = serializers.CharField(source = 'checkin.object_name', read_only=True)
+    # object_detail_list = serializers.CharField(source = 'object_detail_list.object_name', read_only=True)
+    # related_object = serializers.CharField(source = 'related_object.object_name', read_only=True)
+    # related_detail = serializers.CharField(source = 'related_detail.object_name', read_only=True)
     
 
     class Meta:
@@ -37,10 +37,10 @@ class ChildDetailSerializer(serializers.ModelSerializer):
     
 class ObjectListInspectionSerializer(serializers.ModelSerializer):
     child_details = ChildDetailSerializer(many=True, required=False)
-    checkin = serializers.CharField(source='checkin.user.name', read_only=True)
-    object_detail_list = serializers.CharField(source = 'object_detail_list.object_name', read_only=True)
-    related_object = serializers.CharField(source = 'related_object.object_name', read_only=True)
-    related_detail = serializers.CharField(source = 'related_detail.object_name', read_only=True)
+    # checkin = serializers.CharField(source='checkin.user.name', read_only=True)
+    # object_detail_list = serializers.CharField(source = 'object_detail_list.object_name', read_only=True)
+    # related_object = serializers.CharField(source = 'related_object.object_name', read_only=True)
+    # related_detail = serializers.CharField(source = 'related_detail.object_name', read_only=True)
 
     class Meta:
         model = ObjectListInspection
@@ -62,13 +62,13 @@ class CheckInOutSerializer(serializers.ModelSerializer):
     user_name = serializers.SerializerMethodField()
     object_check_in = serializers.PrimaryKeyRelatedField(queryset=Realestateobjects.objects.all())
     property_check_in = serializers.SerializerMethodField()
-    object_detail_list = serializers.CharField(source='object_detail_list.object_name', read_only=True)
+    # object_detail_list = serializers.CharField(source='object_detail_list.object_name', read_only=True)
     # furniture_check_in = serializers.PrimaryKeyRelatedField(queryset=Realestateobjects.objects.all())
 
     class Meta:
         model = CheckInOut
         fields = ('id', 'user', 'user_name', 'service_ticket_number', 'object_check_in',
-                  'check_in_date', 'check_in_time', 'check_out_date', 'check_out_time', 'inspection_date_time','property_check_in','object_detail_list')
+                  'check_in_date', 'check_in_time', 'check_out_date', 'check_out_time', 'inspection_date_time','property_check_in')
                   
 
     def get_user_name(self, obj):
@@ -194,24 +194,24 @@ class AppendicesTransSerializer(serializers.ModelSerializer):
     # checkin = serializers.CharField(source='checkin.user.name', read_only=True)
     # obj = serializers.CharField(source='obj.name', read_only=True)
 
-    images = serializers.SerializerMethodField()
+    #images = serializers.SerializerMethodField()
 
-    def get_images(self, obj):
-        imgId = obj.images.all()
-        req = self.context['request']
-        base_uri = req.build_absolute_uri('/')
-        imgRecord = CheckinImage.objects.filter(id__in=imgId)
-        imgData = KeyImageSerializer(imgRecord, many=True)
-        result = []
-        for data in imgData.data:
-            imgPath = str(data.get('image'))
-            imgPath = imgPath[1:]
-            imageUrl = base_uri+imgPath
-            m = {}
-            m['id'] = data.get('id')
-            m['imageURL'] = imageUrl
-            result.append(m)
-        return result
+    # def get_images(self, obj):
+    #     imgId = obj.images.all()
+    #     req = self.context['request']
+    #     base_uri = req.build_absolute_uri('/')
+    #     imgRecord = CheckinImage.objects.filter(id__in=imgId)
+    #     imgData = KeyImageSerializer(imgRecord, many=True)
+    #     result = []
+    #     for data in imgData.data:
+    #         imgPath = str(data.get('image'))
+    #         imgPath = imgPath[1:]
+    #         imageUrl = base_uri+imgPath
+    #         m = {}
+    #         m['id'] = data.get('id')
+    #         m['imageURL'] = imageUrl
+    #         result.append(m)
+    #     return result
     class Meta:
         model = Appendicestransaction
         exclude = ('created_at', 'updated_at')
