@@ -11,6 +11,7 @@ from reportlab.lib.pagesizes import letter
 from property.settings import BASE_DIR,MEDIA_ROOT
 import base64
 import os
+from django.utils import timezone
 # Create your views here.
 class MeetingScheduleViewSet(viewsets.ModelViewSet):
     queryset = MeetingSchedule.objects.all()
@@ -77,6 +78,23 @@ class MeetingScheduleViewSet(viewsets.ModelViewSet):
         except Exception as e:
             return Response(str(e))
 
+    @action(detail=False, methods=['patch'], name='update_time',url_path='update_time/(?P<meetid>[^/.]+)')
+    def update_time(self,request,meetid):
+        try:
+            flag = request.data.get('flag')
+            current_time = timezone.now().time()
+            meeting = MeetingSchedule.objects.get(id=meetid)
+            if flag == 0:
+                meeting.meet_start_time=current_time
+                meeting.status='live'
+            if flag ==1:
+                meeting.meet_start_time=current_time
+                meeting.status='finished'
+            meeting.save()
+            serializer = MeetingScheduleSerializer(meeting)
+            return Response(serializer.data)
+        except Exception as e:
+            return Response(str(e))
 
 # Create your views here.
 class MeetingParticipantViewSet(viewsets.ModelViewSet):
@@ -143,6 +161,8 @@ class MeetingParticipantViewSet(viewsets.ModelViewSet):
         instance.save()
         serializer=MeetingParticipantSerializer(instance)
         return Response(serializer.data) 
+    
+    
 
 # Create your views here.
 class MeetingParticipantAgendaViewSet(viewsets.ModelViewSet):
@@ -164,4 +184,6 @@ class MeetingParticipantAgendaViewSet(viewsets.ModelViewSet):
             else:
                 return Response(serializer.errors)
     
-
+class ParticipantAgendaViewSet(viewsets.ModelViewSet):
+    queryset = ParticipantAgenda.objects.all()
+    serializer_class = ParticipantAgendaSerializer

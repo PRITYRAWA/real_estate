@@ -47,9 +47,23 @@ class GetMeetingAgendaSerializer(serializers.ModelSerializer):
             "meetingagenda_detail"
        
         )
+
+class ParticipantAgendaSerializer(serializers.ModelSerializer):
+    participant =serializers.PrimaryKeyRelatedField(read_only=True)
+    agenda=serializers.PrimaryKeyRelatedField(read_only=True)
+
+    class Meta:
+        model = ParticipantAgenda
+        fields = (
+            "id",
+            "participant",
+            "agenda",
+            "agenda_vote"
+        )
     
 class MeetingParticipantSerializer(serializers.ModelSerializer):
     meeting = serializers.PrimaryKeyRelatedField(read_only=True,source="meeting.title")
+    meet_participants = ParticipantAgendaSerializer(read_only=True)
     class Meta:
         model = MeetingParticipant
         fields = (
@@ -57,6 +71,7 @@ class MeetingParticipantSerializer(serializers.ModelSerializer):
             "meeting",
             "participant",
             "participant_email",
+            "meet_participants",
             "attendence_in_person",
             "online_voting",
             "meeting_attendence",
@@ -99,6 +114,8 @@ class MeetingParticipantAgendaSerializer(serializers.ModelSerializer):
 class GetMeetingParticipantSerializer(serializers.ModelSerializer):
     meeting = serializers.PrimaryKeyRelatedField(read_only=True,source="meeting.title")
     participant = serializers.PrimaryKeyRelatedField(read_only=True,source="participant.participant_name")
+    meet_participants = ParticipantAgendaSerializer(read_only=True)
+
     class Meta:
         model = MeetingParticipant
         fields = (
@@ -106,6 +123,7 @@ class GetMeetingParticipantSerializer(serializers.ModelSerializer):
             "meeting",
             "participant",
             "participant_email",
+            "meet_participants",
             "attendence_in_person",
             "online_voting",
             "meeting_attendence",
@@ -265,13 +283,19 @@ class CreateMeetingAgendaSerializer(serializers.ModelSerializer):
             "meetingagenda_detail"
        
         )
+
+
+    
+
+
+
 #create custom serializer for meeting.
 class MeetingScheduleSerializer(serializers.ModelSerializer):
     meeting_agendas = CreateMeetingAgendaSerializer(many=True)
     meeting_participants = MeetingParticipantSerializer(many=True,read_only=True)
     meeting_votingcircles = VotingCircleSerializer(many=True)
     meeting_quorums = CreateMeetingQuorumsSerializer(many=True)
-    meeting_votingcretrieas = CreateMeetingVotesSerializer(many = True)
+    meeting_votingcretriea = CreateMeetingVotesSerializer(many = True)
     class Meta:
         model = MeetingSchedule
         fields = (
@@ -286,6 +310,8 @@ class MeetingScheduleSerializer(serializers.ModelSerializer):
             "meeting_date",
             "meeting_time",
             "date_defined",
+            "meet_start_time",
+            "meet_end_time",
             "visible_to_ownership_app",
             "submission_deadline",
             "dispatch_invitation",
@@ -303,7 +329,7 @@ class MeetingScheduleSerializer(serializers.ModelSerializer):
             "meeting_participants",
            "meeting_votingcircles",
            "meeting_quorums",
-           "meeting_votingcretrieas"
+           "meeting_votingcretriea"
         )
     
     def create(self, data):
@@ -326,6 +352,7 @@ class MeetingScheduleSerializer(serializers.ModelSerializer):
         #bulk_agendas_details = MeetingAgenda.objects.bulk_create(agenda_list)
         #print("bulk_agendas_details ", bulk_agendas_details)
         subagendas_list=[]
+
         if agenda_list:
             for subagenda in agenda_list:
                 subagenda.save()
@@ -344,7 +371,16 @@ class MeetingScheduleSerializer(serializers.ModelSerializer):
             for votes in voting_list:
                 votes.save()
                 participant_list.append(MeetingParticipant(meeting=instance,participant=votes,participant_email=votes.email))
-            bulk_participants_details = MeetingParticipant.objects.bulk_create(participant_list)
+            #bulk_participants_details = MeetingParticipant.objects.bulk_create(participant_list)
+            ap_list=[]
+            for mpagendas in participant_list:
+                mpagendas.save()
+                meetAgendaList = MeetingAgenda.objects.filter(meeting=instance)
+                for agendalist in meetAgendaList:
+                    ap_list.append(ParticipantAgenda(meetparticipant=mpagendas,agenda=agendalist))
+            bulk_participants_details = ParticipantAgenda.objects.bulk_create(ap_list)
+
+
         #print("bulk_voting_details ", bulk_voting_details)
         quorums_list=[]
         if meeting_quorums:
@@ -389,7 +425,7 @@ class MeetingScheduleSerializer(serializers.ModelSerializer):
         agenda_detailss = validated_data.pop('meeting_agendas', None)
         votingcircle_details = validated_data.pop('meeting_votingcircles', None)
         quorums_details = validated_data.pop('meeting_quorums', None)
-        meeting_votingcretrieas= data.pop('meeting_votingcretriea', None)
+        meeting_votingcretrieas= validated_data.pop('meeting_votingcretriea', None)
         meeting_date = data.pop('meeting_date',None)
         meeting_time = data.pop('meeting_time',None)
         # update the parent model.
@@ -437,6 +473,9 @@ class MeetingScheduleSerializer(serializers.ModelSerializer):
             else:
                 print("flow is in else condition")
                 agenda_data = MeetingAgenda.objects.create(**agenda, meeting=instance)
+                voting = MeetingParticipant.objects.filter(meeting=instance)
+                for v in voting:
+                    ParticipantAgenda.objects.create(meetparticipant=v,agenda=agenda_data)
                 agenda_list.append(agenda_data.id)
         print("flow is here correctly")
         for agenda in instance.meeting_agendas.all():
@@ -528,7 +567,7 @@ class GetMeetingScheduleSerializer(serializers.ModelSerializer):
     meeting_participants = GetMeetingParticipantSerializer(many=True)
     meeting_votingcircles = GetVotingCircleSerializer(many=True)
     meeting_quorums = GetMeetingQuorumsSerializer(many=True)
-    meeting_vote_cretriea = GetMeetingVotesSerializer(many=True)
+    meeting_votingcretriea = GetMeetingVotesSerializer(many=True)
     property = serializers.CharField(read_only=True, source="property.name")
     chairman = serializers.CharField(read_only=True, source="chairman.name")
     minute_taker = serializers.CharField(read_only=True, source="minute_taker.name")
@@ -549,6 +588,8 @@ class GetMeetingScheduleSerializer(serializers.ModelSerializer):
             "meeting_date",
             "meeting_time",
             "date_defined",
+            "meet_start_time",
+            "meet_end_time",
             "visible_to_ownership_app",
             "submission_deadline",
             "dispatch_invitation",
@@ -566,7 +607,7 @@ class GetMeetingScheduleSerializer(serializers.ModelSerializer):
             "meeting_participants",
            "meeting_votingcircles",
            "meeting_quorums",
-           "meeting_vote_cretriea"
+           "meeting_votingcretriea"
         )
     
     

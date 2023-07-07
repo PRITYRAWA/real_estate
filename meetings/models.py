@@ -14,10 +14,10 @@ class MeetingSchedule(BaseModel):
     property = models.ForeignKey(Realestateproperties,related_name="properties",on_delete=models.PROTECT)
     object = models.ForeignKey(Realestateobjects,related_name="property_objects",on_delete=models.PROTECT)
     subgroup = models.ForeignKey(Realestateproperties,related_name="subgroups",on_delete=models.PROTECT)
-    chairman = models.ForeignKey(Realestatepropertyowner,related_name="chairmans",on_delete=models.PROTECT)
-    minute_taker = models.ForeignKey(Realestatepropertyowner,related_name="mintue_takers",on_delete=models.PROTECT)
+    chairman = models.ForeignKey(Realestatepropertymanagement,related_name="chairmans",on_delete=models.PROTECT)
+    minute_taker = models.ForeignKey(Realestatepropertymanagement,related_name="mintue_takers",on_delete=models.PROTECT)
     meeting_date = models.DateField(auto_now_add=True)
-    meeting_time=models.TimeField(auto_now_add=True)
+    meeting_time=models.TimeField(auto_now_add=False,null=True,blank=True)
     date_defined =models.BooleanField(default=False)
     visible_to_ownership_app=models.BooleanField(default=False)
     submission_deadline =models.BooleanField(default=False)
@@ -32,6 +32,8 @@ class MeetingSchedule(BaseModel):
     qr_code = models.ImageField(upload_to='qr_codes/', blank=True, null=True)
     status = models.TextField(max_length=50,choices= status,default='pending')
     subassociation= models.CharField(max_length=100, blank=True, null=True)
+    meet_start_time=models.TimeField(auto_now_add=False,null=True,blank=True)
+    meet_end_time=models.TimeField(auto_now_add=False,null=True,blank=True)
 
     class Meta:
         db_table = 'MeetingSchedule'
@@ -113,6 +115,11 @@ class MeetingParticipant(BaseModel):
     
     def __str__(self):
         return str(self.participant.participant_name)
+
+class ParticipantAgenda(BaseModel):
+    participant = models.ForeignKey(MeetingParticipant,related_name="meet_participants",on_delete=models.CASCADE)
+    agenda=models.ForeignKey(MeetingAgenda,related_name="meet_agendas",null=True,blank=True,on_delete=models.CASCADE)
+    agenda_vote=models.BooleanField(null=True)
 
 class MeetingParticipantAgenda(BaseModel):
     meeting_participant = models.ForeignKey(MeetingParticipant,related_name="meeting_participant",on_delete=models.CASCADE)
