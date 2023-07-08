@@ -13,7 +13,7 @@ class MeetingSchedule(BaseModel):
     venue = models.CharField(max_length=100,blank=True, null=True)
     property = models.ForeignKey(Realestateproperties,related_name="properties",on_delete=models.PROTECT)
     object = models.ForeignKey(Realestateobjects,related_name="property_objects",on_delete=models.PROTECT)
-    subgroup = models.ForeignKey(Realestateproperties,related_name="subgroups",on_delete=models.PROTECT)
+    subgroup = models.ForeignKey(Realestateproperties,related_name="subgroups",null=True,blank=True,on_delete=models.PROTECT)
     chairman = models.ForeignKey(Realestatepropertymanagement,related_name="chairmans",on_delete=models.PROTECT)
     minute_taker = models.ForeignKey(Realestatepropertymanagement,related_name="mintue_takers",on_delete=models.PROTECT)
     meeting_date = models.DateField(auto_now_add=True)

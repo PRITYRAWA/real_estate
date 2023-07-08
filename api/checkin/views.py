@@ -23,6 +23,22 @@ class CheckInOutListCreateView(viewsets.ModelViewSet):
     queryset = CheckInOut.objects.all()
     serializer_class = CheckInOutSerializer
 
+    def list(self,request):
+        try:
+            checkin_list=[]
+            checkin = CheckInOut.objects.filter(type='checkin')
+            for rec in checkin:
+                checkin_filter=CheckInOut.objects.filter(checkin_id=rec)
+                if checkin_filter:
+                    pass
+                else:
+                    checkin_list.append(rec)
+            serializer = CheckInOutSerializer(checkin_list, many=True)
+            return Response(serializer.data)
+        except Exception as e:
+            return Response(str(e))
+    
+
 class ObjectListInspectionViewSet(viewsets.ModelViewSet):
     queryset = ObjectListInspection.objects.all()
     serializer_class = ObjectListInspectionSerializer

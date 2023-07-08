@@ -6,7 +6,12 @@ from multiselectfield import MultiSelectField
 
 # checkin model
 class CheckInOut(BaseModel):
+    TYPE_CHOICES = [
+        ('checkin', 'Checkin'),
+        ('checkout', 'Checkout'),
+    ]
     user = models.ForeignKey(Realestatepropertytenant, on_delete=models.PROTECT)
+    checkin_id = models.ForeignKey('CheckInOut',null=True,blank=True,related_name='checkin_id',on_delete=models.PROTECT)
     service_ticket_number = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
     object_check_in = models.ForeignKey(Realestateobjects, on_delete=models.PROTECT, null=True, blank=True)
     check_in_date = models.DateField(null=True, blank=True)
@@ -16,6 +21,7 @@ class CheckInOut(BaseModel):
     inspection_date_time = models.DateTimeField(null=True, blank=True)
     # object_details = models.ManyToManyField(Realestateobjectsdetail)
     object_detail_list = models.ForeignKey('ObjectListInspection', on_delete=models.PROTECT, null=True, blank=True)
+    type = models.CharField(max_length=30,default='checkin',choices=TYPE_CHOICES, verbose_name=("Type"))
 
     def __str__(self):
         return f"{self.user.name} checked into {self.object_check_in}"
