@@ -118,8 +118,14 @@ class MeetingParticipantViewSet(viewsets.ModelViewSet):
     def attorney_data(self, request, email, meetid):
         getData = request.data
         base64_image = request.POST.get('signature')
+        prefix = "data:image/png;base64,"
+        if base64_image.startswith(prefix):
+            base64_string = base64_image[len(prefix):]
+        #padded_string = base64_image + '=' * (4 - (len(base64_image) % 4))
+        #print(base64_image)
         # Decode the base64 image data)
-        image_data = base64.b64decode(base64_image)
+        image_data = base64.b64decode(base64_string)
+        print("flow is here")
         attorney_name = getData.get('power_of_attorney_name')
         appartment_name = getData.get('appartment_name')
         owner = getData.get('owner_name')

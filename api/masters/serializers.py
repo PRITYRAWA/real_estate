@@ -219,7 +219,7 @@ class RealestateobjectsdetailSerializer(serializers.ModelSerializer):
     child_details = serializers.SerializerMethodField()
     related_object = serializers.CharField(read_only=True, source='related_object.object_name')
     related_property = serializers.CharField(read_only=True, source='related_property.name')
-    related_detail = serializers.CharField(read_only=True, source='related_detail.object_name')
+    related_detail_name = serializers.CharField(read_only=True, source='related_detail.object_name')
     
     class Meta:
         model = Realestateobjectsdetail

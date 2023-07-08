@@ -49,21 +49,30 @@ class GetMeetingAgendaSerializer(serializers.ModelSerializer):
         )
 
 class ParticipantAgendaSerializer(serializers.ModelSerializer):
-    participant =serializers.PrimaryKeyRelatedField(read_only=True)
-    agenda=serializers.PrimaryKeyRelatedField(read_only=True)
+    #participant =serializers.CharField(read_only=True)
+    #agenda=serializers.CharField(read_only=True)
+    #participant =serializers.PrimaryKeyRelatedField(read_only=True)
+    #agenda=serializers.PrimaryKeyRelatedField(read_only=True)
+
+    participant = serializers.PrimaryKeyRelatedField(read_only=True)
+    agenda = serializers.PrimaryKeyRelatedField(read_only=True)
+    agenda_vote = serializers.BooleanField(allow_null=True)
 
     class Meta:
         model = ParticipantAgenda
-        fields = (
-            "id",
-            "participant",
-            "agenda",
-            "agenda_vote"
-        )
+        fields = ('id','participant', 'agenda', 'agenda_vote')
     
 class MeetingParticipantSerializer(serializers.ModelSerializer):
     meeting = serializers.PrimaryKeyRelatedField(read_only=True,source="meeting.title")
-    meet_participants = ParticipantAgendaSerializer(read_only=True)
+    meet_participants = ParticipantAgendaSerializer(source='meet_participants.all', many=True,read_only=True)
+
+    #meet_participants = serializers.SerializerMethodField()
+
+    #def get_meet_participants(self, obj):
+        #print("object",obj.id)
+        #result = ParticipantAgendaSerializer(ParticipantAgenda.objects.filter(participant=obj.id),many=True)
+        #return result.data
+
     class Meta:
         model = MeetingParticipant
         fields = (
@@ -377,7 +386,7 @@ class MeetingScheduleSerializer(serializers.ModelSerializer):
                 mpagendas.save()
                 meetAgendaList = MeetingAgenda.objects.filter(meeting=instance)
                 for agendalist in meetAgendaList:
-                    ap_list.append(ParticipantAgenda(meetparticipant=mpagendas,agenda=agendalist))
+                    ap_list.append(ParticipantAgenda(participant=mpagendas,agenda=agendalist))
             bulk_participants_details = ParticipantAgenda.objects.bulk_create(ap_list)
 
 
@@ -475,7 +484,7 @@ class MeetingScheduleSerializer(serializers.ModelSerializer):
                 agenda_data = MeetingAgenda.objects.create(**agenda, meeting=instance)
                 voting = MeetingParticipant.objects.filter(meeting=instance)
                 for v in voting:
-                    ParticipantAgenda.objects.create(meetparticipant=v,agenda=agenda_data)
+                    ParticipantAgenda.objects.create(participant=v,agenda=agenda_data)
                 agenda_list.append(agenda_data.id)
         print("flow is here correctly")
         for agenda in instance.meeting_agendas.all():
@@ -494,11 +503,18 @@ class MeetingScheduleSerializer(serializers.ModelSerializer):
                     continue
             else:
                 voting.pop("meeting", None)
+                ap_list=[]
                 voting_data = MeetingVotingCircle.objects.create(**voting, meeting=instance)
+                mpagendas=MeetingParticipant.objects.create(meeting=instance,participant=voting_data,participant_email=voting_data.email)
+                meetAgendaList = MeetingAgenda.objects.filter(meeting=instance)
+                for agendalist in meetAgendaList:
+                    ap_list.append(ParticipantAgenda(participant=mpagendas,agenda=agendalist))
+                bulk_participants_details = ParticipantAgenda.objects.bulk_create(ap_list)
                 voting_list.append(voting_data.id)
 
         for voting in instance.meeting_votingcircles.all():
                 if voting.id not in voting_list:
+                    MeetingParticipant.objects.get(meeting=instance,participant=voting,participant_email=voting.email).delete()
                     voting.delete()
         
         #update meeting quroms

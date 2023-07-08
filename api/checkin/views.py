@@ -168,10 +168,44 @@ class KeysViewSet(viewsets.ModelViewSet):
         if 'images' in getData:
             imgs = getData.pop('images')
             haveImg = True
-        newRec = KeysSerializer(data=getData, context={'request':request})
+        st = None
+        det=None
+        m = {}
+        #m['state'] = None
+        #m['deterioration'] = None
+        data = request.data
+        if 'deterioration' in data:
+            deterioration = data['deterioration']
+            det = deterioration.split(",")
+            m['deterioration'] = det
+        if 'state' in data:
+            state = data['state']
+            st = state.split(",")
+            m['state'] = st
+        if 'count' in data:
+            m['count'] = data['count']
+        if 'others' in data:
+            m['others'] = data['others']
+        if 'description' in data:
+            m['description'] = data['description']
+        if 'obj' in data:
+            m['obj'] = data['obj']
+        if 'checkin' in data:
+            m['checkin'] = data['checkin']
+        if 'name' in data:
+            m['name'] = data['name']
+        print(m)
+        if 'deterioration' or 'state' in data:
+      
+            newRec = KeysSerializer(data=m, context={'request':request})
+        else:            
+            newRec = KeysSerializer(data=getData, context={'request':request})
+
         if newRec.is_valid(raise_exception=True):
             newRec.save()
             recDetails = Realestatekey.objects.get(id=newRec.data.get('id'))
+            #det = deterioration[0].split(",")
+            #st = state[0].split(",")
             if haveImg:
                 for img in imgs:
                     new_image = CheckinImage.objects.create(image=img)
@@ -240,7 +274,48 @@ class MetersViewSet(viewsets.ModelViewSet):
         if 'images' in getData:
             imgs = getData.pop('images')
             haveImg = True
-        newRec = MetersSerializer(data=getData, context={'request':request})
+        m = {}
+        data = request.data
+        if 'deterioration' in data:
+            deterioration = data['deterioration']
+            det = deterioration.split(",")
+            m['deterioration'] = det
+        if 'state' in data:
+            state = data['state']
+            st = state.split(",")
+            m['state'] = st
+        if 'count' in data:
+            m['count'] = data['count']
+        if 'others' in data:
+            m['others'] = data['others']
+        if 'description' in data:
+            m['description'] = data['description']
+        if 'obj' in data:
+            m['obj'] = data['obj']
+        if 'checkin' in data:
+            m['checkin'] = data['checkin']
+        if 'name' in data:
+            m['name'] = data['name']
+        if 'meterno' in data:
+            m['meterno'] = data['meterno']
+        if 'reading' in data:
+            m['reading'] = data['reading']
+        if 'unit' in data:
+            m['unit'] = data['unit']
+        if 'whochange' in data:
+            m['whochange'] = data['whochange']
+        if 'company' in data:
+            m['company'] = data['company']
+        if 'cleaning' in data:
+            cleaning = data['cleaning']
+            cleaning = cleaning.split(",")
+            m['cleaning'] = cleaning
+        if 'accessories' in data:
+            accessories = data['accessories']
+            accessories = accessories.split(",")
+            m['accessories'] = accessories
+
+        newRec = MetersSerializer(data=m, context={'request':request})
         if newRec.is_valid(raise_exception=True):
             newRec.save()
             recDetails = Realestatemeter.objects.get(id=newRec.data.get('id'))
@@ -435,7 +510,35 @@ class AppendTransViewSet(viewsets.ModelViewSet):
         if 'images' in getData:
             imgs = getData.pop('images')
             haveImg = True
-        newRec = AppendicesTransSerializer(data=getData, context={'request':request})
+        m = {}
+        data = request.data
+ 
+        if 'cleaning' in data:
+            cleaning = data['cleaning']
+            cleaning = cleaning.split(",")
+            m['cleaning'] = cleaning
+        if 'state' in data:
+            m['state'] = data['state']
+            # st = state.split(",")
+            # m['state'] = st
+        if 'count' in data:
+            m['count'] = data['count']
+        if 'others' in data:
+            m['others'] = data['others']
+        if 'description' in data:
+            m['description'] = data['description']
+        if 'obj' in data:
+            m['obj'] = data['obj']
+        if 'checkin' in data:
+            m['checkin'] = data['checkin']
+        if 'name' in data:
+            m['name'] = data['name']
+        if 'is_done' in data:
+            m['is_done'] = data['is_done']
+        if 'is_todo' in data:
+            m['is_todo'] = data['is_todo']
+
+        newRec = AppendicesTransSerializer(data=m, context={'request':request})
         if newRec.is_valid(raise_exception=True):
             newRec.save()
             recDetails = Appendicestransaction.objects.get(id=newRec.data.get('id'))
@@ -536,9 +639,10 @@ class CommentViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         queryset = super().get_queryset()
-        checkin_id = self.request.query_params.get('checkin_id')
+        checkin_id = self.request.query_params.get('checkin')
         inspection_type = self.request.query_params.get('comment')
-
+        print("???????????????????????????",inspection_type)
+        print(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>",checkin_id)
         if checkin_id and inspection_type:
             queryset = queryset.filter(checkin_id=checkin_id, inspection_type=inspection_type)
 
