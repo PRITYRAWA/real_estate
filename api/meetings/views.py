@@ -43,6 +43,98 @@ class MeetingScheduleViewSet(viewsets.ModelViewSet):
             return Response(str(e))
 
 
+    @action(detail=False, methods=['get'], name='votes_result',url_path='votes_result/(?P<meetid>[^/.]+)/(?P<agid>[^/.]+)')
+    def votes_result(self,request,meetid,agid):
+        #participants = MeetingParticipant.objects.filter(meeting=meetid)
+        result_dict={}
+        agendas = MeetingAgenda.objects.get(meeting=meetid,id=agid)
+        meet_participants =ParticipantAgenda.objects.filter(agenda=agid)
+        pers_participant=MeetingParticipant.objects.filter(meeting=meetid,attendence_in_person=True).count()
+        adv_participant=MeetingParticipant.objects.filter(meeting=meetid,online_voting=True).count()
+        print("meet",meet_participants)
+        result_dict['participation_in_person']=pers_participant
+        result_dict['participation_in_advance']=adv_participant
+        participants_count = meet_participants.count()
+        votes_participants=[]
+        vote_yes= meet_participants.filter(agenda_vote=True)
+        for rec in vote_yes:
+            votes_yes={}
+            votes_yes['email']=rec.participant.participant_email
+            votes_yes['name']=rec.participant.participant.participant_name
+            votes_participants.append(votes_yes)
+        result_dict['votes_yes']=votes_participants
+        vote_yes_count= vote_yes.count()
+        votes_participants_no=[]
+        vote_no= meet_participants.filter(agenda_vote=False)
+        vote_no_count= vote_no.count()
+        for rec in vote_no:
+            votes_no={}
+            votes_no['email']=rec.participant.participant_email
+            votes_no['name']=rec.participant.participant.participant_name
+            votes_participants_no.append(votes_no)
+        result_dict['votes_no']=votes_participants_no
+        result_dict['votes_no_count']=vote_no_count
+        result_dict['votes_yes_count']=vote_yes_count
+        result_dict['participants_count']=participants_count
+        vote_type= MeetingVotes.objects.filter(meeting=meetid).values_list('voting_type','tie_case')
+        yes_votes_averge_percent =vote_yes_count/participants_count
+        yes_result = round(yes_votes_averge_percent,1)
+        result_dict['yes_averge']=yes_result
+        no_votes_averge_percent =vote_no_count/participants_count
+        no_result = round(no_votes_averge_percent,1)
+        result_dict['no_averge']=no_result
+        valuess = []
+        for item in vote_type[0]:
+            split_items = item.split(',')
+            valuess.extend(split_items)
+        if valuess[0] == 'head':
+            result_dict['vote_type']='head'
+            if yes_result > no_result:
+                result_dict['final_result']="Accepted"
+                result_dict['tie_case']='No'
+            elif yes_result < no_result:
+                result_dict['final_result']="Rejected"
+                result_dict['tie_case']='No'
+            else:
+                result_dict['tie_case']='Yes'
+                result_dict['final_result']=valuess[1]
+        if valuess[0] == 'object':
+            result_dict['vote_type']='object'
+            yes_object_count=0
+            for rec in vote_yes:
+                yes_object_count= yes_object_count + rec.participant.object_count
+            no_object_count=0
+            for rec in vote_no:
+                no_object_count= no_object_count + rec.participant.object_count
+            if yes_object_count > no_object_count:
+                result_dict['final_result']="Accepted"
+                result_dict['tie_case']='No'
+            elif no_object_count < no_object_count:
+                result_dict['final_result']="Rejected"
+                result_dict['tie_case']='No'
+            else:
+                result_dict['tie_case']='Yes'
+                result_dict['final_result']=valuess[1]
+        if valuess[0] == 'value':
+            result_dict['vote_type']='value'
+            yes_object_count=0
+            for rec in vote_yes:
+                yes_value = yes_object_count + rec.participant.asset_value
+            no_object_count=0
+            for rec in vote_no:
+                no_value= no_object_count + rec.participant.asset_value
+            if yes_value > no_value:
+                result_dict['final_result']="Accepted"
+                result_dict['tie_case']='No'
+            elif no_value < no_value:
+                result_dict['final_result']="Rejected"
+                result_dict['tie_case']='No'
+            else:
+                result_dict['tie_case']='Yes'
+                result_dict['final_result']=valuess[1]
+
+        return Response(result_dict)
+
     @action(detail=False, methods=['post'], name='scan_qr_code',url_path='scan_qr_code/(?P<email>[^/]+[@._][^/]+)/(?P<meetid>[^/.]+)')
     def scan_qr_code(self,request,email,meetid):
         meeting_id = MeetingSchedule.objects.get(id=meetid)

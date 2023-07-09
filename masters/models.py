@@ -382,6 +382,8 @@ class Realestatepropertymanagement(BaseModel):
     manager_name = models.CharField(max_length=100,null=True,blank=True,verbose_name=_("Manager Name"))
     manager_email = models.CharField(max_length=100,null=True,blank=True,verbose_name=_("Manager Email"))
     manager_Phone = models.CharField(max_length=100,null=True,blank=True,verbose_name=_("Manager Phone"))
+    object_count= models.IntegerField(default=1,verbose_name=("Object Count")) 
+    asset_value=models.FloatField(default=0.0,  null=True, blank=True,verbose_name=("Asset Value"))
 
     class Meta:
         db_table = 'Realestatepropertymanagement'

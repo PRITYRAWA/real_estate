@@ -86,6 +86,8 @@ class MeetingVotingCircle(BaseModel):
     email=models.CharField(max_length=100, blank=False, null=False)
     manageby = models.CharField(max_length=30,null=True,blank=True,verbose_name="Manage By")
     manageby_id = models.CharField(max_length=30,null=True,blank=True,verbose_name="Manager Id")
+    object_count= models.IntegerField(default=1,verbose_name=("Object Count")) 
+    asset_value=models.FloatField(default=0.0,  null=True, blank=True,verbose_name=("Asset Value"))
     category = models.CharField(max_length=20, choices=types, default='main',verbose_name=("Category"))
     class Meta:
         db_table = 'MeetingVotingCircle'
@@ -101,6 +103,8 @@ class MeetingParticipant(BaseModel):
     meeting = models.ForeignKey(MeetingSchedule,related_name="meeting_participants",on_delete=models.CASCADE)
     participant=models.ForeignKey(MeetingVotingCircle,related_name="participants",on_delete=models.CASCADE)
     participant_email=models.EmailField(blank=True,null=True,max_length=50)
+    object_count= models.IntegerField(default=1,verbose_name=("Object Count")) 
+    asset_value=models.FloatField(default=0.0,  null=True, blank=True,verbose_name=("Asset Value"))
     attendence_in_person= models.BooleanField(default=False)
     online_voting= models.BooleanField(default=False)
     meeting_attendence= models.BooleanField(default=False)

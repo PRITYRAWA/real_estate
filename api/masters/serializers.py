@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from masters.models import *
 from tasks.models import *
+from django.db.models import Sum
 
 class RealestateobjectSerializer(serializers.ModelSerializer):
     realestatepropertyid = serializers.CharField(read_only=True, source='realestatepropertyid.name')
@@ -199,6 +200,21 @@ class CreatePropertymanagementserializer(serializers.ModelSerializer):
             instance.manager_name = instance.realestateagentid.name
             instance.manager_email = instance.realestateagentid.email
             instance.manager_Phone = instance.realestateagentid.phonenumber
+        if instance.realestateobjectid:
+                asset_value= Realestateobjects.objects.get(id=instance.realestateobjectid.id)
+                instance.asset_value=asset_value.value
+                instance.object_count= 1
+        else:
+            asset_value=Realestateobjects.objects.filter(realestatepropertyid=instance.realestatepropertyid.id).aggregate(total=Sum('value'))
+            object_count = Realestateobjects.objects.filter(realestatepropertyid=instance.realestatepropertyid.id).count()
+            sum_value = asset_value['total']
+            print("object",object_count,"sum",sum_value)
+            if object_count == 0:
+                instance.asset_value=0.00
+                instance.object_count=1
+            else:
+                instance.asset_value=sum_value
+                instance.object_count=object_count
         instance.save()
 
         return instance

@@ -25,7 +25,8 @@ from .config import *
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # Take environment variables from .env file
-environ.Env.read_env()
+#environ.Env.read_env()
+environ.Env.read_env(BASE_DIR / "property/.env.example")
 env = environ.Env()
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
@@ -33,8 +34,8 @@ env = environ.Env()
 # SECURITY WARNING: keep the secret key used in production secret!
 DEBUG = env('DEBUG')
 SECRET_KEY = env('SECRET_KEY')
-# ALLOWED_HOSTS = ["*"]
-ALLOWED_HOSTS = env.list("ALLOWED_HOSTS")
+ALLOWED_HOSTS = ["*"]
+#ALLOWED_HOSTS = env.list("ALLOWED_HOSTS")
 
 # Application definition
 

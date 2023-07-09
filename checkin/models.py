@@ -11,7 +11,7 @@ class CheckInOut(BaseModel):
         ('checkout', 'Checkout'),
     ]
     user = models.ForeignKey(Realestatepropertytenant, on_delete=models.PROTECT)
-    checkin_id = models.ForeignKey('CheckInOut',null=True,blank=True,related_name='checkin_id',on_delete=models.PROTECT)
+    checkin_id = models.ForeignKey('CheckInOut',null=True,blank=True,related_name='checkin_ids',on_delete=models.PROTECT)
     service_ticket_number = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
     object_check_in = models.ForeignKey(Realestateobjects, on_delete=models.PROTECT, null=True, blank=True)
     check_in_date = models.DateField(null=True, blank=True)
