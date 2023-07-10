@@ -175,6 +175,8 @@ class GetPropertymanagementserializer(serializers.ModelSerializer):
             "manager_name",
             "manager_email",
             "manager_Phone"
+            "object_count",
+            "asset_value"
 
         )
 
@@ -277,6 +279,8 @@ class AppendicesMasterSerializer(serializers.ModelSerializer):
 class PropertyContactSerializer(serializers.ModelSerializer):
     property_id = serializers.SerializerMethodField('get_alternate_id')
     property_name = serializers.SerializerMethodField('get_alternate_name')
+    
+
 
     def get_alternate_name(self, obj):
         return obj.realestatepropertyid.name
@@ -297,6 +301,7 @@ class PropertyContactSerializer(serializers.ModelSerializer):
             queryset = Realestatepropertymanagement.objects.filter(realestatepropertyid = property_id).first()
         representation['manager'] = {}
         representation['owner'] = {}
+        representation['manager']['id'] = queryset.id
         representation['manager']['email'] = queryset.manager_email
         representation['manager']['name'] = queryset.manager_name
         representation['manager']['phone'] = queryset.manager_Phone

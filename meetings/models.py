@@ -34,6 +34,7 @@ class MeetingSchedule(BaseModel):
     subassociation= models.CharField(max_length=100, blank=True, null=True)
     meet_start_time=models.TimeField(auto_now_add=False,null=True,blank=True)
     meet_end_time=models.TimeField(auto_now_add=False,null=True,blank=True)
+    meeting_protocol=models.FileField(upload_to="images", null=True, blank=True)
 
     class Meta:
         db_table = 'MeetingSchedule'

@@ -140,8 +140,11 @@ class RealestateobjectsdetailViewSet(viewsets.ModelViewSet):
     serializer_class = RealestateobjectsdetailSerializer
 
     def get_queryset(self):
+        category = self.request.query_params.get('category')
         queryset = super().get_queryset()
         queryset = queryset.filter(related_detail=None)  # Exclude self-related items
+        if category:
+            queryset = queryset.filter(category_type=category)
         return queryset
 
 class PropertyManagementViewSet(viewsets.ModelViewSet):

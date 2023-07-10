@@ -7,11 +7,14 @@ from pyzbar import pyzbar
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from reportlab.pdfgen import canvas
-from reportlab.lib.pagesizes import letter
+from reportlab.lib.pagesizes import letter,inch
 from property.settings import BASE_DIR,MEDIA_ROOT
 import base64
 import os
 from django.utils import timezone
+from reportlab.platypus import SimpleDocTemplate, Table, TableStyle
+from reportlab.lib import colors
+from reportlab.lib.units import cm
 # Create your views here.
 class MeetingScheduleViewSet(viewsets.ModelViewSet):
     queryset = MeetingSchedule.objects.all()
@@ -76,7 +79,7 @@ class MeetingScheduleViewSet(viewsets.ModelViewSet):
         result_dict['votes_no_count']=vote_no_count
         result_dict['votes_yes_count']=vote_yes_count
         result_dict['participants_count']=participants_count
-        vote_type= MeetingVotes.objects.filter(meeting=meetid).values_list('voting_type','tie_case')
+        vote_type= MeetingVotes.objects.filter(meeting=meetid).values_list('voting_type','tie_case','tabs','condition')
         yes_votes_averge_percent =vote_yes_count/participants_count
         yes_result = round(yes_votes_averge_percent,1)
         result_dict['yes_averge']=yes_result
@@ -87,6 +90,8 @@ class MeetingScheduleViewSet(viewsets.ModelViewSet):
         for item in vote_type[0]:
             split_items = item.split(',')
             valuess.extend(split_items)
+        result_dict['tab']=valuess[2]  
+        result_dict['condition']=valuess[3]   
         if valuess[0] == 'head':
             result_dict['vote_type']='head'
             if yes_result > no_result:
@@ -187,7 +192,91 @@ class MeetingScheduleViewSet(viewsets.ModelViewSet):
             return Response(serializer.data)
         except Exception as e:
             return Response(str(e))
+        
+    @action(detail=False, methods=['get'], name='download_pdf',url_path='download_pdf/(?P<meetid>[^/.]+)')
+    def download_pdf(self,request,meetid):
+        meet_details= MeetingSchedule.objects.get(id=meetid)
+        pers_participant=MeetingParticipant.objects.filter(meeting=meetid,voting_attendence=True).count()
+        adv_participant=MeetingParticipant.objects.filter(meeting=meetid,online_voting=True).count()
+        agenda_items=MeetingAgenda.objects.filter(meeting=meetid)
+        participant=MeetingParticipant.objects.filter(meeting=meetid)
 
+        output_pdf_path = f'{MEDIA_ROOT}/pdf/{meet_details.title}.pdf'
+        c = canvas.Canvas(output_pdf_path, pagesize=letter)
+        c.drawString(50, 700, meet_details.title, c.setFont("Helvetica", 14))
+        c.line(x1=50, y1=650, x2=550, y2=650)
+        width = 400
+        height = 100
+        data = [
+            ["Location:",meet_details.venue],
+            ["Date | Time:", meet_details.meeting_date],
+            ["Chairperson:", meet_details.chairman.manager_name],
+            ["Minute-taker:", meet_details.minute_taker.manager_name],
+            ["Present:",pers_participant],
+            ["Guest:","--"]
+        ]
+        style = TableStyle([
+            ('BACKGROUND', (0, 1), (-1, -1), colors.white),  # Table body background color
+            ('GRID', (0, 0), (-1, -1), 1, colors.black),  # Table grid color
+            ('FONTSIZE', (0, 1), (-1, -1), 10),  # Table body font size
+            ('FONTNAME', (0, 1), (-1, -1), 'Helvetica'),  # Table body font
+            ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),  # Vertical alignment for all cells
+        ])
+        # Increase the padding of the second cell in the first row
+        style.add('RIGHTPADDING', (1, 0), (1, 0), 415)  # Increase the right padding
+
+        table = Table(data)
+        table.setStyle(style)
+
+        table.wrapOn(c, 50, 400)
+        table.drawOn(c, 50, 525) 
+
+        c.line(x1=50, y1=515, x2=550, y2=515)
+        c.drawString(50, 485, "Agenda items", c.setFont("Helvetica", 12))
+        c.line(x1=50, y1=482, x2=125, y2=482)
+        xData = 465
+        count = 1
+        for rec in agenda_items:
+            c.drawString(50, xData, rec.topic, c.setFont("Helvetica", 10))
+            count = count + 1
+            xData = xData - 15
+        c.drawString(50, 370, "Further remarks:", c.setFont("Helvetica", 10))
+        c.drawString(50, 365, "__", c.setFont("Helvetica", 10))
+        c.drawString(50, 350, "End of the meeting : "+str(meet_details.meet_end_time), c.setFont("Helvetica", 10))
+        c.drawString(50, 330, "LEATUS AG", c.setFont("Helvetica", 10))
+        c.drawString(50, 300, meet_details.chairman.manager_name, c.setFont("Helvetica", 10))
+        c.drawString(350, 300, meet_details.minute_taker.manager_name, c.setFont("Helvetica", 10))
+        c.drawString(50, 290, "Chairperson", c.setFont("Helvetica", 10))
+        c.drawString(350, 290, "Minute-taker", c.setFont("Helvetica", 10))
+        c.drawString(50, 270, "Attendance list", c.setFont("Helvetica", 10))
+        
+        data = [
+            ["Name","Participation","Value quotas", "Head votes", "Object votes"]
+        ]
+       
+        style = TableStyle([
+            ('BACKGROUND', (0, 1), (-1, -1), colors.white),  # Table body background color
+            ('GRID', (0, 0), (-1, -1), 1, colors.black),  # Table grid color
+            ('FONTSIZE', (0, 1), (-1, -1), 10),  # Table body font size
+            ('FONTNAME', (0, 1), (-1, -1), 'Helvetica'),  # Table body font
+            ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),  # Vertical alignment for all cells
+        ])
+        column_widths = [6 * cm, 4 * cm] + [None] * 4 
+        table = Table(data, colWidths=column_widths)
+        table.setStyle(style)
+
+        table.wrapOn(c, 50, 170)
+        table.drawOn(c, 50, 250)
+        c.showPage()  # Move to the next page for the next order
+        c.save()
+        pdf_path = f'pdf/{meet_details.title}.pdf'
+        meet_details.meeting_protocol=pdf_path
+        meet_details.save()
+        serializer = MeetingScheduleSerializer(meet_details)
+        return Response(serializer.data['meeting_protocol'])
+
+
+        
 # Create your views here.
 class MeetingParticipantViewSet(viewsets.ModelViewSet):
     queryset = MeetingParticipant.objects.all()

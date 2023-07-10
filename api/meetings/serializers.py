@@ -340,7 +340,8 @@ class MeetingScheduleSerializer(serializers.ModelSerializer):
             "meeting_participants",
            "meeting_votingcircles",
            "meeting_quorums",
-           "meeting_votingcretriea"
+           "meeting_votingcretriea",
+           "meeting_protocol"
         )
     
     def create(self, data):
@@ -627,7 +628,8 @@ class GetMeetingScheduleSerializer(serializers.ModelSerializer):
             "meeting_participants",
            "meeting_votingcircles",
            "meeting_quorums",
-           "meeting_votingcretriea"
+           "meeting_votingcretriea",
+           "meeting_protocol"
         )
     
     
