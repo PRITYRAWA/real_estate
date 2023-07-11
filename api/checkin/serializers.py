@@ -206,7 +206,7 @@ class MetersSerializer(serializers.ModelSerializer):
 
 class FurnitureInspectionSerializer(serializers.ModelSerializer):
     checkin = serializers.PrimaryKeyRelatedField(queryset=CheckInOut.objects.all())
-    cleaning = serializers.MultipleChoiceField(choices=Appendicestransaction.CLEANINGS_CHOICES)
+    cleaning = serializers.MultipleChoiceField(choices=Appendicestransaction.CLEANING_CHOICES)
 
     images = serializers.SerializerMethodField()
 
