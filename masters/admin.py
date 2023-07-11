@@ -49,9 +49,9 @@ class ObjectsdetailInline(admin.TabularInline):
 @admin.register(Realestateobjects)
 class CustomProperties(admin.ModelAdmin):
     exclude = ("createdby","lastmodifiedby")
-    inlines = [
-        ObjectsdetailInline,
-    ]
+#    inlines = [
+#        ObjectsdetailInline,
+#    ]
 
 @admin.register(Realestatepropertymanagement)
 class PropertyManagement(admin.ModelAdmin):
