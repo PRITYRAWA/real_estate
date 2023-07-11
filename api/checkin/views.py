@@ -158,6 +158,33 @@ class ChildObjectListInspectionViewSet(viewsets.ModelViewSet):
             queryset = queryset.filter(category_type=category)
         return queryset
 
+    def update(self, request, *args, **kwargs):
+        print(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>",request.data)
+        
+        instance = self.get_object()
+        getData = request.data.copy()  # Create a mutable copy of the QueryDict
+        haveImg = False
+
+        if 'images' in getData:
+            imgs = getData.pop('images')
+            haveImg = True
+
+        serializer = ChildDetailSerializer(instance, data=getData, partial=True, context={'request': request})
+        serializer.is_valid(raise_exception=True)
+        self.perform_update(serializer)
+        getChild = ObjectListInspection.objects.get(id=instance.id)
+        # Update associated images
+        if haveImg:
+            # instance.images.clear()  # Remove existing images
+
+            for img in imgs:
+                new_image = CheckinImage.objects.create(image=img)
+                getChild.images.add(new_image)
+
+        result = ChildDetailSerializer(instance, context={'request': request})
+        return Response(result.data)
+    
+
 class KeysViewSet(viewsets.ModelViewSet):
     queryset = Realestatekey.objects.all()
     serializer_class = KeysSerializer
@@ -494,12 +521,49 @@ class FurnitureInspectionViewSet(viewsets.ModelViewSet):
             queryset = super().get_queryset() 
 
         return queryset
+    
 
+    def update(self, request, *args, **kwargs):
+        m = {}
+        data = request.data
+        
+        if 'cleaning' in data:
+            cleaning = data['cleaning']
+            cleaning = cleaning.split(",")
+            m['cleaning'] = cleaning
+        if 'state' in data:
+            m['state'] = data['state']
+        if 'checkin' in data:
+            m['checkin'] = data['checkin']
+        if 'cleaning_type' in data:
+            m['cleaning_type'] = data['cleaning_type']
+        if 'description' in data:
+            m['description'] = data['description']
+        
+        instance = self.get_object()
+        getData = request.data.copy()
+        haveImg = False
+        if 'images' in getData:
+            imgs = getData.pop('images')
+
+            haveImg = True
+        if len(m) > 0:
+            serializer = FurnitureInspectionSerializer(instance, data=m, partial=True, context={'request': request})
+            serializer.is_valid(raise_exception=True)
+            self.perform_update(serializer)
+        getFurniture = FurnitureInspection.objects.get(id=instance.id)
+        
+        if haveImg:
+            for img in imgs:
+                new_image = CheckinImage.objects.create(image=img)
+                getFurniture.images.add(new_image)
+        result = FurnitureInspectionSerializer(instance, context={'request': request})
+        return Response(result.data)
 
 class RentaldeductionViewSet(viewsets.ModelViewSet):
     queryset = RentalDeduction.objects.all()
     serializer_class = RentaldeductionSerializer
-    # http_method_names = ['get', 'post', 'put', 'patch', 'delete']
+    http_method_names = ['get', 'post', 'put', 'patch', 'delete']
 
     def get_queryset(self):
         checkin_id = self.request.query_params.get('checkin')
@@ -513,6 +577,79 @@ class RentaldeductionViewSet(viewsets.ModelViewSet):
         elif obj_id:
             queryset = queryset.filter(obj=obj_id)
         return queryset
+    
+
+    def create(self, request, *args, **kwargs):
+        getData = request.data
+        print('ejfvnn',getData)
+        haveImg = False
+        result = []
+        if 'images' in getData:
+            imgs = getData.pop('images')
+            haveImg = True
+        m = {}
+        data = request.data
+ 
+        if 'title' in data:
+            m['title'] = data['title']
+        if 'deduction_type' in data:
+            m['deduction_type'] = data['deduction_type']
+        if 'description' in data:
+            m['description'] = data['description']
+        if 'deadline' in data:
+            m['deadline'] = data['deadline']
+        if 'checkin' in data:
+            m['checkin'] = data['checkin']
+        if 'period' in data:
+            m['period'] = data['period']
+
+        newRec = RentaldeductionSerializer(data=m, context={'request':request})
+        if newRec.is_valid(raise_exception=True):
+            newRec.save()
+            recDetails = RentalDeduction.objects.get(id=newRec.data.get('id'))
+            if haveImg:
+                for img in imgs:
+                    new_image = CheckinImage.objects.create(image=img)
+                    recDetails.images.add(new_image)
+        result = RentaldeductionSerializer(recDetails, context={'request':request})
+        return Response(result.data)
+
+    def update(self, request, *args, **kwargs):
+        m = {}
+        data = request.data
+        
+        if 'title' in data:
+            m['title'] = data['title']
+        if 'deduction_type' in data:
+            m['deduction_type'] = data['deduction_type']
+        if 'description' in data:
+            m['description'] = data['description']
+        if 'deadline' in data:
+            m['deadline'] = data['deadline']
+        if 'checkin' in data:
+            m['checkin'] = data['checkin']
+        if 'period' in data:
+            m['period'] = data['period']
+        
+        instance = self.get_object()
+        getData = request.data.copy()
+        haveImg = False
+        if 'images' in getData:
+            imgs = getData.pop('images')
+
+            haveImg = True
+        if len(m) > 0:
+            serializer = RentaldeductionSerializer(instance, data=m, partial=True, context={'request': request})
+            serializer.is_valid(raise_exception=True)
+            self.perform_update(serializer)
+        getAppendence = RentalDeduction.objects.get(id=instance.id)
+        
+        if haveImg:
+            for img in imgs:
+                new_image = CheckinImage.objects.create(image=img)
+                getAppendence.images.add(new_image)
+        result = RentaldeductionSerializer(instance, context={'request': request})
+        return Response(result.data)
     
 class AppendTransViewSet(viewsets.ModelViewSet):
     queryset = Appendicestransaction.objects.all()

@@ -106,7 +106,7 @@ class CheckInOutSerializer(serializers.ModelSerializer):
     class Meta:
         model = CheckInOut
         fields = ('id', 'user', 'user_name', 'service_ticket_number', 'object_check_in',
-                  'check_in_date', 'check_in_time', 'check_out_date', 'check_out_time', 'inspection_date_time','property_check_in')
+                  'check_in_date', 'check_in_time', 'check_out_date', 'check_out_time', 'inspection_date_time','property_check_in','checkin_id','type')
                   
 
     def get_user_name(self, obj):
@@ -206,7 +206,28 @@ class MetersSerializer(serializers.ModelSerializer):
 
 class FurnitureInspectionSerializer(serializers.ModelSerializer):
     checkin = serializers.PrimaryKeyRelatedField(queryset=CheckInOut.objects.all())
+    cleaning = serializers.MultipleChoiceField(choices=Appendicestransaction.CLEANINGS_CHOICES)
 
+    images = serializers.SerializerMethodField()
+
+    def get_images(self, obj):
+        print(obj)
+        imgId = obj.images.all()
+        print(imgId)
+        req = self.context['request']
+        base_uri = req.build_absolute_uri('/')
+        imgRecord = CheckinImage.objects.filter(id__in=imgId)
+        imgData = KeyImageSerializer(imgRecord, many=True)
+        result = []
+        for data in imgData.data:
+            imgPath = str(data.get('image'))
+            imgPath = imgPath[1:]
+            imageUrl = base_uri+imgPath
+            m = {}
+            m['id'] = data.get('id')
+            m['imageURL'] = imageUrl
+            result.append(m)
+        return result
     class Meta:
         model = FurnitureInspection
         exclude = ('created_at', 'updated_at')
@@ -222,6 +243,28 @@ class CommentSerializer(serializers.ModelSerializer):
 
 class RentaldeductionSerializer(serializers.ModelSerializer):
     checkin = serializers.CharField(source='checkin.user.name', read_only=True)
+
+    images = serializers.SerializerMethodField()
+
+    def get_images(self, obj):
+        print(obj)
+        imgId = obj.images.all()
+        print(imgId)
+        req = self.context['request']
+        base_uri = req.build_absolute_uri('/')
+        imgRecord = CheckinImage.objects.filter(id__in=imgId)
+        imgData = KeyImageSerializer(imgRecord, many=True)
+        result = []
+        for data in imgData.data:
+            imgPath = str(data.get('image'))
+            imgPath = imgPath[1:]
+            imageUrl = base_uri+imgPath
+            m = {}
+            m['id'] = data.get('id')
+            m['imageURL'] = imageUrl
+            result.append(m)
+        return result
+
     class Meta:
         model = RentalDeduction
         exclude = ('created_at', 'updated_at')

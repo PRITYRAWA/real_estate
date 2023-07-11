@@ -61,6 +61,7 @@ class ObjectListInspection(BaseModel):
     notes = models.TextField(blank=True, null=True,verbose_name=("Notes"))
     images = models.ManyToManyField("CheckinImage", related_name='objectlist')
     count = models.IntegerField(default=0,verbose_name=("Count"),null=True,blank=True)
+    color = models.CharField(max_length=100, null=True, blank=True,verbose_name=("Color"))
 
     class Meta:
         db_table = 'Object transaction'
@@ -194,11 +195,23 @@ class FurnitureInspection(BaseModel):
         ('Sheer Cleaning', 'Sheer Cleaning'),
         ('Linen Cleaning', 'Linen Cleaning'),
     ]
+    CLEANINGS_CHOICES = [
+        ('neat', 'Neat'),
+        ('well_maintained', 'Well Maintained'),
+        ('incomplete_cleaning', 'Incomplete Cleaning'),
+        ('mold', 'Mold'),
+        ('poorly_maintained', 'Poorly Maintained'),
+        ('very_poorly_maintained', 'Very Poorly Maintained'),
+        ('average_state_of_maintenance', 'Average State of Maintenance'),
+        ('trace_of_humidity', 'Trace of Humidity'),
+    ]
     checkin = models.ForeignKey(CheckInOut, on_delete=models.PROTECT,null=True,blank=True)   
     # obj = models.ForeignKey(FurnitureInspectionMaster,on_delete=models.CASCADE, null=True, blank=True) 
     cleaning_type = models.CharField(max_length=50, choices=CLEANING_TYPES)
-    photos = models.ImageField(upload_to='inspection_photos/',null=True,blank=True)
+    images = models.ManyToManyField("CheckinImage", related_name='furnitureinsp')
     description = models.TextField(null=True,blank=True)
+    state = models.CharField(max_length=100,null=True,blank=True)
+    cleaning = MultiSelectField(choices=CLEANINGS_CHOICES, max_length=50,null=True, blank=True, verbose_name=("Cleaning"))
 
     def __str__(self):
         return f"{self.cleaning_type} - {self.pk}"
@@ -213,7 +226,7 @@ class RentalDeduction(BaseModel):
     ]
     title = models.CharField(max_length=50)
     deduction_type = models.CharField(max_length=50, choices=DEDUCTION_TYPES)
-    photos = models.ImageField(upload_to='rental_deductions/',null=True,blank=True)
+    images = models.ManyToManyField("CheckinImage", related_name='rentalDeduct')
     description = models.TextField()
     deadline = models.DateTimeField(auto_now_add=True)
     checkin = models.ForeignKey(CheckInOut, on_delete=models.PROTECT)
@@ -306,6 +319,7 @@ class CheckinContacts(BaseModel):
     serviceprovider_tel = models.CharField(max_length=100, null=True, blank=True,)
     serviceprovider_signatory = models.BooleanField(default=False)
     send_email_serviceprovider = models.BooleanField(default=False)
+    manager_id = models.CharField(max_length=100, blank=True, null=True)
 
 
 
