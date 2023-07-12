@@ -31,7 +31,7 @@ class ChildDetailSerializer(serializers.ModelSerializer):
     def get_child_details(self, obj):
         if self.context.get('exclude_child_details'):
             return []
-        child_details = obj.child_details.all()
+        child_details = obj.child_details.filter(category_type=obj.category_type)
         serialized_child_details = self.__class__(child_details, many=True, context={'exclude_child_details': True}).data
         return serialized_child_details
     
@@ -232,14 +232,24 @@ class FurnitureInspectionSerializer(serializers.ModelSerializer):
         model = FurnitureInspection
         exclude = ('created_at', 'updated_at')
 
+class CreateCommentSerializer(serializers.ModelSerializer):
+    
+    class Meta:
+        model = Checkincomments
+        exclude = ('created_at', 'updated_at')
+
 class CommentSerializer(serializers.ModelSerializer):
-    realestatemanageid = serializers.CharField(source='realestatemanageid.manager_name', read_only=True)
+    #realestatemanageid = serializers.CharField(source='realestatemanageid.manager_name', read_only=True)
     checkin = serializers.CharField(source='checkin.user.name', read_only=True)
     class Meta:
         model = Checkincomments
         exclude = ('created_at', 'updated_at')
 
+class CreateRentaldeductionSerializer(serializers.ModelSerializer):
 
+    class Meta:
+        model = RentalDeduction
+        exclude = ('created_at', 'updated_at')
 
 class RentaldeductionSerializer(serializers.ModelSerializer):
     checkin = serializers.CharField(source='checkin.user.name', read_only=True)

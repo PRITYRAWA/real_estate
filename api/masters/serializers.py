@@ -246,7 +246,8 @@ class RealestateobjectsdetailSerializer(serializers.ModelSerializer):
     def get_child_details(self, obj):
         if self.context.get('exclude_child_details'):
             return []
-        child_details = obj.child_details.all()
+        #child_details = obj.child_details.all()
+        child_details = obj.child_details.filter(category_type=obj.category_type)
         serialized_child_details = self.__class__(child_details, many=True, context={'exclude_child_details': True}).data
         return serialized_child_details
 

@@ -282,7 +282,6 @@ class Checkincomments(BaseModel):
         ('furniture_inspection', 'Furniture Inspection'),
         ('rental_deduction', 'Rental Deduction'),
     ]
-    realestatemanageid = models.ForeignKey(Realestatepropertymanagement, on_delete=models.PROTECT)  
     checkin = models.ForeignKey(CheckInOut, on_delete=models.PROTECT,null=True,blank=True)   
     tenant_comment = models.CharField(max_length=500,null=True,blank=True)   
     office_comment = models.CharField(max_length=500,null=True,blank=True)   

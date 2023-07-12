@@ -603,7 +603,7 @@ class RentaldeductionViewSet(viewsets.ModelViewSet):
         if 'period' in data:
             m['period'] = data['period']
 
-        newRec = RentaldeductionSerializer(data=m, context={'request':request})
+        newRec = CreateRentaldeductionSerializer(data=m, context={'request':request})
         if newRec.is_valid(raise_exception=True):
             newRec.save()
             recDetails = RentalDeduction.objects.get(id=newRec.data.get('id'))
@@ -639,7 +639,7 @@ class RentaldeductionViewSet(viewsets.ModelViewSet):
 
             haveImg = True
         if len(m) > 0:
-            serializer = RentaldeductionSerializer(instance, data=m, partial=True, context={'request': request})
+            serializer = CreateRentaldeductionSerializer(instance, data=m, partial=True, context={'request': request})
             serializer.is_valid(raise_exception=True)
             self.perform_update(serializer)
         getAppendence = RentalDeduction.objects.get(id=instance.id)
@@ -800,6 +800,23 @@ class CommentViewSet(viewsets.ModelViewSet):
             queryset = queryset.filter(checkin_id=checkin_id, inspection_type=inspection_type)
 
         return queryset
+    
+    def create(self,request):
+        serializer = CreateCommentSerializer(data=request.data, context={'request': request})
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        else:
+            return Response(serializer.errors)
+        
+    def update(self,request,pk=None):
+        instance = Checkincomments.objects.get(pk=pk)
+        serializer = CreateCommentSerializer(instance,data=request.data, context={'request': request})
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        else:
+            return Response(serializer.errors)
 
 
 def generate_pdf(request, pk):
