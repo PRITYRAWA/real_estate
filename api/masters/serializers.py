@@ -174,7 +174,7 @@ class GetPropertymanagementserializer(serializers.ModelSerializer):
             "manageby_id",
             "manager_name",
             "manager_email",
-            "manager_Phone"
+            "manager_Phone",
             "object_count",
             "asset_value"
 
