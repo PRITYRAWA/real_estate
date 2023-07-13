@@ -581,8 +581,10 @@ class MeetingScheduleSerializer(serializers.ModelSerializer):
         qr_image.save(settings.MEDIA_ROOT / qr_image_path)
 
         instance.qr_code = qr_image_path
-        instance.meeting_date = meeting_date
-        instance.meeting_time = meeting_time
+        if meeting_date:
+            instance.meeting_date = meeting_date
+        if meeting_time:
+            instance.meeting_time = meeting_time
         instance.save()
         return instance
 
