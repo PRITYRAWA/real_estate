@@ -445,122 +445,127 @@ class MeetingScheduleSerializer(serializers.ModelSerializer):
         super(self.__class__, self).update(instance, validated_data)
         print("update method after")
        
-        # update the related meeting agendas and sub agendas model.
-        agenda_list=[]
-        detail_list=[]
-        for agenda in agenda_details:
-            print("agenda",agenda)
-            magenda_details= agenda.pop('meetingagenda_detail',None)
-            if "id" in agenda.keys():
-                agenda_id = agenda["id"]
-                agenda_obj = MeetingAgenda.objects.filter(id=agenda_id)
-                print("agenda_obj",agenda_obj)
-                if agenda_obj.exists():
-                    agenda_data = agenda_obj.update(**agenda)
-                    agenda_list.append(agenda_id)
-                else:
-                    continue
-                for detail in magenda_details:
-                    if "id" in detail.keys():
-                        detail_id = detail["id"]
-                        detail_obj = MeetingSubAgendaDetails.objects.filter(id=detail_id)
-                        print("detail_obj",detail_obj)
-                        if detail_obj.exists():
-                            detail_data = detail_obj.update(**detail)
-                            detail_list.append(detail_id)
-                        else:
-                            continue
+        if agenda_details:
+            # update the related meeting agendas and sub agendas model.
+            agenda_list=[]
+            detail_list=[]
+            for agenda in agenda_details:
+                print("agenda",agenda)
+                magenda_details= agenda.pop('meetingagenda_detail',None)
+                if "id" in agenda.keys():
+                    agenda_id = agenda["id"]
+                    agenda_obj = MeetingAgenda.objects.filter(id=agenda_id)
+                    print("agenda_obj",agenda_obj)
+                    if agenda_obj.exists():
+                        agenda_data = agenda_obj.update(**agenda)
+                        agenda_list.append(agenda_id)
                     else:
-                        print("flow is in else agendacondition")
-                        agenda_id = MeetingAgenda.objects.get(id=agenda_id)
-                        submitter = detail.pop('submitter',None)
-                        submiiter_id= Realestatepropertymanagement.objects.get(id=submitter)
-                        detail_data = MeetingSubAgendaDetails.objects.create(**detail,submitter=submiiter_id, meeting_agenda=agenda_id)
-                        detail_list.append(detail_data.id)
-                for mdetails in instance.meeting_agendas.all():
-                    for meet_details in mdetails.meetingagenda_detail.all():
-                        if meet_details.id not in detail_list:
-                            print("delete floe")
-                            meet_details.delete()
-            else:
-                print("flow is in else condition")
-                agenda_data = MeetingAgenda.objects.create(**agenda, meeting=instance)
-                voting = MeetingParticipant.objects.filter(meeting=instance)
-                for v in voting:
-                    ParticipantAgenda.objects.create(participant=v,agenda=agenda_data)
-                agenda_list.append(agenda_data.id)
-        print("flow is here correctly")
-        for agenda in instance.meeting_agendas.all():
-                if agenda.id not in agenda_list:
-                    agenda.delete()
+                        continue
+                    for detail in magenda_details:
+                        if "id" in detail.keys():
+                            detail_id = detail["id"]
+                            detail_obj = MeetingSubAgendaDetails.objects.filter(id=detail_id)
+                            print("detail_obj",detail_obj)
+                            if detail_obj.exists():
+                                detail_data = detail_obj.update(**detail)
+                                detail_list.append(detail_id)
+                            else:
+                                continue
+                        else:
+                            print("flow is in else agendacondition")
+                            agenda_id = MeetingAgenda.objects.get(id=agenda_id)
+                            submitter = detail.pop('submitter',None)
+                            submiiter_id= Realestatepropertymanagement.objects.get(id=submitter)
+                            detail_data = MeetingSubAgendaDetails.objects.create(**detail,submitter=submiiter_id, meeting_agenda=agenda_id)
+                            detail_list.append(detail_data.id)
+                    for mdetails in instance.meeting_agendas.all():
+                        for meet_details in mdetails.meetingagenda_detail.all():
+                            if meet_details.id not in detail_list:
+                                print("delete floe")
+                                meet_details.delete()
+                else:
+                    print("flow is in else condition")
+                    agenda_data = MeetingAgenda.objects.create(**agenda, meeting=instance)
+                    voting = MeetingParticipant.objects.filter(meeting=instance)
+                    for v in voting:
+                        ParticipantAgenda.objects.create(participant=v,agenda=agenda_data)
+                    agenda_list.append(agenda_data.id)
+            print("flow is here correctly")
+            for agenda in instance.meeting_agendas.all():
+                    if agenda.id not in agenda_list:
+                        agenda.delete()
         
-        voting_list = []
-        for voting in votingcircle_detail:
-            if "id" in voting.keys():
-                voting_id=voting["id"]
-                voting_obj = MeetingVotingCircle.objects.filter(id=voting_id)
-                if voting_obj.exists():
-                    voting_data = voting_obj.update(**voting)
-                    voting_list.append(voting_id)
+        if votingcircle_detail:
+            voting_list = []
+            for voting in votingcircle_detail:
+                if "id" in voting.keys():
+                    voting_id=voting["id"]
+                    voting_obj = MeetingVotingCircle.objects.filter(id=voting_id)
+                    if voting_obj.exists():
+                        voting_data = voting_obj.update(**voting)
+                        voting_list.append(voting_id)
+                    else:
+                        continue
                 else:
-                    continue
-            else:
-                voting.pop("meeting", None)
-                ap_list=[]
-                voting_data = MeetingVotingCircle.objects.create(**voting, meeting=instance)
-                mpagendas=MeetingParticipant.objects.create(meeting=instance,participant=voting_data,participant_email=voting_data.email,object_count=voting_data.object_count,asset_value=voting_data.asset_value)
-                meetAgendaList = MeetingAgenda.objects.filter(meeting=instance)
-                for agendalist in meetAgendaList:
-                    ap_list.append(ParticipantAgenda(participant=mpagendas,agenda=agendalist))
-                bulk_participants_details = ParticipantAgenda.objects.bulk_create(ap_list)
-                voting_list.append(voting_data.id)
+                    voting.pop("meeting", None)
+                    ap_list=[]
+                    voting_data = MeetingVotingCircle.objects.create(**voting, meeting=instance)
+                    mpagendas=MeetingParticipant.objects.create(meeting=instance,participant=voting_data,participant_email=voting_data.email,object_count=voting_data.object_count,asset_value=voting_data.asset_value)
+                    meetAgendaList = MeetingAgenda.objects.filter(meeting=instance)
+                    for agendalist in meetAgendaList:
+                        ap_list.append(ParticipantAgenda(participant=mpagendas,agenda=agendalist))
+                    bulk_participants_details = ParticipantAgenda.objects.bulk_create(ap_list)
+                    voting_list.append(voting_data.id)
 
-        for voting in instance.meeting_votingcircles.all():
-                if voting.id not in voting_list:
-                    participant_id=MeetingParticipant.objects.get(meeting=instance,participant=voting,participant_email=voting.email)
-                    agendas_id = ParticipantAgenda.objects.filter(participant=participant_id).delete()
-                    participant_id.delete()
-                    voting.delete()
-        
-        #update meeting quroms
-        quoroms_list=[] = []
-        for quorums in quorums_detail:
-            if "id" in quorums.keys():
-                quorums_id = quorums["id"]
-                quorums_obj = MeetingQuorums.objects.filter(id=quorums_id)
-                if quorums_obj.exists():
-                    quorums_data = quorums_obj.update(**quorums)
-                    quoroms_list.append(quorums_id)
+            for voting in instance.meeting_votingcircles.all():
+                    if voting.id not in voting_list:
+                        participant_id=MeetingParticipant.objects.get(meeting=instance,participant=voting,participant_email=voting.email)
+                        agendas_id = ParticipantAgenda.objects.filter(participant=participant_id).delete()
+                        participant_id.delete()
+                        voting.delete()
+
+        if quorums_detail: 
+            #update meeting quroms
+            quoroms_list=[] = []
+            for quorums in quorums_detail:
+                if "id" in quorums.keys():
+                    quorums_id = quorums["id"]
+                    quorums_obj = MeetingQuorums.objects.filter(id=quorums_id)
+                    if quorums_obj.exists():
+                        quorums_data = quorums_obj.update(**quorums)
+                        quoroms_list.append(quorums_id)
+                    else:
+                        continue
                 else:
-                    continue
-            else:
-                quorums.pop("meeting", None)
-                quorums_data = MeetingQuorums.objects.create(**quorums, meeting=instance)
-                quoroms_list.append(quorums_data.id)
+                    quorums.pop("meeting", None)
+                    quorums_data = MeetingQuorums.objects.create(**quorums, meeting=instance)
+                    quoroms_list.append(quorums_data.id)
 
-        for quorums in instance.meeting_quorums.all():
-                if quorums.id not in quoroms_list:
-                    quorums.delete()
+            for quorums in instance.meeting_quorums.all():
+                    if quorums.id not in quoroms_list:
+                        quorums.delete()
 
-        #update meeting votes
-        meetingvotes_list=[]
-        for vcretriea in meeting_votingcretriea:
-            if "id" in vcretriea.keys():
-                cretriea_id = vcretriea["id"]
-                votes_obj = MeetingVotes.objects.filter(id=cretriea_id)
-                if votes_obj.exists():
-                    voting_data = votes_obj.update(**vcretriea)
-                    meetingvotes_list.append(cretriea_id)
+
+        if meeting_votingcretriea:
+            #update meeting votes
+            meetingvotes_list=[]
+            for vcretriea in meeting_votingcretriea:
+                if "id" in vcretriea.keys():
+                    cretriea_id = vcretriea["id"]
+                    votes_obj = MeetingVotes.objects.filter(id=cretriea_id)
+                    if votes_obj.exists():
+                        voting_data = votes_obj.update(**vcretriea)
+                        meetingvotes_list.append(cretriea_id)
+                    else:
+                        continue
                 else:
-                    continue
-            else:
-                vcretriea.pop("meeting", None)
-                voting_data = MeetingVotes.objects.create(**vcretriea, meeting=instance)
-                meetingvotes_list.append(voting_data.id)
+                    vcretriea.pop("meeting", None)
+                    voting_data = MeetingVotes.objects.create(**vcretriea, meeting=instance)
+                    meetingvotes_list.append(voting_data.id)
 
-        for vcretriea in instance.meeting_votingcretriea.all():
-                if vcretriea.id not in meetingvotes_list:
-                    vcretriea.delete()
+            for vcretriea in instance.meeting_votingcretriea.all():
+                    if vcretriea.id not in meetingvotes_list:
+                        vcretriea.delete()
 		 
         qr = qrcode.QRCode(
             version=1,
@@ -631,7 +636,5 @@ class GetMeetingScheduleSerializer(serializers.ModelSerializer):
            "meeting_votingcretriea",
            "meeting_protocol"
         )
-    
-    
-    
-    
+
+ 

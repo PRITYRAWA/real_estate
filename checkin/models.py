@@ -523,7 +523,7 @@ class CheckinContacts(BaseModel):
         return str(self.tenant_name)
     
     
-lass Checks(BaseModel):
+class Checks(BaseModel):
     name = models.CharField(max_length=70,null=True,blank=True)
     is_done = models.BooleanField(default=False, verbose_name=("Is Done"),null=True,blank=True)
     is_todo = models.BooleanField(default=False, verbose_name=("Is Todo"),null=True,blank=True)

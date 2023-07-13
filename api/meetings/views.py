@@ -36,6 +36,16 @@ class MeetingScheduleViewSet(viewsets.ModelViewSet):
             return Response(serializer.data)
         else:
             return Response(serializer.errors)
+    
+    def partial_update(self, request, pk=None):
+        instance = MeetingSchedule.objects.get(pk=pk)
+        serializer = MeetingScheduleSerializer(instance,data=request.data,partial=True, context={'request': request})
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        else:
+            return Response(serializer.errors)
+    
         
     def list(self,request):
         try:
