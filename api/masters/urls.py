@@ -30,6 +30,5 @@ router.register(r'property-contact/(?P<property_id>\d+)(?:/(?P<object_id>\d+))?'
 
 urlpatterns = [
     # path('properties/vacant/', VacantPropertyListView.as_view(), name='vacant-property-list'),
-
 ]
 urlpatterns += router.urls
