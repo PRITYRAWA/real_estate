@@ -18,6 +18,7 @@ router.register(r'comment', CommentViewSet)
 router.register(r'room-detail', ChildObjectListInspectionViewSet, basename='child-objectlistinspection')
 
 router.register(r'checkin-contacts', CheckinContactsViewSet, basename='checkin-contacts')
+router.register(r'checks', ChecksViewSet)
 
 urlpatterns = [
         path('generate-report/', generate_pdf_report, name='generate_report'),

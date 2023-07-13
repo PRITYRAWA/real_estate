@@ -247,6 +247,27 @@ class CommentSerializer(serializers.ModelSerializer):
 
 class CreateRentaldeductionSerializer(serializers.ModelSerializer):
 
+    images = serializers.SerializerMethodField()
+
+    def get_images(self, obj):
+        print(obj)
+        imgId = obj.images.all()
+        print(imgId)
+        req = self.context['request']
+        base_uri = req.build_absolute_uri('/')
+        imgRecord = CheckinImage.objects.filter(id__in=imgId)
+        imgData = KeyImageSerializer(imgRecord, many=True)
+        result = []
+        for data in imgData.data:
+            imgPath = str(data.get('image'))
+            imgPath = imgPath[1:]
+            imageUrl = base_uri+imgPath
+            m = {}
+            m['id'] = data.get('id')
+            m['imageURL'] = imageUrl
+            result.append(m)
+        return result
+
     class Meta:
         model = RentalDeduction
         exclude = ('created_at', 'updated_at')
@@ -314,4 +335,10 @@ class CheckinContactsSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = CheckinContacts
+        exclude = ('created_at', 'updated_at')
+
+class CheckSerializer(serializers.ModelSerializer):
+    
+    class Meta:
+        model = Checks
         exclude = ('created_at', 'updated_at')

@@ -1189,3 +1189,8 @@ def delete_realestatemeter_images(request, realestatemeter_id):
     realestatemeter.images.clear()
 
     return Response({'message': 'Images deleted successfully'}, status=status.HTTP_200_OK)
+
+
+class ChecksViewSet(viewsets.ModelViewSet):
+    queryset = Checks.objects.all()
+    serializer_class = CheckSerializer

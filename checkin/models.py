@@ -328,7 +328,18 @@ class CheckinContacts(BaseModel):
     
     def __str__(self):
         return str(self.tenant_name)
+    
+    
+class Checks(BaseModel):
+    name = models.CharField(max_length=70,null=True,blank=True)
+    is_done = models.BooleanField(default=False, verbose_name=("Is Done"),null=True,blank=True)
+    is_todo = models.BooleanField(default=False, verbose_name=("Is Todo"),null=True,blank=True)
 
+    class Meta:
+        db_table = "Checks"
+        ordering = ['-id']
+    
+    def __str__(self):
+        return str(self.name)
 
-        return str(self.tenant_name)
 
