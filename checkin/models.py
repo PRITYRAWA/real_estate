@@ -48,6 +48,9 @@ class CheckInOut(BaseModel):
     type = models.CharField(
         max_length=30, default="checkin", choices=TYPE_CHOICES, verbose_name=("Type")
     )
+    property_inspection_report=models.FileField(upload_to="images", null=True, blank=True)
+    furniture_inspection_report=models.FileField(upload_to="images", null=True, blank=True)
+    rental_deduction_report=models.FileField(upload_to="images", null=True, blank=True)
 
     def __str__(self):
         return f"{self.user.name} checked into {self.object_check_in}"

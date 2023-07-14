@@ -105,7 +105,7 @@ class CheckInOutSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = CheckInOut
-        fields = ('id', 'user', 'user_name', 'service_ticket_number', 'object_check_in',
+        fields = ('id', 'user', 'user_name', 'service_ticket_number', 'object_check_in','property_inspection_report','furniture_inspection_report','rental_deduction_report',
                   'check_in_date', 'check_in_time', 'check_out_date', 'check_out_time', 'inspection_date_time','property_check_in','checkin_id','type')
                   
 
