@@ -97,7 +97,7 @@ class MeetingParticipantSerializer(serializers.ModelSerializer):
 
 
 class MeetingParticipantAgendaSerializer(serializers.ModelSerializer):
-    meeting_participant = serializers.PrimaryKeyRelatedField(read_only=True,source="meeting_participant.meeting.title")
+    meeting_participant = serializers.PrimaryKeyRelatedField(read_only=True,source="meeting_participant.participant.participant_name")
     
     class Meta:
         model = MeetingParticipantAgenda
@@ -596,11 +596,11 @@ class GetMeetingScheduleSerializer(serializers.ModelSerializer):
     meeting_votingcircles = GetVotingCircleSerializer(many=True)
     meeting_quorums = GetMeetingQuorumsSerializer(many=True)
     meeting_votingcretriea = GetMeetingVotesSerializer(many=True)
-    property = serializers.CharField(read_only=True, source="property.name")
-    chairman = serializers.CharField(read_only=True, source="chairman.name")
-    minute_taker = serializers.CharField(read_only=True, source="minute_taker.name")
-    object = serializers.CharField(read_only=True, source="object.name")
-    subgroup = serializers.CharField(read_only=True, source="subgroup.name")
+    property_name = serializers.CharField(read_only=True, source="property.name")
+    chairman_name = serializers.CharField(read_only=True, source="chairman.manager_name")
+    minute_taker_name = serializers.CharField(read_only=True, source="minute_taker.manager_name")
+    object_name = serializers.CharField(read_only=True, source="object.object_name")
+    subgroup_name = serializers.CharField(read_only=True, source="subgroup.name")
 
     class Meta:
         model = MeetingSchedule
@@ -613,6 +613,11 @@ class GetMeetingScheduleSerializer(serializers.ModelSerializer):
             "subgroup",
             "chairman",
             "minute_taker",
+            "property_name",
+            "chairman_name",
+            "minute_taker_name",
+            "object_name",
+            "subgroup_name",
             "meeting_date",
             "meeting_time",
             "date_defined",
