@@ -15,7 +15,7 @@ class MeetingSchedule(BaseModel):
         Realestateproperties, related_name="properties", on_delete=models.PROTECT
     )
     object = models.ForeignKey(
-        Realestateobjects, related_name="property_objects", on_delete=models.PROTECT
+        Realestateobjects, related_name="property_objects", on_delete=models.PROTECT,null=True,blank=True
     )
     subgroup = models.ForeignKey(
         Realestateproperties,
@@ -165,10 +165,10 @@ class MeetingParticipant(BaseModel):
     asset_value = models.FloatField(
         default=0.0, null=True, blank=True, verbose_name=("Asset Value")
     )
-    attendence_in_person = models.BooleanField(default=False)
+    attendance_in_person = models.BooleanField(default=False)
     online_voting = models.BooleanField(default=False)
-    meeting_attendence = models.BooleanField(default=False)
-    voting_attendence = models.BooleanField(default=False)
+    meeting_attendance = models.BooleanField(default=False)
+    voting_attendance = models.BooleanField(default=False)
     power_of_attroney = models.BooleanField(default=False)
     attroney_attchment = models.FileField(upload_to="attachment", null=True, blank=True)
     verified_attroney = models.BooleanField(default=False)
@@ -214,7 +214,7 @@ class MeetingParticipantAgenda(BaseModel):
     title = models.CharField(max_length=100, blank=False, null=False)
     voting_ques = models.CharField(max_length=100, blank=False, null=False)
     explaination = models.CharField(max_length=100, blank=True, null=True)
-    attachment = models.FileField(upload_to="attachment", null=True, blank=True)
+    attachment = models.FileField(upload_to="attachement", null=True, blank=True)
 
     class Meta:
         db_table = "MeetingParticipantAgenda"

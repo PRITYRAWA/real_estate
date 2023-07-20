@@ -62,7 +62,7 @@ class MeetingScheduleViewSet(viewsets.ModelViewSet):
         result_dict={}
         agendas = MeetingAgenda.objects.get(meeting=meetid,id=agid)
         meet_participants =ParticipantAgenda.objects.filter(agenda=agid)
-        pers_participant=MeetingParticipant.objects.filter(meeting=meetid,attendence_in_person=True).count()
+        pers_participant=MeetingParticipant.objects.filter(meeting=meetid,attendance_in_person=True).count()
         adv_participant=MeetingParticipant.objects.filter(meeting=meetid,online_voting=True).count()
         print("meet",meet_participants)
         result_dict['participation_in_person']=pers_participant
@@ -154,15 +154,15 @@ class MeetingScheduleViewSet(viewsets.ModelViewSet):
     def scan_qr_code(self,request,email,meetid):
         meeting_id = MeetingSchedule.objects.get(id=meetid)
         attendence = MeetingParticipant.objects.get(meeting=meetid,participant_email=email)
-        attendence.meeting_attendence= True
-        attendence.attendence_in_person = True
+        attendence.meeting_attendance= True
+        attendence.attendance_in_person = True
         attendence.save()
         serializer = MeetingParticipantSerializer(attendence)
         return Response(serializer.data)
 
     @action(detail=False, methods=['get'], name='present_participants',url_path='present_participants/(?P<email>[^/]+[@._][^/]+)/(?P<meetid>[^/.]+)')
     def present_participants(self,request,email,meetid):
-        attendence = MeetingParticipant.objects.filter(meeting=meetid,meeting_attendence=True)
+        attendence = MeetingParticipant.objects.filter(meeting=meetid,meeting_attendance=True)
         serializer = GetMeetingParticipantSerializer(attendence, many=True)
         return Response(serializer.data)
     
@@ -206,7 +206,7 @@ class MeetingScheduleViewSet(viewsets.ModelViewSet):
     @action(detail=False, methods=['get'], name='download_pdf',url_path='download_pdf/(?P<meetid>[^/.]+)')
     def download_pdf(self,request,meetid):
         meet_details= MeetingSchedule.objects.get(id=meetid)
-        pers_participant=MeetingParticipant.objects.filter(meeting=meetid,voting_attendence=True).count()
+        pers_participant=MeetingParticipant.objects.filter(meeting=meetid,voting_attendance=True).count()
         adv_participant=MeetingParticipant.objects.filter(meeting=meetid,online_voting=True).count()
         agenda_items=MeetingAgenda.objects.filter(meeting=meetid)
         participant=MeetingParticipant.objects.filter(meeting=meetid)
@@ -370,11 +370,9 @@ class MeetingParticipantAgendaViewSet(viewsets.ModelViewSet):
     def submit_agenda(self, request,email,meetid):
         participant_id= MeetingParticipant.objects.get(participant_email=email,meeting=meetid)
         if participant_id:
-            print("participant_id",participant_id)
-            params ={}
-            params['email']=email
-            params['meetid']=meetid
-            serializer = MeetingParticipantAgendaSerializer(data=request.data, context={'request': params})
+            request.email = email
+            request.meetid = meetid
+            serializer = MeetingParticipantAgendaSerializer(data=request.data, context={'request': request})
             if serializer.is_valid():
                 serializer.save()
                 return Response(serializer.data)

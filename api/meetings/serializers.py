@@ -83,10 +83,10 @@ class MeetingParticipantSerializer(serializers.ModelSerializer):
             "participant_name",
             "participant_email",
             "meet_participants",
-            "attendence_in_person",
+            "attendance_in_person",
             "online_voting",
-            "meeting_attendence",
-            "voting_attendence",
+            "meeting_attendance",
+            "voting_attendance",
             "power_of_attroney",
             "attroney_attchment",
             "verified_attroney",
@@ -114,9 +114,8 @@ class MeetingParticipantAgendaSerializer(serializers.ModelSerializer):
         )
 
     def create(self, data):
-        params=self.context.get('request')
-        email =params['email']
-        meetid=params['meetid']
+        email= self.context['request'].email
+        meetid = self.context['request'].meetid
         user_obj= MeetingParticipant.objects.get(meeting=meetid,participant_email=email)
         instance = MeetingParticipantAgenda.objects.create(meeting_participant=user_obj,**data)
         instance.save()
@@ -135,10 +134,10 @@ class GetMeetingParticipantSerializer(serializers.ModelSerializer):
             "participant",
             "participant_email",
             "meet_participants",
-            "attendence_in_person",
+            "attendance_in_person",
             "online_voting",
-            "meeting_attendence",
-            "voting_attendence",
+            "meeting_attendance",
+            "voting_attendance",
             "power_of_attroney",
             "attroney_attchment",
             "verified_attroney",
