@@ -1,23 +1,24 @@
-from rest_framework import viewsets
-from .serializers import *
-from checkin.models import *
 import json
-from reportlab.lib.pagesizes import letter
-from reportlab.pdfgen import canvas
 import os
-from django.http import HttpRequest
-from django.conf import settings
-from django.http import HttpResponse
-from rest_framework.response import Response
-from django.db.models import Q
-from rest_framework import status
-from reportlab.lib.pagesizes import letter
-from reportlab.platypus import SimpleDocTemplate, Paragraph, Table, TableStyle
-from reportlab.lib import colors
-from django.shortcuts import get_object_or_404
-from reportlab.lib.styles import getSampleStyleSheet
 from io import BytesIO
+
+from django.conf import settings
+from django.db.models import Q
+from django.http import HttpRequest, HttpResponse
+from django.shortcuts import get_object_or_404
+from reportlab.lib import colors
+from reportlab.lib.pagesizes import letter
+from reportlab.lib.styles import getSampleStyleSheet
+from reportlab.pdfgen import canvas
+from reportlab.platypus import Paragraph, SimpleDocTemplate, Table, TableStyle
+from rest_framework import status, viewsets
 from rest_framework.decorators import api_view
+from rest_framework.response import Response
+
+from checkin.models import *
+
+from .serializers import *
+
 
 class CheckInOutListCreateView(viewsets.ModelViewSet):
     queryset = CheckInOut.objects.all()
@@ -51,7 +52,7 @@ class ObjectListInspectionViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         checkin_id = self.request.query_params.get('checkin')
         category = self.request.query_params.get('category')
-        room_id = self.kwargs.get('pk') 
+        room_id = self.kwargs.get('pk')
         queryset = super().get_queryset()
         queryset = queryset.filter(related_detail=None)  # Exclude self-related items
         if room_id is not None:

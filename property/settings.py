@@ -10,9 +10,11 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
-from pathlib import Path
-import environ
 from datetime import timedelta
+from pathlib import Path
+
+import environ
+
 from .config import *
 
 # SECURITY WARNING: don't run with debug turned on in production!
@@ -26,7 +28,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # Take environment variables from .env file
 environ.Env.read_env()
-#environ.Env.read_env(BASE_DIR / "property/.env.example")
+environ.Env.read_env(BASE_DIR / "property/.env")
 env = environ.Env()
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
@@ -34,8 +36,8 @@ env = environ.Env()
 # SECURITY WARNING: keep the secret key used in production secret!
 DEBUG = env('DEBUG')
 SECRET_KEY = env('SECRET_KEY')
-#ALLOWED_HOSTS = ["*"]
-ALLOWED_HOSTS = env.list("ALLOWED_HOSTS")
+ALLOWED_HOSTS = ["*"]
+# ALLOWED_HOSTS = env.list("ALLOWED_HOSTS")
 
 # Application definition
 
@@ -88,7 +90,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'property.middleware.ExceptionMiddleware',
 ]
-# CORS_ORIGIN_ALLOW_ALL = True
+CORS_ORIGIN_ALLOW_ALL = True
 # CORS_ORIGIN_WHITELIST = [
 #     'http://localhost:5173',  # Replace with your friend's React server URL
 #     'http://localhost:8000',  # Replace with your friend's React server URL
